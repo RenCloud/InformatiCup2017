@@ -1,0 +1,2 @@
+model_checkpoint_path: "rbm_model"
+all_model_checkpoint_paths: "rbm_model"
