@@ -250,3 +250,9 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Niels ignores
+learning/networks/data
+learning/networks/logs
+learning/networks/models
+learning/networks/MNIST_data
