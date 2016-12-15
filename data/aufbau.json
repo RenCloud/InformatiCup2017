@@ -1,0 +1,76 @@
+{
+    "id": 1, // Repository id
+    "name": "NameDesRepository",
+    "full_name": "Besitzer/Name",
+    "owner_id": 1, //ID des OWnerS
+    "description": "Beschreibung",
+    "readme": "Inhalt der Readme",
+    "language":[//Enthällt alle verwendeten sprachen wie es github wiedergibt
+        {
+            "lang": "language Name",
+            "bytes": 123//How mutch
+        },
+        {
+            "lang": "language Name",
+            "bytes": 123//How mutch
+        }
+    ],
+    "repository":[//Enthällt dateien des repos (ordner und dateien )
+        {
+
+            "path": "lib/grit.rb",
+            "type": "Blob"    //File
+        },
+        {
+            "path": "lib/grit",
+            "type": "Tree"  //Dir
+        }
+
+    ],
+    "truncated": false ,// Api note ... wenn repository zu viele dateien enthält dann true
+    "commits":[//Enthält bis zu 1000 commits
+
+     {
+            "commit": {
+                "author": {
+                    "name": "Scott Chacon",
+                    "email": "schacon@gmail.com"
+                },
+                "commiter": {
+                    "name": "Ryan Tomayko",
+                    "email": "rtomayko@gmail.com"
+                },
+                "message": "git refs api read stuff working and tested"
+            },
+            "author_login": "schacon",
+            "committer_login": "rtomayko"
+        }
+    ],
+    "comments":[//Enthält bis zu 1000 kommentare
+             {
+            "body": "Glad I'm not the only one. See this? http://lukewarmtapioca.com/2008/3/26/trailing-whitespace-in-textmate\n",
+            "path": "",
+            "user": {
+                "name": "sprsquish",
+                "email": ""
+            }
+        }
+
+    ],
+    "issue":[//Enthält bis zu 1000 issues
+{
+            "state": "open",
+            "title": "Debugger doesn't seem to work with the JIT",
+            "body": "I'm trying out the Rubinius debugger, but I can't seem to get it set a breakpoint on a method that has already been compiled. They do work before the method is compiled.\n\nExpected behaviour is that the breakpoints would work on compiled code, and presumably the compiled code would be deoptimized when I install the breakpoint.\n\nThis is with v2.2.4, Mac, x86_64.\n\nTake this test file, `test.rb`.\n\n```\nrequire 'rubinius/debugger'\n\ndef foo\n  a = 1\n  b = 2\n  c = 3\nend\n\n10_000_000.times do\n  foo\nend\n\nRubinius::Debugger.start\n\n10_000_000.times do\n  foo\nend\n```\n\nRun it and set a breakpoint on line 5. The breakpoint doesn't seem to work.\n\n```\n$ rubinius/bin/ruby test.rb\n\n| Breakpoint: Object#__script__ at test.rb:13 (38)\n| 13: Rubinius::Debugger.start\ndebug> b Object#foo:5\n| Set breakpoint 1: test.rb:5 (+4)\ndebug> c\n$\n```\n\nPerhaps it's the JIT - try it with JIT disabled.\n\n```\n$ rubinius/bin/ruby -Xint test.rb \n\n| Breakpoint: Object#__script__ at test.rb:13 (38)\n| 13: Rubinius::Debugger.start\ndebug> b Object#foo:5\n| Set breakpoint 1: test.rb:5 (+4)\ndebug> c\n\n| Breakpoint: Object#foo at test.rb:5 (4)\n| 5:   b = 2\ndebug> exit\n$\n```\n\nNow it works.\n\nWe can also make it work by not running enough iterations to provoke the JIT -\nchange 10_000_000 to 1.\n\n```\n$ rubinius/bin/ruby test.rb \n\n| Breakpoint: Object#__script__ at test.rb:13 (37)\n| 13: Rubinius::Debugger.start\ndebug> b Object#foo:5\n| Set breakpoint 1: test.rb:5 (+4)\ndebug> c\n\n| Breakpoint: Object#foo at test.rb:5 (4)\n| 5:   b = 2\ndebug> exit\n$\n```\n",
+            "user": {
+                "name": "",
+                "email": ""
+            }
+        }
+    ]
+
+
+
+}
+]
+//Beispiel verschönnert eigentlich alles hintereinander -> unleserlich aber das ist ja dem parser egal aber zum aufba ansehen dachte ich es ist so leichter
