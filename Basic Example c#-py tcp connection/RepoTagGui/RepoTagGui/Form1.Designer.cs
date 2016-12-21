@@ -31,6 +31,8 @@
             this.b_createTCPConnection = new System.Windows.Forms.Button();
             this.tb_ip = new System.Windows.Forms.TextBox();
             this.tb_port = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.l_response = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // b_createTCPConnection
@@ -59,11 +61,31 @@
             this.tb_port.TabIndex = 2;
             this.tb_port.Text = "PORT";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(272, 137);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(55, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Response";
+            // 
+            // l_response
+            // 
+            this.l_response.AutoSize = true;
+            this.l_response.Location = new System.Drawing.Point(336, 137);
+            this.l_response.Name = "l_response";
+            this.l_response.Size = new System.Drawing.Size(35, 13);
+            this.l_response.TabIndex = 4;
+            this.l_response.Text = "label2";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(932, 515);
+            this.Controls.Add(this.l_response);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.tb_port);
             this.Controls.Add(this.tb_ip);
             this.Controls.Add(this.b_createTCPConnection);
@@ -79,6 +101,8 @@
         private System.Windows.Forms.Button b_createTCPConnection;
         private System.Windows.Forms.TextBox tb_ip;
         private System.Windows.Forms.TextBox tb_port;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label l_response;
     }
 }
 
