@@ -58,6 +58,7 @@ def prep():
             [(9, 1.0), (10, 1.0)],
             [(9, 1.0), (10, 1.0), (11, 1.0)],
             [(8, 1.0), (10, 1.0), (11, 1.0)]]
+    results = []
     tfidf = gensim.models.TfidfModel(corpus)
     vec = [(0, 1),(4,1)]
     index = gensim.similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=12)
@@ -74,6 +75,8 @@ def prep():
     json_out_raw_arr = []
     for rep in data:
 
+        if(input("") == 'q'):
+            return
         #vec += search_lang(rep['language'])
         search_repo(rep['repository'])
         res = search_desc(rep['description'], rep['readme'])
@@ -91,11 +94,17 @@ def prep():
                     json_out_raw.append(elem[1])
                 else:
                     json_out_raw[elem[0]] = elem[1]
+        #über corpora iterieren
+        #tfidf * res des corpus(Network)
+        # auf einen 7Tupel addieren
+        #Gewichtung des Network hinfällig
         json_out_raw_arr.append(json_out_raw)
         dump = json.dumps(json_out_raw_arr)
+        #Funktionsaufruf
+        #resu = Network.?
+        #kriegt 7Tupel
+        results.append([0.5, 0.3, 0, 0, 0.1, 0.7, 0.5])
+        print(json_out_raw)
     dictionary.save("dic.txt")
     gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
     return dump
-#f = open("vec.json", "w")
-#f.write(dump)
-#print(dump)
