@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 import numpy
 import gensim
+import os.path
 
 
 def search_repo(repo):
@@ -42,7 +43,8 @@ def search_desc(desc, readme):
                 words.append(e)
     #print(dic_desc)
     return words
-
+# corpus ergebnis zuordnen
+# similarities mit ergebnissen
 
 def prep():
     json_data = open("data/json/1-367.json").read()
@@ -61,8 +63,14 @@ def prep():
     index = gensim.similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=12)
     sims = index[tfidf[vec]]
     #print(list(enumerate(sims)))
-    dictionary = gensim.corpora.Dictionary()
-    corpus = []
+    if(os.path.isfile("dic.txt")):
+        dictionary = gensim.corpora.Dictionary.load("dic.txt")
+    else:
+        dictionary = gensim.corpora.Dictionary()
+    if(os.path.isfile("cor.mm")):
+        corpus = list(gensim.corpora.MmCorpus("cor.mm"))
+    else:
+        corpus = []
     json_out_raw_arr = []
     for rep in data:
 
@@ -85,6 +93,8 @@ def prep():
                     json_out_raw[elem[0]] = elem[1]
         json_out_raw_arr.append(json_out_raw)
         dump = json.dumps(json_out_raw_arr)
+    dictionary.save("dic.txt")
+    gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
     return dump
 #f = open("vec.json", "w")
 #f.write(dump)
