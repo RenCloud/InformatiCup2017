@@ -4,7 +4,6 @@ import numpy as np
 class DataSet(object):
 
     def __init__(self, input, output):
-        self._data_set = input
         self._num_examples = len(input)
         self._images = input
         self._labels = output
@@ -34,4 +33,16 @@ class DataSet(object):
 
     @property
     def num_examples(self):
-        return self._data_set.shape[0]
+        return self._images.shape[0]
+
+    @property
+    def input_dim(self):
+        return self._images.shape[1]
+
+    @property
+    def images(self):
+        return self._images
+
+    @property
+    def labels(self):
+        return self._labels
