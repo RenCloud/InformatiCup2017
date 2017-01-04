@@ -12,34 +12,28 @@ def fit_rbm(data_set, main_dir="rbm_test"):
 
     input = DataSet(input_np, input_np)
 
-    rbm = RBM(784, 10, batch_size=100, epochs=300, main_dir=main_dir, gibbs_sampling_steps=1,
-              learning_rate=0.1, input_to_binary=True, verbose=False)
+    # TODO
+    # größe anpassen
 
-    rbm.fit(input, validation_set=None, restore_previous_model=False, start_epoche=0)
+    rbm = RBM(input.input_dim, 7, main_dir=main_dir, input_to_binary=True, verbose=False)
 
-    rbm.learning_rate = 0.05
-    rbm.gibbs_sampling_steps = 3
-    rbm.epochs = 300
-    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=300)
+    rbm.fit(input, validation_set=None, restore_previous_model=False, start_epoche=0, gibbs_sampling_steps=1,
+            learning_rate=0.1, weight_decay_factor=0.001, momentum_factor=0.5, epochs=50, batch_size=10)
 
-    rbm.learning_rate = 0.01 / 100
-    rbm.gibbs_sampling_steps = 5
-    rbm.epochs = 300
-    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=600)
+    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=50, gibbs_sampling_steps=3,
+            learning_rate=0.05, weight_decay_factor=0.001, momentum_factor=0.9, epochs=300, batch_size=100)
 
-    rbm.learning_rate = 0.001 / 100
-    rbm.gibbs_sampling_steps = 10
-    rbm.epochs = 300
-    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=900)
+    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=350, gibbs_sampling_steps=5,
+            learning_rate=0.01, weight_decay_factor=0.001, momentum_factor=0.9, epochs=300, batch_size=100)
 
-    rbm.learning_rate = 0.0001 / 100
-    rbm.gibbs_sampling_steps = 20
-    rbm.epochs = 600
-    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=1200)
+    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=650, gibbs_sampling_steps=10,
+            learning_rate=0.001, weight_decay_factor=0.001, momentum_factor=0.9, epochs=300, batch_size=100)
+
+    rbm.fit(input, validation_set=None, restore_previous_model=True, start_epoche=950, gibbs_sampling_steps=20,
+            learning_rate=0.0001, weight_decay_factor=0.001, momentum_factor=0.9, epochs=600, batch_size=100)
 
 
 def classify(input):
-    rbm = RBM(784, 10, batch_size=100, epochs=300, main_dir="rbm_server", gibbs_sampling_steps=1,
-              learning_rate=0.1, input_to_binary=True, verbose=False)
+    rbm = RBM(784, 10, main_dir="rbm_server", input_to_binary=True, verbose=False)
 
     rbm.classify(input, return_hstates=False, input_to_binary=False)
