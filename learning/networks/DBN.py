@@ -28,6 +28,7 @@ class DBN(object):
         '''
             Constructor for Deep Belief Network. Sets up all Variables used by the network. In the Constructor is also
             the size of the network specified.
+
         :param layer_size: The parameter holds the size and the number of layers used for the network as a list:
                                 e.g.[10, 20, 10], this network has 3 layers of the size 10, 20, 10.
         :param main_dir: Is used as save location for checkpoints and logdata.
@@ -105,7 +106,7 @@ class DBN(object):
             if i == 0 and first_layer_binary:
                 input_to_binary = True
 
-            rbm = RBM(self.layer_size[i], self.layer_size[i + 1], main_dir="dbn/rbm_" + repr(i),
+            rbm = RBM(self.layer_size[i], self.layer_size[i + 1], main_dir=self.main_dir + "/rbm_" + repr(i),
                       model_name="rbm_model_" + repr(i), input_to_binary=input_to_binary)
 
             start_epoch = 0
@@ -347,21 +348,21 @@ class DBN(object):
 
         return models_dir, data_dir, summary_dir
 
-
+'''
 if __name__ == '__main__':
     dbm = DBN([784, 500, 500, 2000, 10])
 
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
     # dbm.train_set = mnist.train
-    '''
+
     dbm.pretraining(mnist.train, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
                     weight_decay=[0.0001, 0.0001, 0.0001],
-                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[150, 150, 150],
+                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
                     batch_size=[10, 100, 100])
-    '''
+
 
     dbm.supervised_finetuning(batch_size=100, data_set=mnist.test, epochs=1, make_dbn=True, validation_set=mnist.validation)
 
-
+'''
 
