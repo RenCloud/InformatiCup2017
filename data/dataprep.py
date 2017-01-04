@@ -45,25 +45,19 @@ def search_desc(desc, readme):
     return words
 # corpus ergebnis zuordnen
 # similarities mit ergebnissen
+"""
+@param file json file to analyze or train with
+@param training 0-analyze, 1-training, 2-vector optimization
+@return vector for networks
+"""
+def prep(file, training = 0):
+    if(os.path.isfile(file)):
+        data = json.loads(open(file).read())
+    else:
+        if(training != 2):
+            print("file not found: "+file)
 
-def prep():
-    json_data = open("data/json/1-367.json").read()
-    data = json.loads(json_data)
-    corpus = [[(0, 1.0), (1, 1.0), (2, 1.0)],
-            [(2, 1.0), (3, 1.0), (4, 1.0), (5, 1.0), (6, 1.0), (8, 1.0)],
-            [(1, 1.0), (3, 1.0), (4, 1.0), (7, 1.0)],
-            [(0, 1.0), (4, 2.0), (7, 1.0)],
-            [(3, 1.0), (5, 1.0), (6, 1.0)],
-            [(9, 1.0)],
-            [(9, 1.0), (10, 1.0)],
-            [(9, 1.0), (10, 1.0), (11, 1.0)],
-            [(8, 1.0), (10, 1.0), (11, 1.0)]]
-    results = []
-    tfidf = gensim.models.TfidfModel(corpus)
-    vec = [(0, 1),(4,1)]
-    index = gensim.similarities.SparseMatrixSimilarity(tfidf[corpus], num_features=12)
-    sims = index[tfidf[vec]]
-    #print(list(enumerate(sims)))
+    # load dictionary and corpus
     if(os.path.isfile("dic.txt")):
         dictionary = gensim.corpora.Dictionary.load("dic.txt")
     else:
@@ -72,39 +66,51 @@ def prep():
         corpus = list(gensim.corpora.MmCorpus("cor.mm"))
     else:
         corpus = []
-    json_out_raw_arr = []
-    for rep in data:
 
-        if(input("") == 'q'):
-            return
-        #vec += search_lang(rep['language'])
-        search_repo(rep['repository'])
+    for rep in data:
+        #TODO file endings
+        #search_repo(rep['repository'])
+
         res = search_desc(rep['description'], rep['readme'])
         tmp = []
         tmp.append(res)
-        dictionary.merge_with(gensim.corpora.Dictionary(tmp))
-        corpus.append(dictionary.doc2bow(res))
-        #vec +=
-        tfidf = gensim.models.TfidfModel(corpus)
-        #print(tfidf[dictionary.doc2bow(res)])
-        json_out_raw = []
-        for elem in tfidf[dictionary.doc2bow(res)]:
-            if(elem[0] is not None and elem[1] is not None):
-                if(elem[0]>=len(json_out_raw)):
-                    json_out_raw.append(elem[1])
-                else:
-                    json_out_raw[elem[0]] = elem[1]
+        dump = ""
+
+        if(training == 2):
+            dictionary.filter_extremes(10, 0.8, None)
+            dictionary.compactify()
+            print(dictionary)
+        elif(training == 1):
+            dictionary.merge_with(gensim.corpora.Dictionary(tmp))
+            corpus.append(dictionary.doc2bow(res))
+        elif(training == 0):
+            tfidf = gensim.models.TfidfModel(corpus)
+            json_out_raw = [0 for x in range(dictionary.__len__())]
+            for elem in tfidf[dictionary.doc2bow(res)]:
+                #print(json_out_raw)
+                if(elem[0] is not None and elem[1] is not None):
+                    if(elem[0]>=len(json_out_raw)):
+                        json_out_raw.append(elem[1])
+                    else:
+                        json_out_raw[elem[0]] = elem[1]
+
+            dump = json.dumps(json_out_raw)
+        else:
+            print("param error")
+        #lsi = gensim.models.LsiModel(corpus)
+        #vec_lsi = lsi[dictionary.doc2bow(res)]
+        #print(vec_lsi)
         #über corpora iterieren
         #tfidf * res des corpus(Network)
         # auf einen 7Tupel addieren
         #Gewichtung des Network hinfällig
-        json_out_raw_arr.append(json_out_raw)
-        dump = json.dumps(json_out_raw_arr)
+        #json_out_raw_arr.append(json_out_raw)
         #Funktionsaufruf
         #resu = Network.?
         #kriegt 7Tupel
-        results.append([0.5, 0.3, 0, 0, 0.1, 0.7, 0.5])
-        print(json_out_raw)
+        #results.append([0.5, 0.3, 0, 0, 0.1, 0.7, 0.5])
+        #print(json_out_raw)
     dictionary.save("dic.txt")
     gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
+    #print(dump)
     return dump
