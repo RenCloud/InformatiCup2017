@@ -1,1 +1,0 @@
-# InformatiCup2017

@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>utilities &#8212; Gi-Projekt 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utilities</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utitilies module.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">misc</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="c1"># ################### #</span>
+<span class="c1">#   Network helpers   #</span>
+<span class="c1"># ################### #</span>
+
+
+<div class="viewcode-block" id="sample_prob"><a class="viewcode-back" href="../code.html#utilities.sample_prob">[docs]</a><span class="k">def</span> <span class="nf">sample_prob</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">rand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get samples from a tensor of probabilities.</span>
+<span class="sd">    :param probs: tensor of probabilities</span>
+<span class="sd">    :param rand: tensor (of the same shape as probs) of random values</span>
+<span class="sd">    :return: binary sample of probabilities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">probs</span> <span class="o">-</span> <span class="n">rand</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="xavier_init"><a class="viewcode-back" href="../code.html#utilities.xavier_init">[docs]</a><span class="k">def</span> <span class="nf">xavier_init</span><span class="p">(</span><span class="n">fan_in</span><span class="p">,</span> <span class="n">fan_out</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Xavier initialization of network weights.</span>
+<span class="sd">    https://stackoverflow.com/questions/33640581/how-to-do-xavier-initialization-on-tensorflow</span>
+<span class="sd">    :param fan_in: fan in of the network (n_features)</span>
+<span class="sd">    :param fan_out: fan out of the network (n_components)</span>
+<span class="sd">    :param const: multiplicative constant</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">low</span> <span class="o">=</span> <span class="o">-</span><span class="n">const</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">6.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">fan_in</span> <span class="o">+</span> <span class="n">fan_out</span><span class="p">))</span>
+    <span class="n">high</span> <span class="o">=</span> <span class="n">const</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">6.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">fan_in</span> <span class="o">+</span> <span class="n">fan_out</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">((</span><span class="n">fan_in</span><span class="p">,</span> <span class="n">fan_out</span><span class="p">),</span> <span class="n">minval</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="n">high</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="seq_data_iterator"><a class="viewcode-back" href="../code.html#utilities.seq_data_iterator">[docs]</a><span class="k">def</span> <span class="nf">seq_data_iterator</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sequence data iterator.</span>
+<span class="sd">    Taken from tensorflow/models/rnn/ptb/reader.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="n">data_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+    <span class="n">batch_len</span> <span class="o">=</span> <span class="n">data_len</span> <span class="o">//</span> <span class="n">batch_size</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">batch_len</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[</span><span class="n">batch_len</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="n">batch_len</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="n">epoch_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">num_steps</span>
+
+    <span class="k">if</span> <span class="n">epoch_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;epoch_size == 0, decrease batch_size or num_steps&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epoch_size</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">num_steps</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_steps</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">num_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+
+<span class="c1"># ################ #</span>
+<span class="c1">#   Data helpers   #</span>
+<span class="c1"># ################ #</span>
+
+
+<div class="viewcode-block" id="gen_batches"><a class="viewcode-back" href="../code.html#utilities.gen_batches">[docs]</a><span class="k">def</span> <span class="nf">gen_batches</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Divide input data into batches.</span>
+<span class="sd">    :param data: input data</span>
+<span class="sd">    :param batch_size: size of each batch</span>
+<span class="sd">    :return: data divided into batches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="to_one_hot"><a class="viewcode-back" href="../code.html#utilities.to_one_hot">[docs]</a><span class="k">def</span> <span class="nf">to_one_hot</span><span class="p">(</span><span class="n">dataY</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert the vector of labels dataY into one-hot encoding.</span>
+<span class="sd">    :param dataY: vector of labels</span>
+<span class="sd">    :return: one-hot encoded labels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dataY</span><span class="p">)</span>
+    <span class="n">onehot</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">dataY</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataY</span><span class="p">):</span>
+        <span class="n">onehot</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">onehot</span></div>
+
+
+<div class="viewcode-block" id="conv2bin"><a class="viewcode-back" href="../code.html#utilities.conv2bin">[docs]</a><span class="k">def</span> <span class="nf">conv2bin</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a matrix of probabilities into binary values.</span>
+<span class="sd">    If the matrix has values &lt;= 0 or &gt;= 1, the values are</span>
+<span class="sd">    normalized to be in [0, 1].</span>
+<span class="sd">    :type data: numpy array</span>
+<span class="sd">    :param data: input matrix</span>
+<span class="sd">    :return: converted binary matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">out_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">out_data</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">val</span><span class="p">:</span>
+                <span class="n">out_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">out_data</span></div>
+
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../code.html#utilities.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Normalize the data to be in the [0, 1] range.</span>
+<span class="sd">    :param data:</span>
+<span class="sd">    :return: normalized data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">out_data</span><span class="p">):</span>
+        <span class="n">out_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">out_data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">out_data</span></div>
+
+
+<div class="viewcode-block" id="masking_noise"><a class="viewcode-back" href="../code.html#utilities.masking_noise">[docs]</a><span class="k">def</span> <span class="nf">masking_noise</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sess</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply masking noise to data in X.</span>
+<span class="sd">    In other words a fraction v of elements of X</span>
+<span class="sd">    (chosen at random) is forced to zero.</span>
+<span class="sd">    :param data: array_like, Input data</span>
+<span class="sd">    :param sess: TensorFlow session</span>
+<span class="sd">    :param v: fraction of elements to distort, float</span>
+<span class="sd">    :return: transformed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_noise</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rand</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">data_noise</span><span class="p">[</span><span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">rand</span><span class="p">)))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">data_noise</span></div>
+
+
+<div class="viewcode-block" id="salt_and_pepper_noise"><a class="viewcode-back" href="../code.html#utilities.salt_and_pepper_noise">[docs]</a><span class="k">def</span> <span class="nf">salt_and_pepper_noise</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply salt and pepper noise to data in X.</span>
+<span class="sd">    In other words a fraction v of elements of X</span>
+<span class="sd">    (chosen at random) is set to its maximum or minimum value according to a</span>
+<span class="sd">    fair coin flip.</span>
+<span class="sd">    If minimum or maximum are not given, the min (max) value in X is taken.</span>
+<span class="sd">    :param X: array_like, Input data</span>
+<span class="sd">    :param v: int, fraction of elements to distort</span>
+<span class="sd">    :return: transformed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X_noise</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">mn</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">mx</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_features</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="n">X_noise</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">mn</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">X_noise</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">mx</span>
+
+    <span class="k">return</span> <span class="n">X_noise</span></div>
+
+<span class="c1"># ############# #</span>
+<span class="c1">#   Utilities   #</span>
+<span class="c1"># ############# #</span>
+
+
+<div class="viewcode-block" id="expand_args"><a class="viewcode-back" href="../code.html#utilities.expand_args">[docs]</a><span class="k">def</span> <span class="nf">expand_args</span><span class="p">(</span><span class="o">**</span><span class="n">args_to_expand</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Expand the given lists into the length of the layers.</span>
+<span class="sd">    This is used as a convenience so that the user does not need to specify the</span>
+<span class="sd">    complete list of parameters for model initialization.</span>
+<span class="sd">    IE the user can just specify one parameter and this function will expand it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">layers</span> <span class="o">=</span> <span class="n">args_to_expand</span><span class="p">[</span><span class="s1">&#39;layers&#39;</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">args_to_expand</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">args_to_expand</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">args_to_expand</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">args_to_expand</span></div>
+
+
+<div class="viewcode-block" id="flag_to_list"><a class="viewcode-back" href="../code.html#utilities.flag_to_list">[docs]</a><span class="k">def</span> <span class="nf">flag_to_list</span><span class="p">(</span><span class="n">flagval</span><span class="p">,</span> <span class="n">flagtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a string of comma-separated tf flags to a list of values.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">flagtype</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">flagval</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">_</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">flagtype</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">flagval</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">_</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">flagtype</span> <span class="o">==</span> <span class="s1">&#39;str&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">flagval</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">_</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;incorrect type&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="str2actfunc"><a class="viewcode-back" href="../code.html#utilities.str2actfunc">[docs]</a><span class="k">def</span> <span class="nf">str2actfunc</span><span class="p">(</span><span class="n">act_func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert activation function name to tf function.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">act_func</span> <span class="o">==</span> <span class="s1">&#39;sigmoid&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span>
+
+    <span class="k">elif</span> <span class="n">act_func</span> <span class="o">==</span> <span class="s1">&#39;tanh&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">tanh</span>
+
+    <span class="k">elif</span> <span class="n">act_func</span> <span class="o">==</span> <span class="s1">&#39;relu&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span></div>
+
+
+<div class="viewcode-block" id="random_seed_np_tf"><a class="viewcode-back" href="../code.html#utilities.random_seed_np_tf">[docs]</a><span class="k">def</span> <span class="nf">random_seed_np_tf</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Seed numpy and tensorflow random number generators.</span>
+<span class="sd">    :param seed: seed parameter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">set_random_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="gen_image"><a class="viewcode-back" href="../code.html#utilities.gen_image">[docs]</a><span class="k">def</span> <span class="nf">gen_image</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">img_type</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save an image with the given parameters.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="p">)</span> <span class="o">==</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="p">)</span> <span class="o">==</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span> <span class="o">*</span> <span class="mi">3</span>
+
+    <span class="k">if</span> <span class="n">img_type</span> <span class="o">==</span> <span class="s1">&#39;grey&#39;</span><span class="p">:</span>
+        <span class="n">misc</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">img_type</span> <span class="o">==</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span>
+        <span class="n">misc</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_weights_as_images"><a class="viewcode-back" href="../code.html#utilities.get_weights_as_images">[docs]</a><span class="k">def</span> <span class="nf">get_weights_as_images</span><span class="p">(</span><span class="n">weights_npy</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;img/&#39;</span><span class="p">,</span>
+                          <span class="n">n_images</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">img_type</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create and save the weights of the hidden units as images.</span>
+<span class="sd">    :param weights_npy: path to the weights .npy file</span>
+<span class="sd">    :param width: width of the images</span>
+<span class="sd">    :param height: height of the images</span>
+<span class="sd">    :param outdir: output directory</span>
+<span class="sd">    :param n_images: number of images to generate</span>
+<span class="sd">    :param img_type: &#39;grey&#39; or &#39;color&#39; (RGB)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">weights_npy</span><span class="p">)</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="n">n_images</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perm</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">weights</span><span class="p">])</span>
+        <span class="n">image_path</span> <span class="o">=</span> <span class="n">outdir</span> <span class="o">+</span> <span class="s1">&#39;w_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">gen_image</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">image_path</span><span class="p">,</span> <span class="n">img_type</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Niels Nuthmann.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
