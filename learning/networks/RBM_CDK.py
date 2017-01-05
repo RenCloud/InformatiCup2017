@@ -6,7 +6,7 @@ import learning.utils
 from learning.utils import utilities
 
 from tensorflow.examples.tutorials.mnist import input_data
-from utils.input_format import DataSet
+from learning.utils.input_format import DataSet
 
 # TODO
 '''

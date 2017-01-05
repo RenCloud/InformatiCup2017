@@ -60,7 +60,6 @@ def prep(file, training = 0):
     # load dictionary and corpus
     if(os.path.isfile("dic.txt")):
         dictionary = gensim.corpora.Dictionary.load("dic.txt")
-        print(dictionary)
     else:
         dictionary = gensim.corpora.Dictionary()
     if(os.path.isfile("dicEnd.txt")):
@@ -103,7 +102,7 @@ def prep(file, training = 0):
             #corpusEndings.append(dictionary.doc2bow(end))
         elif(training == 0):
             tfidf = gensim.models.TfidfModel(corpus)
-            json_out_raw = [0 for x in range(dictionary.__len__()+dictionaryEndings.__len__())]
+            json_out_raw = [0 for x in range(dictionary.__len__())]
             for elem in tfidf[dictionary.doc2bow(res)]:
                 #print(json_out_raw)
                 if(elem[0] is not None and elem[1] is not None):
@@ -120,7 +119,7 @@ def prep(file, training = 0):
             #        else:
             #            json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
             json_out_raw_arr.append(json_out_raw)
-            dump = json.dumps(json_out_raw_arr)
+            return json_out_raw_arr
         else:
             print("param error")
         #lsi = gensim.models.LsiModel(corpus)
