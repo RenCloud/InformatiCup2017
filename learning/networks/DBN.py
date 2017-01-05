@@ -25,6 +25,7 @@ class DBN(object):
                  main_dir="dbn",
                  model_name="dbn_model"
                  ):
+
         '''
             Constructor for Deep Belief Network. Sets up all Variables used by the network. In the Constructor is also
             the size of the network specified.
@@ -34,6 +35,7 @@ class DBN(object):
         :param main_dir: Is used as save location for checkpoints and logdata.
         :param model_name: Is used for the checkpoint filename.
         '''
+
         self.layer_size = layer_size
 
         self.RBMs = {}
@@ -152,7 +154,7 @@ class DBN(object):
         self._build_deterministic_model()
 
         with tf.Session() as self.tf_session:
-            self._initialize_tf_utilities_and_ops()
+            self._initialize_tf_utilities_and_ops(create_from_rbms=make_dbn)
 
             for i in range(epochs):
                 self._run_train_step(data_set, batch_size)
@@ -174,6 +176,7 @@ class DBN(object):
                             pretrained RBMs.
         :return: The prediction
         '''
+
         if build_dbn:
             self._build_dbn_from_rbms()
 
@@ -190,17 +193,28 @@ class DBN(object):
 
         return output
 
-    def _initialize_tf_utilities_and_ops(self):
+    def _initialize_tf_utilities_and_ops(self, create_from_rbms=False):
+
         '''
         Helper function which initializes all tensorflow variables.
+                If the network is first created from multiple RBMs only the tf_saver is used to restore only the
+                pretrained variables. Otherwise an error will occure. If the network was already build the weights
+                will be load completely and from a different directory.
 
         :return: self
         '''
+
         self.tf_session.run(tf.global_variables_initializer())
         self.tf_merged_summaries = tf.summary.merge_all()
-        self.tf_saver = tf.train.Saver(self._create_save_dict())
+
+        self.tf_saver = tf.train.Saver(self._create_restore_dict())
         self.tf_finetune_saver = tf.train.Saver()
-        self.tf_saver.restore(self.tf_session, self.model_path)
+
+        if create_from_rbms:
+            self.tf_finetune_saver.restore(self.tf_session, self.model_dir + "dbn/" + self.model_name)
+        else:
+            self.tf_saver.restore(self.tf_session, self.model_path)
+
         self.tf_summary_writer = tf.train.SummaryWriter(self.summary_dir, self.tf_session.graph)
 
     def _run_train_step(self, data_set, batch_size):
@@ -212,6 +226,7 @@ class DBN(object):
         :param batch_size: The size for the batches
         :return: self
         '''
+
         iterations = (int)(data_set.num_examples / batch_size)
 
         for i in range(iterations):
@@ -228,13 +243,14 @@ class DBN(object):
         :param epoch: Am integer to pin the result to an epoch
         :return: self
         '''
+
         sum, accuracy = self.tf_session.run([self.tf_merged_summaries, self.accuracy],
                                             feed_dict={self.input_data: validation_set.images,
                                                        self.y: validation_set.labels})
 
         self.tf_summary_writer.add_summary(sum, epoch)
 
-    def _create_save_dict(self):
+    def _create_restore_dict(self):
         '''
         Helper function to dynamically get all names and tensorflow variables in one dictionary. This is used to load
                 only these pretrained variables.
@@ -290,6 +306,7 @@ class DBN(object):
 
         :return: self
         '''
+
         self._create_variables()
         self._create_placeholder()
 
@@ -315,17 +332,20 @@ class DBN(object):
 
         :return: self
         '''
+
         for i in range(len(self.layer_size) - 1):
             self.w[i] = tf.Variable(tf.random_normal((self.layer_size[i], self.layer_size[i + 1]), mean=0.0,
                                                      stddev=0.1), name="dbn_weight_" + repr(i))
             self.bh[i] = tf.Variable(tf.zeros([self.layer_size[i + 1]]), name="dbn_bias_hidden_" + repr(i))
 
     def _create_placeholder(self):
+
         '''
         A Helper function wich creates the placesholders for the inputdata and the desired output.
 
         :return:
         '''
+
         self.input_data = tf.placeholder(tf.float32, [None, self.layer_size[0]], name="input-data")
         self.y = tf.placeholder(tf.float32, [None, self.layer_size[-1]], name="desired-output")
 
@@ -336,6 +356,7 @@ class DBN(object):
 
         :return: Returns the path to the logs and model directories
         '''
+
         self.main_dir = self.main_dir + '/' if self.main_dir[-1] != '/' else self.main_dir
 
         models_dir = "models/" + self.main_dir
@@ -345,6 +366,9 @@ class DBN(object):
         for d in [models_dir, data_dir, summary_dir]:
             if not os.path.isdir(d):
                 os.makedirs(d)
+
+        if not os.path.isdir(models_dir + "dbn/" + self.model_name):
+            os.makedirs(models_dir + "dbn/" + self.model_name)
 
         return models_dir, data_dir, summary_dir
 

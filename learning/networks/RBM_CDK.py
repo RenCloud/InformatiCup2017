@@ -5,6 +5,9 @@ import os
 import learning.utils
 from learning.utils import utilities
 
+from tensorflow.examples.tutorials.mnist import input_data
+from utils.input_format import DataSet
+
 # TODO
 '''
 10. Runtime profiling
@@ -61,9 +64,6 @@ from learning.utils import utilities
         wants to convert the input and/or output into binary digits. These options can influence the results of the
         network.
 '''
-
-from tensorflow.examples.tutorials.mnist import input_data
-from learning.utils.input_format import DataSet
 
 
 class RBM(object):
