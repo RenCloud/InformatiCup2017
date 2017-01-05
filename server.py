@@ -1,6 +1,6 @@
 import data.dataprep
 import os
-#import learning.frontend.Main
+import learning.frontend.Main
 inp = input("Select mode:\n t - training\n d - filter_extremes\n other key - normal mode\n$")
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
@@ -9,6 +9,6 @@ if(inp == "t"):
 elif(inp == "d"):
     data.dataprep.prep("data/test.json", 2)
 else:
-    vec = data.dataprep.prep("data/test.json")
+    vec = data.dataprep.prep("data/json/1-367.json")
     print(vec)
-#cat = Main.fit_rbm(vec)
+cat = learning.frontend.Main.fit_dbm(vec, main_dir="test")

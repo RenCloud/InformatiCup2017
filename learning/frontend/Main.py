@@ -1,8 +1,8 @@
-from networks.RBM_CDK import RBM
-from networks.DBN import DBN
+from learning.networks.RBM_CDK import RBM
+from learning.networks.DBN import DBN
 import json
 import numpy as np
-from utils.input_format import DataSet
+from learning.utils.input_format import DataSet
 
 
 def fit_rbm(data_set, main_dir="rbm_test"):
@@ -50,5 +50,3 @@ def fit_dbm(data_set, main_dir="dbn/"):
 
     # dbn.supervised_finetuning(batch_size=100, data_set=input, epochs=1, make_dbn=True,
     #                         validation_set=False)
-
-

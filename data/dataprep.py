@@ -60,16 +60,29 @@ def prep(file, training = 0):
     # load dictionary and corpus
     if(os.path.isfile("dic.txt")):
         dictionary = gensim.corpora.Dictionary.load("dic.txt")
+        print(dictionary)
     else:
         dictionary = gensim.corpora.Dictionary()
+    if(os.path.isfile("dicEnd.txt")):
+        dictionaryEndings = gensim.corpora.Dictionary.load("dicEnd.txt")
+    else:
+        dictionaryEndings = gensim.corpora.Dictionary
     if(os.path.isfile("cor.mm")):
         corpus = list(gensim.corpora.MmCorpus("cor.mm"))
     else:
         corpus = []
+    if(os.path.isfile("corEnd.mm")):
+        corpusEndings = list(gensim.corpora.MmCorpus("corEnd.mm"))
+    else:
+        corpusEndings = []
 
+
+    json_out_raw_arr = []
     for rep in data:
         #TODO file endings
-        #search_repo(rep['repository'])
+        end = search_repo(rep['repository'])
+        endTmp = []
+        endTmp.append(end)
 
         res = search_desc(rep['description'], rep['readme'])
         tmp = []
@@ -80,12 +93,17 @@ def prep(file, training = 0):
             dictionary.filter_extremes(10, 0.8, None)
             dictionary.compactify()
             print(dictionary)
+            #dictionaryEndings.filter_extremes(10, 0.8, None)
+            #dictionaryEndings.compactify()
+            #print(dictionaryEndings)
         elif(training == 1):
             dictionary.merge_with(gensim.corpora.Dictionary(tmp))
             corpus.append(dictionary.doc2bow(res))
+            #dictionaryEndings.merge_with(gensim.corpora.Dictionary(endTmp))
+            #corpusEndings.append(dictionary.doc2bow(end))
         elif(training == 0):
             tfidf = gensim.models.TfidfModel(corpus)
-            json_out_raw = [0 for x in range(dictionary.__len__())]
+            json_out_raw = [0 for x in range(dictionary.__len__()+dictionaryEndings.__len__())]
             for elem in tfidf[dictionary.doc2bow(res)]:
                 #print(json_out_raw)
                 if(elem[0] is not None and elem[1] is not None):
@@ -94,7 +112,15 @@ def prep(file, training = 0):
                     else:
                         json_out_raw[elem[0]] = elem[1]
 
-            dump = json.dumps(json_out_raw)
+            #for elem in tfidf[dictionary.doc2bow(end)]:
+                #print(json_out_raw)
+            #    if(elem[0] is not None and elem[1] is not None):
+            #        if(elem[0]>=len(json_out_raw)):
+            #            json_out_raw.append(elem[1])
+            #        else:
+            #            json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
+            json_out_raw_arr.append(json_out_raw)
+            dump = json.dumps(json_out_raw_arr)
         else:
             print("param error")
         #lsi = gensim.models.LsiModel(corpus)

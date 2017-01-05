@@ -2,9 +2,8 @@ import tensorflow as tf
 import numpy as np
 
 import os
-import utils
-import ZConfig
-from utils import utilities
+import learning.utils
+from learning.utils import utilities
 
 # TODO
 '''
@@ -64,7 +63,7 @@ from utils import utilities
 '''
 
 from tensorflow.examples.tutorials.mnist import input_data
-from utils.input_format import DataSet
+from learning.utils.input_format import DataSet
 
 
 class RBM(object):

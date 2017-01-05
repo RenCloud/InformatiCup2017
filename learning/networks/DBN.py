@@ -4,10 +4,10 @@ import numpy as np
 
 import os
 
-from networks.RBM_CDK import RBM
+from learning.networks.RBM_CDK import RBM
 
 from tensorflow.examples.tutorials.mnist import input_data
-from utils.input_format import DataSet
+from learning.utils.input_format import DataSet
 
 # TODO
 '''
@@ -365,4 +365,3 @@ if __name__ == '__main__':
     dbm.supervised_finetuning(batch_size=100, data_set=mnist.test, epochs=1, make_dbn=True, validation_set=mnist.validation)
 
 '''
-
