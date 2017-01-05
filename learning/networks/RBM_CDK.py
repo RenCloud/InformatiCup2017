@@ -2,8 +2,6 @@ import tensorflow as tf
 import numpy as np
 
 import os
-import learning.utils
-from learning.utils import utilities
 
 from tensorflow.examples.tutorials.mnist import input_data
 from learning.utils.input_format import DataSet
@@ -137,19 +135,20 @@ class RBM(object):
 
     def fit(self, train_set, validation_set=None, restore_previous_model=None, start_epoche=0, epochs=300,
             gibbs_sampling_steps=1, learning_rate=0.01, momentum_factor=0.9, weight_decay_factor=0.0001, batch_size=10):
+
         '''
 
-        :param train_set: Trainset formatted as input_format
-        :param validation_set: Validationset formatted as input_format
-        :param restore_previous_model: If true restores learned model weights
-        :param start_epoche: Already passed epochs to keep the Tensorboard graph well formatted
-        :param epochs: Number of epochs the learning should last
-        :param gibbs_sampling_steps: Number of gibbs sampling steps the net should performs
-        :param learning_rate: Hyperparameter Learning rate parameter; will be devided by batch_size
-        :param momentum_factor: Specifies the momentumterm
-        :param weight_decay_factor:Specifies how strong the high weights are penetalized
-        :param batch_size: The trainingset is sliced in mini batches. One batch has the size of batch_size
-        :return: self
+        :param train_set: Trainset formatted as input_format.
+        :param validation_set: Validationset formatted as input_format.
+        :param restore_previous_model: If true restores learned model weights.
+        :param start_epoche: Already passed epochs to keep the Tensorboard graph well formatted.
+        :param epochs: Number of epochs the learning should last.
+        :param gibbs_sampling_steps: Number of gibbs sampling steps the net should performs.
+        :param learning_rate: Hyperparameter Learning rate parameter; will be devided by batch_size.
+        :param momentum_factor: Specifies the momentumterm.
+        :param weight_decay_factor:Specifies how strong the high weights are penetalized.
+        :param batch_size: The trainingset is sliced in mini batches. One batch has the size of batch_size.
+        :return: self.
         '''
 
         self._epochs = epochs
@@ -417,7 +416,8 @@ class RBM(object):
         self._tf_bh = tf.Variable(tf.zeros([self._hidden_size]), name="hidden_bias_" + self._model_name)
         self._tf_bv = tf.Variable(tf.zeros([self._input_size]), name="visible_bias_" + self._model_name)
 
-        self._tf_delta_w = tf.Variable(tf.zeros([self._input_size, self._hidden_size]), name="delta_w_" + self._model_name)
+        self._tf_delta_w = tf.Variable(tf.zeros([self._input_size, self._hidden_size]),
+                                       name="delta_w_" + self._model_name)
         self._tf_delta_bh = tf.Variable(tf.zeros([self._hidden_size]), name="delta_bh_" + self._model_name)
         self._tf_delta_bv = tf.Variable(tf.zeros([self._input_size]), name="delta_bv_" + self._model_name)
 

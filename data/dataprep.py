@@ -119,7 +119,6 @@ def prep(file, training = 0):
             #        else:
             #            json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
             json_out_raw_arr.append(json_out_raw)
-            return json_out_raw_arr
         else:
             print("param error")
         #lsi = gensim.models.LsiModel(corpus)
@@ -138,4 +137,4 @@ def prep(file, training = 0):
     dictionary.save("dic.txt")
     gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
     #print(dump)
-    return dump
+    return json_out_raw_arr
