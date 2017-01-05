@@ -1,13 +1,11 @@
 ﻿using Octokit;
 using System.Collections.Generic;
 
-namespace GitRepoToJSON.Models
-{
+namespace GitRepoToJSON.Models {
     /// <summary>
     /// View Class to Create ViewObject for the cshtml file
     /// </summary>
-    public class ViewRepoOverview
-    {
+    public class ViewRepoOverview {
         /// <summary>
         /// Constructor with Repositories Object
         /// </summary>

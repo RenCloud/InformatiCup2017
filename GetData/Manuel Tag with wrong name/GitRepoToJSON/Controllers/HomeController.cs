@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -83,13 +82,14 @@ namespace GitRepoToJSON.Controllers {
             var oauthLoginUrl = client.Oauth.GetGitHubLoginUrl(request);
             return oauthLoginUrl.ToString();
         }
+        
 
         /// <summary>
         ///     Call to About page and load the content
         /// </summary>
         /// <returns>About Page</returns>
         public ActionResult About() {
-            ViewBag.Message = "GitRepoToJson";
+            ViewBag.Message = "TagManuel";
 
             return View();
         }
@@ -99,80 +99,39 @@ namespace GitRepoToJSON.Controllers {
         /// </summary>
         /// <returns>Contact Page</returns>
         public ActionResult Contact() {
-            ViewBag.Message = "Contact page.";
+            ViewBag.Message = "Contact Page";
 
             return View();
         }
-
 
         /// <summary>
         ///     Get Page Call
         /// </summary>
         /// <returns>Get Page</returns>
         public ActionResult Get() {
-            ViewBag.Message = "Get More Repos";
+            ViewBag.Message = "Get Repo Data";
 
             return View();
         }
 
         /// <summary>
-        ///     Start page Call ( Load Repository Data from api list)
+        ///     Start page Call ( Load Repository Data of given reposid list)
         /// </summary>
         /// <returns>Start Page</returns>
         public async Task<ActionResult> Start() {
-            ViewBag.Message = "100 ID Downloaded";
-            //Load Process
-            var directory = new DirectoryInfo(@"E:\Github\fortschrit");
-            var idPreFile = 0l;
-            var currentID = 0l;
-            var directoryFiles = directory.GetFiles();
-            //is there a current process?
-            if (directoryFiles.Length != 0) {
-                currentID = int.Parse(directoryFiles[0].Name);
-                idPreFile = currentID;
-            }
-            directory = new DirectoryInfo(@"E:\Github\id");
-            directoryFiles = directory.GetFiles();
-            var data = new List<Repo[]>();
+            //Load Repository ID's
+            var fileString = System.IO.File.ReadAllText(@"E:\Github\tagged\idlist.txt");
+            var fileArray = fileString.Split(',');
+            //Get every single ID
+            var fileArrayInt = new int[fileArray.Length];
+            //Create List for api 'api.github.com/repos(itory)' call 
             var data3 = new List<Repo>();
-            var found = false;
-            //load id files and use only the one intrested in (id process)
-            foreach (var file in directoryFiles) {
-                if (int.Parse(file.Name) != currentID) {
-                    continue;
-                }
-                data.Add(JsonConvert.DeserializeObject<Repo[]>(System.IO.File.ReadAllText(file.FullName)));
-                var data2 = data.SelectMany(arry => arry).ToList();
-                data3.AddRange(from repos in data2 where repos.id >= currentID select repos);
-                found = true;
-                break;
+            var a = 0;
+            foreach (var file in fileArray) {
+                fileArrayInt[a] = int.Parse(file);
+                a++;
             }
-            if (!found) {
-                //No Data With id Process found get new process file
-                var request =
-                    (HttpWebRequest)WebRequest.Create("https://api.github.com/repositories?since=" + currentID);
-                //request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10";
-                request.UserAgent = "Mozilla";
-                request.KeepAlive = false;
-                request.Method = "GET";
-                var response = (HttpWebResponse)request.GetResponse();
-                var newFile = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                var fullDataArray = JsonConvert.DeserializeObject<Repo[]>(newFile);
-                System.IO.File.WriteAllText(@"E:\Github\id\" + fullDataArray[0].id, newFile);
-                directory = new DirectoryInfo(@"E:\Github\id");
-                directoryFiles = directory.GetFiles();
-                currentID = fullDataArray[0].id;
-                //add Data to list after write to file
-                foreach (var file in directoryFiles) {
-                    if (int.Parse(file.Name) != currentID) {
-                        continue;
-                    }
-                    data.Add(JsonConvert.DeserializeObject<Repo[]>(System.IO.File.ReadAllText(file.FullName)));
-                    var data2 = data.SelectMany(arry => arry).ToList();
-                    data3.AddRange(from repos in data2 where repos.id >= currentID select repos);
-                    break;
-                }
-            }
+
 
             var accessToken = Session["OAuthToken"] as string;
             if (accessToken != null) {
@@ -180,8 +139,7 @@ namespace GitRepoToJSON.Controllers {
                 // without ever having the user's OAuth credentials.
                 client.Credentials = new Credentials(accessToken);
             }
-
-            //Create a list for every Api Call
+            //Create List's for every Api Call
             var tree = new List<TreeResponse>();
             var readmes = new List<Readme>();
             var language = new List<IReadOnlyList<RepositoryLanguage>>();
@@ -193,7 +151,6 @@ namespace GitRepoToJSON.Controllers {
 
 
             try {
-
                 //not usefull call ,... but without the Api calls run without oAuth token
                 var test2 = await client.Repository.GetAllForCurrent();
                 // The following requests retrieves all of the user's repositories and
@@ -201,12 +158,14 @@ namespace GitRepoToJSON.Controllers {
                 var options = new ApiOptions {PageCount = 10, PageSize = 100};
                 //MAX : 100
 
-                //Run through every ID in the file (100 id normaly)
-                foreach (var id in data3) {
-                    //Debug.WriteLine(id.id);
+
+                //Run through every ID in the File
+                foreach (var id in fileArrayInt) {
+                    //Debug.WriteLine(id);
+                    //Debug.WriteLine(fileArrayInt.ToList().IndexOf(id));
                     try {
                         //Call Tree Api to get Git Structure (files and dirs) from master path
-                        tree.Add(await client.Git.Tree.GetRecursive(id.id, "master"));
+                        tree.Add(await client.Git.Tree.GetRecursive(id, "master"));
                     } catch (Exception e) {
                         tree.Add(new TreeResponse());
                     }
@@ -220,53 +179,79 @@ namespace GitRepoToJSON.Controllers {
                         commits.Add(null);
                         comments.Add(null);
                         issues.Add(null);
-
-
+                        //But add other data about the repo
+                        var shortTemp = await client.Repository.Get(id);
+                        var tempPro = new Repo {
+                            name = shortTemp.Name,
+                            id = shortTemp.Id,
+                            html_url = shortTemp.HtmlUrl,
+                            full_name = shortTemp.FullName,
+                            owner = {id = shortTemp.Owner.Id},
+                            description = shortTemp.Description
+                        };
+                        //Debug.WriteLine("Add Data");
+                        data3.Add(tempPro);
+                        //go to next item 
                         continue;
                     }
                     try {
                         //Readme Call -> get Readme Name of Repo
-                        readmes.Add(await client.Repository.Content.GetReadme(id.id));
+                        readmes.Add(await client.Repository.Content.GetReadme(id));
                     } catch (Exception e) {
                         readmes.Add(new Readme());
                     }
                     if (readmes.Last() != null) {
-                        //Use normal WebClientt to get Readme without APi Request ;)
-                        try
-                        {
+                        try {
+                           
+                            var shortTemp = await client.Repository.Get(id);
+                            //Add other data about the repo
+                            var tempPro = new Repo {
+                                name = shortTemp.Name,
+                                id = shortTemp.Id,
+                                html_url = shortTemp.HtmlUrl,
+                                full_name = shortTemp.FullName,
+                                owner = {id = shortTemp.Owner.Id},
+                                description = shortTemp.Description
+                            };
+
+                            //Use normal WebClient to get Readme without APi Request ;)
+                            //Debug.WriteLine("Add Data");
+                            data3.Add(tempPro);
                             readeconn.Add(
                                           webClient.DownloadString(
-                                                                   "https://raw.githubusercontent.com/" + id.full_name
-                                                                   + "/master/" + readmes.Last().Name));
+                                                                   "https://raw.githubusercontent.com/"
+                                                                   + tempPro.full_name + "/master/"
+                                                                   + readmes.Last().Name));
                         } catch (Exception e) {
                             readeconn.Add("");
                         }
                     }
+
                     //Debug.WriteLine("Finish Readme");
                     try {
                         //Get Language of repo -> Language Api Call
-                        language.Add(await client.Repository.GetAllLanguages(id.id));
+                        language.Add(await client.Repository.GetAllLanguages(id));
                     } catch (Exception e) {
                         language.Add(null);
                     }
                     //Debug.WriteLine("Finish Language");
                     try {
                         //Get All commits ( with options) -> api call commits
-                        commits.Add(await client.Repository.Commit.GetAll(id.id, options));
+                        commits.Add(await client.Repository.Commit.GetAll(id, options));
                     } catch (Exception e) {
                         commits.Add(null);
                     }
                     //Debug.WriteLine("Finish Commits");
                     try {
                         //Get All Comments with option -> Api call Comments
-                        comments.Add(await client.Repository.Comment.GetAllForRepository(id.id, options));
+                        comments.Add(await client.Repository.Comment.GetAllForRepository(id, options));
                     } catch (Exception e) {
                         comments.Add(null);
                     }
                     //Debug.WriteLine("Finish Comments");
                     try {
                         //Get All Issues with option _> api call issues
-                        issues.Add(await client.Issue.GetAllForRepository(id.id, options));
+                        issues.Add(await client.Issue.GetAllForRepository(id, options));
                     } catch (Exception e) {
                         issues.Add(null);
                     }
@@ -284,8 +269,8 @@ namespace GitRepoToJSON.Controllers {
             }
             //Create List's without 'null' entry looks a bit ugly becouse of overlength and yeah it can be look nicer but so gives no problem
             var re = new Repo();
-            var complete = new JSONFullData[data3.Count];
-            for (var i = 0; i < data3.Count; i++) {
+            var complete = new JSONFullData[fileArrayInt.Length];
+            for (var i = 0; i < fileArrayInt.Length; i++) {
                 Debug.WriteLine("Create JSONFull: " + i);
                 var temp_language = new List<Language>();
                 var temp_repro = new List<Repro>();
@@ -386,16 +371,11 @@ namespace GitRepoToJSON.Controllers {
             //Create Json String
             var json = JsonConvert.SerializeObject(complete);
             //json = json.Replace("},{", "},\n{");
-            //Write Json file and Delete Process file and create new 
-            System.IO.File.WriteAllText(
-                                        @"E:\Github\ausgabe\" + currentID + "-" + data3[data3.Count - 1].id + ".json",
-                                        json);
-            System.IO.File.Delete(@"E:\Github\fortschrit\" + idPreFile);
-            System.IO.File.WriteAllText(@"E:\Github\fortschrit\" + data3[data3.Count - 1].id, "");
+            //Write Json file
+            System.IO.File.WriteAllText(@"E:\Github\tagged\jsontest.json", json);
 
             //Get Remaining Api calls, try it 
-            try
-            {
+            try {
                 re.name = "Remaining: " + client.GetLastApiInfo().RateLimit.Remaining + " Reset Time: "
                     + (client.GetLastApiInfo().RateLimit.Reset.Hour + 1) + ":"
                     + client.GetLastApiInfo().RateLimit.Reset.Minute + ":"

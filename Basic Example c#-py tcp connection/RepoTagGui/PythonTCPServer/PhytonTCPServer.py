@@ -1,6 +1,6 @@
 import socketserver
 import time
-
+# sample server project 
 class MyTCPHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
