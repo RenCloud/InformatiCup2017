@@ -21,7 +21,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../networks'))
 sys.path.insert(0, os.path.abspath('../utils'))
-print(os.path.abspath('../networks'))
+sys.path.insert(0, os.path.abspath('../frontend'))
+sys.path.insert(0, os.path.abspath('../../'))
+print(os.path.abspath('../../'))
 
 
 # -- General configuration ------------------------------------------------
