@@ -17,3 +17,4 @@ Project Code
 .. autoclass:: DBN.DBN
    :members:
    :private-members:
+   :member-order: bysource

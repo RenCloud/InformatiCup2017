@@ -26,8 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Projekt Summary" href="explanation.html" />
-      <link rel="prev" title="Welcome to Gi-Projekt’s documentation!" href="index.html"/>
+      <link rel="next" title="Experiment Results" href="results.html"/>
+      <link rel="prev" title="Introducing the learning mechanism" href="explanation.html"/>
   </head>
   <body role="document">
   <div class="related" role="navigation" aria-label="related navigation">
@@ -41,11 +41,11 @@
               >modules</a> |
           </li>
           <li class="right">
-              <a href="explanation.html" title="Projekt Summary"
+              <a href="results.html" title="Experiment Results"
                  accesskey="N">next</a> |
           </li>
           <li class="right">
-              <a href="index.html" title="Welcome to Gi-Projekt’s documentation!"
+              <a href="explanation.html" title="Introducing the learning mechanism"
                  accesskey="P">previous</a> |
           </li>
           <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li>
@@ -935,14 +935,34 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
                           class="viewcode-link">[source]</span></a><a class="headerlink"
                                                                       href="#RBM_CDK.RBM.get_weights_as_images"
                                                                       title="Permalink to this definition">¶</a></dt>
-                  <dd><p>Create and save the weights of the hidden units with respect to the
-                      visible units as images.
-                      :param width:
-                      :param height:
-                      :param outdir:
-                      :param n_images:
-                      :param img_type:
-                      :return: self.</p>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Create and save the weights of the hidden units with respect to the</dt>
+                          <dd>visible units as images.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>width</strong> &#8211; </li>
+                                      <li><strong>height</strong> &#8211; </li>
+                                      <li><strong>outdir</strong> &#8211; </li>
+                                      <li><strong>n_images</strong> &#8211; </li>
+                                      <li><strong>img_type</strong> &#8211; </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self.</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
                   </dd>
               </dl>
 
@@ -958,282 +978,6 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
                   class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN"
                                                               title="Permalink to this definition">¶</a></dt>
           <dd>
-              <dl class="method">
-                  <dt id="DBN.DBN._build_dbn_from_rbms">
-                      <code class="descname">_build_dbn_from_rbms</code><span class="sig-paren">(</span><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._build_dbn_from_rbms"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._build_dbn_from_rbms"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd>
-                      <dl class="docutils">
-                          <dt>This function takes all pretrained layers weights and temporarily saves them as numpy
-                              arrays.
-                          </dt>
-                          <dd>With the values the tensorflow variables are initialized.</dd>
-                      </dl>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body">self</td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._build_deterministic_model">
-                      <code class="descname">_build_deterministic_model</code><span class="sig-paren">(</span><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._build_deterministic_model"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._build_deterministic_model"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>THis function builds the computation graph for the supervised finetuning and the classification
-                      function.</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body">self</td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._create_data_directories">
-                      <code class="descname">_create_data_directories</code><span class="sig-paren">(</span><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._create_data_directories"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._create_data_directories"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>A Helper function to create the directories to save the logs and the model weights.</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body">Returns the path to the logs and model directories</td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._create_placeholder">
-                      <code class="descname">_create_placeholder</code><span class="sig-paren">(</span><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._create_placeholder"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._create_placeholder"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>A Helper function wich creates the placesholders for the inputdata and the desired output.</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body"></td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._create_restore_dict">
-                      <code class="descname">_create_restore_dict</code><span class="sig-paren">(</span><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._create_restore_dict"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._create_restore_dict"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd>
-                      <dl class="docutils">
-                          <dt>Helper function to dynamically get all names and tensorflow variables in one dictionary.
-                              This is used to load
-                          </dt>
-                          <dd>only these pretrained variables.</dd>
-                      </dl>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body">dict with the variable names as keys and the variables as values
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._create_variables">
-                      <code class="descname">_create_variables</code><span class="sig-paren">(</span><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._create_variables"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._create_variables"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>A Helper function which creates the weights and bias variables.</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body">self</td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._initialize_tf_utilities_and_ops">
-                      <code class="descname">_initialize_tf_utilities_and_ops</code><span class="sig-paren">(</span><em>create_from_rbms=False</em><span
-                          class="sig-paren">)</span><a class="reference internal"
-                                                       href="_modules/DBN.html#DBN._initialize_tf_utilities_and_ops"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._initialize_tf_utilities_and_ops"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd>
-                      <dl class="docutils">
-                          <dt>Helper function which initializes all tensorflow variables.</dt>
-                          <dd>If the network is first created from multiple RBMs only the tf_saver is used to restore
-                              only the
-                              pretrained variables. Otherwise an error will occure. If the network was already build the
-                              weights
-                              will be load completely and from a different directory.
-                          </dd>
-                      </dl>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body">self</td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._run_train_step">
-                      <code class="descname">_run_train_step</code><span class="sig-paren">(</span><em>data_set</em>,
-                      <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal"
-                                                                            href="_modules/DBN.html#DBN._run_train_step"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN._run_train_step"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>Helper function to run the training for one epoch</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Parameters:</th>
-                              <td class="field-body">
-                                  <ul class="first simple">
-                                      <li><strong>data_set</strong> &#8211; The data_set formatted as input_format</li>
-                                      <li><strong>batch_size</strong> &#8211; The size for the batches</li>
-                                  </ul>
-                              </td>
-                          </tr>
-                          <tr class="field-even field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body"><p class="first last">self</p>
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN._run_validation_results">
-                      <code class="descname">_run_validation_results</code><span class="sig-paren">(</span><em>validation_set</em>,
-                      <em>epoch</em><span class="sig-paren">)</span><a class="reference internal"
-                                                                       href="_modules/DBN.html#DBN._run_validation_results"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink"
-                                                                      href="#DBN.DBN._run_validation_results"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>This function is called every epoch to calculate the accuracy.</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Parameters:</th>
-                              <td class="field-body">
-                                  <ul class="first simple">
-                                      <li><strong>validation_set</strong> &#8211; The data set to validate formatted as
-                                          input_format
-                                      </li>
-                                      <li><strong>epoch</strong> &#8211; Am integer to pin the result to an epoch</li>
-                                  </ul>
-                              </td>
-                          </tr>
-                          <tr class="field-even field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body"><p class="first last">self</p>
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
-              <dl class="method">
-                  <dt id="DBN.DBN.classify">
-                      <code class="descname">classify</code><span class="sig-paren">(</span><em>input</em>, <em>build_dbn=False</em><span
-                          class="sig-paren">)</span><a class="reference internal" href="_modules/DBN.html#DBN.classify"><span
-                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN.classify"
-                                                                      title="Permalink to this definition">¶</a></dt>
-                  <dd><p>This function is used to get predictions for a given input. The network has to be build and
-                      should be trained.</p>
-                      <table class="docutils field-list" frame="void" rules="none">
-                          <col class="field-name"/>
-                          <col class="field-body"/>
-                          <tbody valign="top">
-                          <tr class="field-odd field">
-                              <th class="field-name">Parameters:</th>
-                              <td class="field-body">
-                                  <ul class="first simple">
-                                      <li><strong>input</strong> &#8211; The data used to make the prediction.</li>
-                                      <li><strong>build_dbn</strong> &#8211; If the prediction has to be made before the
-                                          finetuning the network can be build from
-                                          pretrained RBMs.
-                                      </li>
-                                  </ul>
-                              </td>
-                          </tr>
-                          <tr class="field-even field">
-                              <th class="field-name">Returns:</th>
-                              <td class="field-body"><p class="first last">The prediction</p>
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </dd>
-              </dl>
-
               <dl class="method">
                   <dt id="DBN.DBN.pretraining">
                       <code class="descname">pretraining</code><span class="sig-paren">(</span><em>train_set,
@@ -1360,6 +1104,282 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
                   </dd>
               </dl>
 
+              <dl class="method">
+                  <dt id="DBN.DBN.classify">
+                      <code class="descname">classify</code><span class="sig-paren">(</span><em>input</em>, <em>build_dbn=False</em><span
+                          class="sig-paren">)</span><a class="reference internal" href="_modules/DBN.html#DBN.classify"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN.classify"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>This function is used to get predictions for a given input. The network has to be build and
+                      should be trained.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>input</strong> &#8211; The data used to make the prediction.</li>
+                                      <li><strong>build_dbn</strong> &#8211; If the prediction has to be made before the
+                                          finetuning the network can be build from
+                                          pretrained RBMs.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">The prediction</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._initialize_tf_utilities_and_ops">
+                      <code class="descname">_initialize_tf_utilities_and_ops</code><span class="sig-paren">(</span><em>create_from_rbms=False</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._initialize_tf_utilities_and_ops"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._initialize_tf_utilities_and_ops"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Helper function which initializes all tensorflow variables.</dt>
+                          <dd>If the network is first created from multiple RBMs only the tf_saver is used to restore
+                              only the
+                              pretrained variables. Otherwise an error will occure. If the network was already build the
+                              weights
+                              will be load completely and from a different directory.
+                          </dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._run_train_step">
+                      <code class="descname">_run_train_step</code><span class="sig-paren">(</span><em>data_set</em>,
+                      <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                            href="_modules/DBN.html#DBN._run_train_step"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN._run_train_step"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>Helper function to run the training for one epoch</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>data_set</strong> &#8211; The data_set formatted as input_format</li>
+                                      <li><strong>batch_size</strong> &#8211; The size for the batches</li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._run_validation_results">
+                      <code class="descname">_run_validation_results</code><span class="sig-paren">(</span><em>validation_set</em>,
+                      <em>epoch</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                       href="_modules/DBN.html#DBN._run_validation_results"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._run_validation_results"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>This function is called every epoch to calculate the accuracy.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>validation_set</strong> &#8211; The data set to validate formatted as
+                                          input_format
+                                      </li>
+                                      <li><strong>epoch</strong> &#8211; Am integer to pin the result to an epoch</li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_restore_dict">
+                      <code class="descname">_create_restore_dict</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_restore_dict"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_restore_dict"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Helper function to dynamically get all names and tensorflow variables in one dictionary.
+                              This is used to load
+                          </dt>
+                          <dd>only these pretrained variables.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">dict with the variable names as keys and the variables as values
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._build_dbn_from_rbms">
+                      <code class="descname">_build_dbn_from_rbms</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._build_dbn_from_rbms"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._build_dbn_from_rbms"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>This function takes all pretrained layers weights and temporarily saves them as numpy
+                              arrays.
+                          </dt>
+                          <dd>With the values the tensorflow variables are initialized.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._build_deterministic_model">
+                      <code class="descname">_build_deterministic_model</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._build_deterministic_model"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._build_deterministic_model"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>THis function builds the computation graph for the supervised finetuning and the classification
+                      function.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_variables">
+                      <code class="descname">_create_variables</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_variables"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_variables"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function which creates the weights and bias variables.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_placeholder">
+                      <code class="descname">_create_placeholder</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_placeholder"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_placeholder"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function wich creates the placesholders for the inputdata and the desired output.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"></td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_data_directories">
+                      <code class="descname">_create_data_directories</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_data_directories"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_data_directories"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function to create the directories to save the logs and the model weights.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">Returns the path to the logs and model directories</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
           </dd>
       </dl>
 
@@ -1372,11 +1392,11 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
           <div class="sphinxsidebarwrapper">
               <h4>Previous topic</h4>
-              <p class="topless"><a href="index.html"
-                                    title="previous chapter">Welcome to Gi-Projekt&#8217;s documentation!</a></p>
-              <h4>Next topic</h4>
               <p class="topless"><a href="explanation.html"
-                                    title="next chapter">Projekt Summary</a></p>
+                                    title="previous chapter">Introducing the learning mechanism</a></p>
+              <h4>Next topic</h4>
+              <p class="topless"><a href="results.html"
+                                    title="next chapter">Experiment Results</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1409,11 +1429,11 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
               >modules</a> |
           </li>
           <li class="right">
-              <a href="explanation.html" title="Projekt Summary"
+              <a href="results.html" title="Experiment Results"
               >next</a> |
           </li>
           <li class="right">
-              <a href="index.html" title="Welcome to Gi-Projekt’s documentation!"
+              <a href="explanation.html" title="Introducing the learning mechanism"
               >previous</a> |
           </li>
           <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li>

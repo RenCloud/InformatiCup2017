@@ -64,30 +64,24 @@ def classify_rbm(data_set, main_dir="rbm_test"):
 def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set=None):
 
     '''
-
-
-    :param data_set:
-    :param main_dir:
-    :param supervised_train_set:
-    :param validation_set:
+    Wrapper function we used to call from our server module. The function gives easy access to the learning ability of
+            network. But the details of the training are already configured and hidden from the server. The server just
+            provides the data_set, supervised_train_set and validation_set as json string.
+            Depending on which of the 3 sets are provided the training is performed differently.
+            If only a data_set is provided then the function will only perform pretraining.
+    :param data_set: The training data to perform the pretraining.
+    :param main_dir: The directory, where the network is saved and loaded from.
+    :param supervised_train_set: A json string with two lists for the input data and the desired output.
+    :param validation_set: A json string with two lists consisting of input data and desired output to validate the
+                    training progress.
     :return:
     '''
+
+    train_set = None
 
     input_list = json.loads(data_set)
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
-
-    data = json.loads(supervised_train_set[0])
-    labels = json.loads(supervised_train_set[1])
-    data_np = np.asarray(data)
-    labels_np = np.asarray(labels)
-    train_set = DataSet(data_np, labels_np)
-
-    vdata = json.loads(validation_set[0])
-    vlabels = json.loads(validation_set[1])
-    vdata_np = np.asarray(vdata)
-    vlabels_np = np.asarray(vlabels)
-    validation_set = DataSet(vdata_np, vlabels_np)
 
     dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
 
@@ -96,18 +90,31 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
                     momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
                     batch_size=[10, 100, 100])
 
-    dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
-                              validation_set=validation_set)
+    if supervised_train_set and validation_set:
+        data = json.loads(supervised_train_set[0])
+        labels = json.loads(supervised_train_set[1])
+        data_np = np.asarray(data)
+        labels_np = np.asarray(labels)
+        train_set = DataSet(data_np, labels_np)
 
-    for i in range(100):
-        dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
+        vdata = json.loads(validation_set[0])
+        vlabels = json.loads(validation_set[1])
+        vdata_np = np.asarray(vdata)
+        vlabels_np = np.asarray(vlabels)
+        validation_set = DataSet(vdata_np, vlabels_np)
+
+        dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
                                   validation_set=validation_set)
 
-        examples = train_set.next_batch(25 + i)
+        for i in range(100):
+            dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
+                                      validation_set=validation_set)
 
-        prediction = dbn.classify(examples[0])
+            examples = train_set.next_batch(25 + i)
 
-        train_set.append(examples[0], prediction)
+            prediction = dbn.classify(examples[0])
+
+            train_set.append(examples[0], prediction)
 
 
 def classify_dbn(data_set, main_dir="dbn/"):

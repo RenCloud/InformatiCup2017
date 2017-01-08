@@ -538,8 +538,10 @@ class RBM(object):
         return w, bh
 
     def get_weights_as_images(self, width, height, outdir='img/', n_images=10, img_type='grey'):
-        """ Create and save the weights of the hidden units with respect to the
-        visible units as images.
+        """
+        Create and save the weights of the hidden units with respect to the
+                visible units as images.
+
         :param width:
         :param height:
         :param outdir:
