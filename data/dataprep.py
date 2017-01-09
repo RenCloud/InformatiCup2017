@@ -8,6 +8,7 @@ import os.path
 def search_repo(repo):
     dic_end = defaultdict(int)
     sum = 0;
+    endings = []
     for path in repo:
         if(path['type'] == "Blob"):
             parts = path['path'].split(".")
@@ -18,7 +19,10 @@ def search_repo(repo):
     for e in list(dic_end):
         if(dic_end[e] <= sum/100):
             del(dic_end[e])
-    #print(dic_end)
+        else:
+            for i in range (0, dic_end[e]):
+                endings.append(e)
+    return endings
 
 def search_desc(desc, readme):
     dic_desc = defaultdict(int)
@@ -34,7 +38,7 @@ def search_desc(desc, readme):
             if not word in words:
                 dic_desc[word] += 1
                 sum += 1
-                words = []
+    words = []
     for e in list(dic_desc):
         if(dic_desc[e] < sum/100):
             del(dic_desc[e])
@@ -65,7 +69,7 @@ def prep(file, training = 0):
     if(os.path.isfile("dicEnd.txt")):
         dictionaryEndings = gensim.corpora.Dictionary.load("dicEnd.txt")
     else:
-        dictionaryEndings = gensim.corpora.Dictionary
+        dictionaryEndings = gensim.corpora.Dictionary()
     if(os.path.isfile("cor.mm")):
         corpus = list(gensim.corpora.MmCorpus("cor.mm"))
     else:
@@ -84,6 +88,9 @@ def prep(file, training = 0):
         endTmp.append(end)
 
         res = search_desc(rep['description'], rep['readme'])
+        endings = search_repo(rep['repository'])
+        endingstmp = []
+        endingstmp.append(endings)
         tmp = []
         tmp.append(res)
         dump = ""
@@ -98,8 +105,8 @@ def prep(file, training = 0):
         elif(training == 1):
             dictionary.merge_with(gensim.corpora.Dictionary(tmp))
             corpus.append(dictionary.doc2bow(res))
-            #dictionaryEndings.merge_with(gensim.corpora.Dictionary(endTmp))
-            #corpusEndings.append(dictionary.doc2bow(end))
+            dictionaryEndings.merge_with(gensim.corpora.Dictionary(endingstmp))
+            corpusEndings.append(dictionary.doc2bow(endings))
         elif(training == 0):
             tfidf = gensim.models.TfidfModel(corpus)
             json_out_raw = [0 for x in range(dictionary.__len__())]
@@ -119,7 +126,6 @@ def prep(file, training = 0):
             #        else:
             #            json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
             json_out_raw_arr.append(json_out_raw)
-            return json_out_raw_arr
         else:
             print("param error")
         #lsi = gensim.models.LsiModel(corpus)
@@ -138,4 +144,4 @@ def prep(file, training = 0):
     dictionary.save("dic.txt")
     gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
     #print(dump)
-    return dump
+    return json_out_raw_arr

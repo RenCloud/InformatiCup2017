@@ -1,6 +1,7 @@
 import data.dataprep
 import os
 import learning.frontend.Main
+import json
 inp = input("Select mode:\n t - training\n d - filter_extremes\n other key - normal mode\n$")
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
@@ -11,6 +12,7 @@ elif(inp == "d"):
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
-        tmp = tmp + data.dataprep.prep("data/json/1-367.json")
+        tmp = tmp + data.dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
-cat = learning.frontend.Main.fit_dbm(vec, main_dir="test")
+    print(len(tmp))
+cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
