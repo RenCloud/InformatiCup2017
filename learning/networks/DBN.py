@@ -48,6 +48,7 @@ class DBN(object):
 
         self._tf_input_data = None
         self._tf_desired_output = None
+        self._tf_keep_prob = None
 
         self._tf_train_step = None
         self._tf_accuracy = None
@@ -180,7 +181,8 @@ class DBN(object):
             self._tf_saver = tf.train.Saver()
             self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
-            output = self._tf_session.run(self._tf_output, feed_dict={self._tf_input_data: input})
+            output = self._tf_session.run(self._tf_output, feed_dict={self._tf_input_data: input,
+                                                                      self._tf_keep_prob: 1})
 
         tf.reset_default_graph()
 
@@ -225,7 +227,8 @@ class DBN(object):
         for i in range(iterations):
             x, y = data_set.next_batch(batch_size)
 
-            self._tf_session.run(self._tf_train_step, feed_dict={self._tf_input_data: x, self._tf_desired_output: y})
+            self._tf_session.run(self._tf_train_step, feed_dict={self._tf_input_data: x, self._tf_desired_output: y,
+                                                                 self._tf_keep_prob: 0.5})
 
     def _run_validation_results(self, validation_set, epoch):
 
@@ -296,7 +299,7 @@ class DBN(object):
     def _build_deterministic_model(self):
 
         '''
-        THis function builds the computation graph for the supervised finetuning and the classification function.
+        This function builds the computation graph for the supervised finetuning and the classification function.
 
         :return: self
         '''
@@ -307,9 +310,16 @@ class DBN(object):
         output = self._tf_input_data
 
         for i in range(len(self._layer_size) - 2):
+            # dropout to prevent overfitting
+            output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+
             output = tf.nn.sigmoid(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
 
         output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
+
+        # dropout to prevent overfitting
+        output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, self._tf_desired_output))
 
         self._tf_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
@@ -342,6 +352,7 @@ class DBN(object):
 
         self._tf_input_data = tf.placeholder(tf.float32, [None, self._layer_size[0]], name="input-data")
         self._tf_desired_output = tf.placeholder(tf.float32, [None, self._layer_size[-1]], name="desired-output")
+        self._tf_keep_prob = tf.placeholder(tf.float32)
 
     def _create_data_directories(self):
 
