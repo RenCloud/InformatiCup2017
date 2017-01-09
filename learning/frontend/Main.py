@@ -110,7 +110,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
             dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
                                       validation_set=validation_set)
 
-            examples = train_set.next_batch(25 + i)
+            examples = train_set.next_batch(100 + 5 * i)
 
             prediction = dbn.classify(examples[0])
 
