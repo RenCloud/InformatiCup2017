@@ -77,20 +77,17 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
 
-    train_set = None
+    data = json.loads(supervised_train_set[0])
+    labels = json.loads(supervised_train_set[1])
+    data_np = np.asarray(data)
+    labels_np = np.asarray(labels)
+    train_set = DataSet(data_np, labels_np)
 
-    if supervised_train_set and validation_set:
-        data = json.loads(supervised_train_set[0])
-        labels = json.loads(supervised_train_set[1])
-        data_np = np.asarray(data)
-        labels_np = np.asarray(labels)
-        train_set = DataSet(data_np, labels_np)
-
-        vdata = json.loads(validation_set[0])
-        vlabels = json.loads(validation_set[1])
-        vdata_np = np.asarray(vdata)
-        vlabels_np = np.asarray(vlabels)
-        validation_set = DataSet(vdata_np, vlabels_np)
+    vdata = json.loads(validation_set[0])
+    vlabels = json.loads(validation_set[1])
+    vdata_np = np.asarray(vdata)
+    vlabels_np = np.asarray(vlabels)
+    validation_set = DataSet(vdata_np, vlabels_np)
 
     dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
 
@@ -99,19 +96,18 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
                     momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
                     batch_size=[10, 100, 100])
 
-    if supervised_train_set and validation_set:
-        dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
+    dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
+                              validation_set=validation_set)
+
+    for i in range(100):
+        dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
                                   validation_set=validation_set)
 
-        for i in range(100):
-            dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
-                                      validation_set=validation_set)
+        examples = train_set.next_batch(25 + i)
 
-            examples = train_set.next_batch(25 + i)
+        prediction = dbn.classify(examples[0])
 
-            prediction = dbn.classify(examples[0])
-
-            train_set.append(examples[0], prediction)
+        train_set.append(examples[0], prediction)
 
 
 def classify_dbn(data_set, main_dir="dbn/"):

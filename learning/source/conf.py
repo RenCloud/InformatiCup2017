@@ -19,11 +19,9 @@
 #
 import os
 import sys
-
-sys.path.insert(0, os.path.abspath('../networks/'))
+sys.path.insert(0, os.path.abspath('../networks'))
 sys.path.insert(0, os.path.abspath('../utils'))
-sys.path.insert(0, os.path.abspath('../../'))
-print(os.path.abspath('../..'))
+print(os.path.abspath('../networks'))
 
 
 # -- General configuration ------------------------------------------------

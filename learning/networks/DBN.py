@@ -1,3 +1,4 @@
+
 import tensorflow as tf
 import numpy as np
 
@@ -18,6 +19,7 @@ from learning.utils.input_format import DataSet
 
 
 class DBN(object):
+
     def __init__(self,
                  layer_size,
                  main_dir="dbn",
@@ -129,8 +131,7 @@ class DBN(object):
             print(results.shape[0], results.shape[1])
 
             self.train_set = DataSet(results, results)
-            print("[INFO] new dataset generated with size ", self.train_set.images.shape[0], " ",
-                  self.train_set.labels.shape[1])
+            print("[INFO] new dataset generated")
 
     def supervised_finetuning(self, data_set, make_dbn=False, batch_size=1, epochs=1, validation_set=None):
 
@@ -277,6 +278,7 @@ class DBN(object):
         if not self.RBMs:
             print("[INFO] recreate rbm models")
             for i in range(len(self.layer_size) - 2):
+
                 self.RBMs[i] = RBM(self.layer_size[i], self.layer_size[i + 1], main_dir="dbn/rbm_" + repr(i),
                                    model_name="rbm_model_" + repr(i), input_to_binary=False)
 
@@ -369,7 +371,6 @@ class DBN(object):
             os.makedirs(models_dir + "dbn/" + self.model_name)
 
         return models_dir, data_dir, summary_dir
-
 
 '''
 if __name__ == '__main__':
