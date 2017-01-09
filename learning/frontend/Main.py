@@ -61,7 +61,7 @@ def classify_rbm(data_set, main_dir="rbm_test"):
     return output
 
 
-def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set=None):
+def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set=None, do_pretraining=True):
 
     '''
     Wrapper function we used to call from our server module. The function gives easy access to the learning ability of
@@ -77,18 +77,17 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
     :return:
     '''
 
-    train_set = None
-
     input_list = json.loads(data_set)
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
 
     dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
 
-    dbn.pretraining(input, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
-                    weight_decay=[0.0001, 0.0001, 0.0001],
-                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
-                    batch_size=[10, 100, 100])
+    if do_pretraining:
+        dbn.pretraining(input, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
+                        weight_decay=[0.0001, 0.0001, 0.0001],
+                        momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
+                        batch_size=[10, 100, 100])
 
     if supervised_train_set and validation_set:
         data = json.loads(supervised_train_set[0])
@@ -110,7 +109,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
             dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
                                       validation_set=validation_set)
 
-            examples = train_set.next_batch(100 + 5 * i)
+            examples = input.next_batch(100 + 5 * i)
 
             prediction = dbn.classify(examples[0])
 
