@@ -12,6 +12,6 @@ elif(inp == "d"):
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
-        tmp = tmp + data.dataprep.prep("data/json/1-367.json")
+        tmp = tmp + data.dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
-cat = learning.frontend.Main.fit_dbm(vec, main_dir="test")
+cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
