@@ -64,8 +64,8 @@ class DataSet(object):
             print("[ERROR] uneven length of added Vectors")
             assert data.shape[0] == labels.shape[0]
 
-        self._images = np.append(self._images, data)
-        self._labels = np.append(self._labels, labels)
+        self._images = np.append(self._images, data, axis=0)
+        self._labels = np.append(self._labels, labels, axis=0)
 
 
     @property
