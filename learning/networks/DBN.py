@@ -261,6 +261,8 @@ class DBN(object):
             dict[self._tf_w[i].name.split(':0')[0]] = self._tf_w[i]
             dict[self._tf_bh[i].name.split(':0')[0]] = self._tf_bh[i]
 
+        print(dict)
+        
         return dict
 
     def _build_dbn_from_rbms(self):
@@ -277,7 +279,7 @@ class DBN(object):
         if not rbms:
             print("[INFO] recreate rbm models")
             for i in range(len(self._layer_size) - 2):
-                rbms[i] = RBM(self._layer_size[i], self._layer_size[i + 1], main_dir="dbn/rbm_" + repr(i),
+                rbms[i] = RBM(self._layer_size[i], self._layer_size[i + 1], main_dir=self._main_dir + "/rbm_" + repr(i),
                               model_name="rbm_model_" + repr(i), input_to_binary=False)
 
         for i in range(len(self._layer_size) - 2):
@@ -293,7 +295,7 @@ class DBN(object):
         with tf.Session() as self._tf_session:
             self._tf_session.run(tf.global_variables_initializer())
             self._tf_saver = tf.train.Saver()
-            self._tf_saver.save(self._tf_session, self._model_path)
+            self._tf_saver.save(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
         tf.reset_default_graph()
 
@@ -373,7 +375,7 @@ class DBN(object):
             if not os.path.isdir(d):
                 os.makedirs(d)
 
-        if not os.path.isdir(models_dir + "dbn/" + self._model_name):
-            os.makedirs(models_dir + "dbn/" + self._model_name)
+        if not os.path.isdir(models_dir + "dbn/"):
+            os.makedirs(models_dir + "dbn/")
 
         return models_dir, data_dir, summary_dir

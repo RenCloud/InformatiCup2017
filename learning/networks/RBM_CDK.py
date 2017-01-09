@@ -160,7 +160,7 @@ class RBM(object):
         self._batch_size = batch_size
 
         self._build_model()
-        self._create_summary_nodes(validation_set)
+        self._create_summary_nodes()
 
         with tf.Session() as self._tf_session:
             self._initialize_tf_utilities_and_ops(restore_previous_model)

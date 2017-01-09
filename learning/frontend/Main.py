@@ -86,7 +86,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
     if do_pretraining:
         dbn.pretraining(input, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
                         weight_decay=[0.0001, 0.0001, 0.0001],
-                        momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
+                        momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[1, 1, 1],
                         batch_size=[10, 100, 100])
 
     if supervised_train_set and validation_set:
@@ -104,7 +104,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
         dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
                                   validation_set=validation_set)
-
+        print("[INFO] First pretraining ended succefully")
         for i in range(100):
             dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
                                       validation_set=validation_set)
@@ -114,6 +114,8 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
             prediction = dbn.classify(examples[0])
 
             train_set.append(examples[0], prediction)
+
+            print("[INFO] ", i, " pretraining ended successfully")
 
 
 def classify_dbn(data_set, main_dir="dbn/"):
