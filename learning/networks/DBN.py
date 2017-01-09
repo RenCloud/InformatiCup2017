@@ -36,35 +36,31 @@ class DBN(object):
         :param model_name: Is used for the checkpoint filename.
         '''
 
-        self.layer_size = layer_size
+        self._layer_size = layer_size
 
-        self.RBMs = {}
+        self._main_dir = main_dir
+        self._model_name = model_name
+        self._model_dir, self._data_dir, self._summary_dir = self._create_data_directories()
+        self._model_path = self._model_dir + self._model_name
 
-        self.train_set = None
+        self._tf_w = {}
+        self._tf_bh = {}
 
-        self.main_dir = main_dir
-        self.model_name = model_name
-        self.model_dir, self.data_dir, self.summary_dir = self._create_data_directories()
-        self.model_path = self.model_dir + self.model_name
+        self._tf_input_data = None
+        self._tf_desired_output = None
+        self._tf_keep_prob = None
 
-        self.w = {}
-        self.bh = {}
+        self._tf_train_step = None
+        self._tf_accuracy = None
+        self._tf_output = None
 
-        self.input_data = None
-        self.y = None
+        self._gibbs_sampling_steps = None
 
-        self.train_step = None
-        self.accuracy = None
-        self.output = None
-
-        self.gibbs_sampling_steps = None
-        self.learning_rate = 0.01
-
-        self.tf_session = None
-        self.tf_saver = None
-        self.tf_finetune_saver = None
-        self.tf_merged_summaries = None
-        self.tf_summary_writer = None
+        self._tf_session = None
+        self._tf_saver = None
+        self._tf_finetune_saver = None
+        self._tf_merged_summaries = None
+        self._tf_summary_writer = None
 
     def pretraining(self,
                     train_set,
@@ -100,15 +96,13 @@ class DBN(object):
         :return: self
         '''
 
-        self.train_set = train_set
-
-        for i in range(len(self.layer_size) - 2):
+        for i in range(len(self._layer_size) - 2):
 
             input_to_binary = False
             if i == 0 and first_layer_binary:
                 input_to_binary = True
 
-            rbm = RBM(self.layer_size[i], self.layer_size[i + 1], main_dir=self.main_dir + "/rbm_" + repr(i),
+            rbm = RBM(self._layer_size[i], self._layer_size[i + 1], main_dir=self._main_dir + "/rbm_" + repr(i),
                       model_name="rbm_model_" + repr(i), input_to_binary=input_to_binary)
 
             start_epoch = 0
@@ -120,17 +114,17 @@ class DBN(object):
 
                 print("[INFO] started training periode ", n + 1, " of ", len(epoch_steps))
 
-                rbm.fit(self.train_set, restore_previous_model=continue_training[n], start_epoche=start_epoch,
+                rbm.fit(train_set, restore_previous_model=continue_training[n], start_epoche=start_epoch,
                         validation_set=None, learning_rate=learning_rate[n],
                         momentum_factor=momentum[n], epochs=epoch_steps[n], weight_decay_factor=weight_decay[n],
                         gibbs_sampling_steps=gibbs_sampling_steps[n], batch_size=batch_size[n])
 
             print("[INFO] pretraining %d ended", i)
-            results = rbm.classify(self.train_set, input_to_binary=None, return_hstates=layer_output_binary)
+            results = rbm.classify(train_set, input_to_binary=None, return_hstates=layer_output_binary)
 
             print(results.shape[0], results.shape[1])
 
-            self.train_set = DataSet(results, results)
+            train_set = DataSet(results, results)
             print("[INFO] new dataset generated")
 
     def supervised_finetuning(self, data_set, make_dbn=False, batch_size=1, epochs=1, validation_set=None):
@@ -153,7 +147,7 @@ class DBN(object):
 
         self._build_deterministic_model()
 
-        with tf.Session() as self.tf_session:
+        with tf.Session() as self._tf_session:
             self._initialize_tf_utilities_and_ops(create_from_rbms=make_dbn)
 
             for i in range(epochs):
@@ -162,7 +156,7 @@ class DBN(object):
                 if validation_set:
                     self._run_validation_results(validation_set, i)
 
-            self.tf_finetune_saver.save(self.tf_session, self.model_dir + "dbn/" + self.model_name)
+            self._tf_finetune_saver.save(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
         tf.reset_default_graph()
 
@@ -182,12 +176,13 @@ class DBN(object):
 
         self._build_deterministic_model()
 
-        with tf.Session() as self.tf_session:
-            self.tf_session.run(tf.global_variables_initializer())
-            self.tf_saver = tf.train.Saver()
-            self.tf_saver.restore(self.tf_session, self.model_dir + "dbn/" + self.model_name)
+        with tf.Session() as self._tf_session:
+            self._tf_session.run(tf.global_variables_initializer())
+            self._tf_saver = tf.train.Saver()
+            self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
-            output = self.tf_session.run(self.output, feed_dict={self.input_data: input})
+            output = self._tf_session.run(self._tf_output, feed_dict={self._tf_input_data: input,
+                                                                      self._tf_keep_prob: 1})
 
         tf.reset_default_graph()
 
@@ -204,18 +199,18 @@ class DBN(object):
         :return: self
         '''
 
-        self.tf_session.run(tf.global_variables_initializer())
-        self.tf_merged_summaries = tf.summary.merge_all()
+        self._tf_session.run(tf.global_variables_initializer())
+        self._tf_merged_summaries = tf.summary.merge_all()
 
-        self.tf_saver = tf.train.Saver(self._create_restore_dict())
-        self.tf_finetune_saver = tf.train.Saver()
+        self._tf_saver = tf.train.Saver(self._create_restore_dict())
+        self._tf_finetune_saver = tf.train.Saver()
 
         if create_from_rbms:
-            self.tf_finetune_saver.restore(self.tf_session, self.model_dir + "dbn/" + self.model_name)
+            self._tf_finetune_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
         else:
-            self.tf_saver.restore(self.tf_session, self.model_path)
+            self._tf_saver.restore(self._tf_session, self._model_path)
 
-        self.tf_summary_writer = tf.train.SummaryWriter(self.summary_dir, self.tf_session.graph)
+        self._tf_summary_writer = tf.train.SummaryWriter(self._summary_dir, self._tf_session.graph)
 
     def _run_train_step(self, data_set, batch_size):
 
@@ -232,7 +227,8 @@ class DBN(object):
         for i in range(iterations):
             x, y = data_set.next_batch(batch_size)
 
-            self.tf_session.run(self.train_step, feed_dict={self.input_data: x, self.y: y})
+            self._tf_session.run(self._tf_train_step, feed_dict={self._tf_input_data: x, self._tf_desired_output: y,
+                                                                 self._tf_keep_prob: 0.5})
 
     def _run_validation_results(self, validation_set, epoch):
 
@@ -244,11 +240,12 @@ class DBN(object):
         :return: self
         '''
 
-        sum, accuracy = self.tf_session.run([self.tf_merged_summaries, self.accuracy],
-                                            feed_dict={self.input_data: validation_set.images,
-                                                       self.y: validation_set.labels})
+        sum, accuracy = self._tf_session.run([self._tf_merged_summaries, self._tf_accuracy],
+                                             feed_dict={self._tf_input_data: validation_set.images,
+                                                        self._tf_desired_output: validation_set.labels,
+                                                        self._tf_keep_prob: 1})
 
-        self.tf_summary_writer.add_summary(sum, epoch)
+        self._tf_summary_writer.add_summary(sum, epoch)
 
     def _create_restore_dict(self):
         '''
@@ -260,9 +257,9 @@ class DBN(object):
 
         dict = {}
 
-        for i in range(len(self.layer_size) - 2):
-            dict[self.w[i].name.split(':0')[0]] = self.w[i]
-            dict[self.bh[i].name.split(':0')[0]] = self.bh[i]
+        for i in range(len(self._layer_size) - 2):
+            dict[self._tf_w[i].name.split(':0')[0]] = self._tf_w[i]
+            dict[self._tf_bh[i].name.split(':0')[0]] = self._tf_bh[i]
 
         return dict
 
@@ -275,34 +272,35 @@ class DBN(object):
         :return: self
         '''
 
-        if not self.RBMs:
+        rbms = {}
+
+        if not rbms:
             print("[INFO] recreate rbm models")
-            for i in range(len(self.layer_size) - 2):
+            for i in range(len(self._layer_size) - 2):
+                rbms[i] = RBM(self._layer_size[i], self._layer_size[i + 1], main_dir="dbn/rbm_" + repr(i),
+                              model_name="rbm_model_" + repr(i), input_to_binary=False)
 
-                self.RBMs[i] = RBM(self.layer_size[i], self.layer_size[i + 1], main_dir="dbn/rbm_" + repr(i),
-                                   model_name="rbm_model_" + repr(i), input_to_binary=False)
-
-        for i in range(len(self.layer_size) - 2):
+        for i in range(len(self._layer_size) - 2):
             print("[INFO] get weights from network ", i)
-            temp_w, temp_bh = self.RBMs[i].get_weights()
-            self.w[i] = temp_w
-            self.bh[i] = temp_bh
+            temp_w, temp_bh = rbms[i].get_weights()
+            self._tf_w[i] = temp_w
+            self._tf_bh[i] = temp_bh
 
-        for i in range(len(self.layer_size) - 2):
-            self.w[i] = tf.Variable(self.w[i], name="dbn_weight_" + repr(i))
-            self.bh[i] = tf.Variable(self.bh[i], name="dbn_bias_hidden_" + repr(i))
+        for i in range(len(self._layer_size) - 2):
+            self._tf_w[i] = tf.Variable(self._tf_w[i], name="dbn_weight_" + repr(i))
+            self._tf_bh[i] = tf.Variable(self._tf_bh[i], name="dbn_bias_hidden_" + repr(i))
 
-        with tf.Session() as self.tf_session:
-            self.tf_session.run(tf.global_variables_initializer())
-            self.tf_saver = tf.train.Saver()
-            self.tf_saver.save(self.tf_session, self.model_path)
+        with tf.Session() as self._tf_session:
+            self._tf_session.run(tf.global_variables_initializer())
+            self._tf_saver = tf.train.Saver()
+            self._tf_saver.save(self._tf_session, self._model_path)
 
         tf.reset_default_graph()
 
     def _build_deterministic_model(self):
 
         '''
-        THis function builds the computation graph for the supervised finetuning and the classification function.
+        This function builds the computation graph for the supervised finetuning and the classification function.
 
         :return: self
         '''
@@ -310,20 +308,27 @@ class DBN(object):
         self._create_variables()
         self._create_placeholder()
 
-        output = self.input_data
+        output = self._tf_input_data
 
-        for i in range(len(self.layer_size) - 2):
-            output = tf.nn.sigmoid(tf.matmul(output, self.w[i]) + self.bh[i])
+        for i in range(len(self._layer_size) - 2):
+            # dropout to prevent overfitting
+            output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
 
-        output = tf.matmul(output, self.w[len(self.layer_size) - 2]) + self.bh[len(self.layer_size) - 2]
-        cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, self.y))
+            output = tf.nn.sigmoid(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
 
-        self.train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+        output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
 
-        correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(self.y, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        # dropout to prevent overfitting
+        output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
 
-        tf.summary.scalar("accuracy", self.accuracy)
+        cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, self._tf_desired_output))
+
+        self._tf_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+        correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(self._tf_desired_output, 1))
+        self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+        tf.summary.scalar("accuracy", self._tf_accuracy)
 
     def _create_variables(self):
 
@@ -333,10 +338,10 @@ class DBN(object):
         :return: self
         '''
 
-        for i in range(len(self.layer_size) - 1):
-            self.w[i] = tf.Variable(tf.random_normal((self.layer_size[i], self.layer_size[i + 1]), mean=0.0,
+        for i in range(len(self._layer_size) - 1):
+            self._tf_w[i] = tf.Variable(tf.random_normal((self._layer_size[i], self._layer_size[i + 1]), mean=0.0,
                                                      stddev=0.1), name="dbn_weight_" + repr(i))
-            self.bh[i] = tf.Variable(tf.zeros([self.layer_size[i + 1]]), name="dbn_bias_hidden_" + repr(i))
+            self._tf_bh[i] = tf.Variable(tf.zeros([self._layer_size[i + 1]]), name="dbn_bias_hidden_" + repr(i))
 
     def _create_placeholder(self):
 
@@ -346,8 +351,9 @@ class DBN(object):
         :return:
         '''
 
-        self.input_data = tf.placeholder(tf.float32, [None, self.layer_size[0]], name="input-data")
-        self.y = tf.placeholder(tf.float32, [None, self.layer_size[-1]], name="desired-output")
+        self._tf_input_data = tf.placeholder(tf.float32, [None, self._layer_size[0]], name="input-data")
+        self._tf_desired_output = tf.placeholder(tf.float32, [None, self._layer_size[-1]], name="desired-output")
+        self._tf_keep_prob = tf.placeholder(tf.float32)
 
     def _create_data_directories(self):
 
@@ -357,35 +363,17 @@ class DBN(object):
         :return: Returns the path to the logs and model directories
         '''
 
-        self.main_dir = self.main_dir + '/' if self.main_dir[-1] != '/' else self.main_dir
+        self._main_dir = self._main_dir + '/' if self._main_dir[-1] != '/' else self._main_dir
 
-        models_dir = "models/" + self.main_dir
-        data_dir = "data/" + self.main_dir
-        summary_dir = "logs/" + self.main_dir
+        models_dir = "models/" + self._main_dir
+        data_dir = "data/" + self._main_dir
+        summary_dir = "logs/" + self._main_dir
 
         for d in [models_dir, data_dir, summary_dir]:
             if not os.path.isdir(d):
                 os.makedirs(d)
 
-        if not os.path.isdir(models_dir + "dbn/" + self.model_name):
-            os.makedirs(models_dir + "dbn/" + self.model_name)
+        if not os.path.isdir(models_dir + "dbn/" + self._model_name):
+            os.makedirs(models_dir + "dbn/" + self._model_name)
 
         return models_dir, data_dir, summary_dir
-
-'''
-if __name__ == '__main__':
-    dbm = DBN([784, 500, 500, 2000, 10])
-
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-
-    # dbm.train_set = mnist.train
-
-    dbm.pretraining(mnist.train, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
-                    weight_decay=[0.0001, 0.0001, 0.0001],
-                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
-                    batch_size=[10, 100, 100])
-
-
-    dbm.supervised_finetuning(batch_size=100, data_set=mnist.test, epochs=1, make_dbn=True, validation_set=mnist.validation)
-
-'''

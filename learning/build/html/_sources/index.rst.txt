@@ -6,17 +6,19 @@
 Welcome to Gi-Projekt's documentation!
 ======================================
 
-    That is our Gi-Projekt Documentation.
+   About the Project
 
-    We will provide here all the code used for the dbn and rbm.
+   Hier was das projekt so abstract macht als einleitung.
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   code
+   introduction
    explanation
+   code
+   results
 
 
 

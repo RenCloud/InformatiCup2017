@@ -70,13 +70,13 @@ class RBM(object):
     def __init__(self, input_size, hidden_size, main_dir="rbm", model_name="rbm_model",
                  standard_derivation=0.01, input_to_binary=False, verbose=False, ):
         '''
-        :param input_size: Number of features used in the input vector
-        :param hidden_size: Number of classes the output should be devided in
-        :param main_dir: Directory where trainingdata, modeldata and imagedata should be saved to
-        :param model_name: Name of the model
-        :param standard_derivation: Standard-derivation for the random initialised weights
-        :param input_to_binary: Determines if the network converts input into binary digits
-        :param verbose: If true it will print the result of loss_function
+        :param input_size: Number of features used in the input vector.
+        :param hidden_size: Number of classes the output should be devided in.
+        :param main_dir: Directory where trainingdata, modeldata and imagedata should be saved to.
+        :param model_name: Name of the model.
+        :param standard_derivation: Standard-derivation for the random initialised weights.
+        :param input_to_binary: Determines if the network converts input into binary digits.
+        :param verbose: If true it will print the result of loss_function.
         '''
 
         # Sets network-size
@@ -139,17 +139,17 @@ class RBM(object):
             gibbs_sampling_steps=1, learning_rate=0.01, momentum_factor=0.9, weight_decay_factor=0.0001, batch_size=10):
         '''
 
-        :param train_set: Trainset formatted as input_format
-        :param validation_set: Validationset formatted as input_format
-        :param restore_previous_model: If true restores learned model weights
-        :param start_epoche: Already passed epochs to keep the Tensorboard graph well formatted
-        :param epochs: Number of epochs the learning should last
-        :param gibbs_sampling_steps: Number of gibbs sampling steps the net should performs
-        :param learning_rate: Hyperparameter Learning rate parameter; will be devided by batch_size
-        :param momentum_factor: Specifies the momentumterm
-        :param weight_decay_factor:Specifies how strong the high weights are penetalized
-        :param batch_size: The trainingset is sliced in mini batches. One batch has the size of batch_size
-        :return: self
+        :param train_set: Trainset formatted as input_format.
+        :param validation_set: Validationset formatted as input_format.
+        :param restore_previous_model: If true restores learned model weights.
+        :param start_epoche: Already passed epochs to keep the Tensorboard graph well formatted.
+        :param epochs: Number of epochs the learning should last.
+        :param gibbs_sampling_steps: Number of gibbs sampling steps the net should performs.
+        :param learning_rate: Hyperparameter Learning rate parameter; will be devided by batch_size.
+        :param momentum_factor: Specifies the momentumterm.
+        :param weight_decay_factor:Specifies how strong the high weights are penetalized.
+        :param batch_size: The trainingset is sliced in mini batches. One batch has the size of batch_size.
+        :return: self.
         '''
 
         self._epochs = epochs
@@ -173,10 +173,10 @@ class RBM(object):
 
         '''
 
-        :param input: the input vectors to classify as input_format
-        :param input_to_binary: if true input is normalized to 0 or 1
-        :param return_hstates: if true returns only the values of 0 or 1
-        :return: binary vector or probabilty which indicates the corresponding class of the inputdata
+        :param input: the input vectors to classify as input_format.
+        :param input_to_binary: if true input is normalized to 0 or 1.
+        :param return_hstates: if true returns only the values of 0 or 1.
+        :return: binary vector or probabilty which indicates the corresponding class of the inputdata.
         '''
 
         self._create_placeholders()
@@ -185,7 +185,7 @@ class RBM(object):
         if input_to_binary:
             self._tf_input_data = self._sample_prob(self._tf_input_data, self._tf_vrand)
 
-        classification = self.sample_hidden_from_visible(self._tf_input_data)
+        classification = self._sample_hidden_from_visible(self._tf_input_data)
 
         with tf.Session() as self._tf_session:
             init_op = tf.global_variables_initializer()
@@ -206,8 +206,8 @@ class RBM(object):
 
         '''
 
-        :param restore_previous_model: if set to true the lastest learned weights are loaded to continue training
-        :return: self
+        :param restore_previous_model: if set to true the lastest learned weights are loaded to continue training.
+        :return: self.
         '''
         init_op = tf.global_variables_initializer()
 
@@ -227,10 +227,10 @@ class RBM(object):
             Devides the training process into the number of epochs. Every epoch run_train_step is called to iterate
             over the whole train_set.
 
-        :param train_set: The input data formatted as input_format
-        :param validation_set: The validation data formatted as input_format
+        :param train_set: The input data formatted as input_format.
+        :param validation_set: The validation data formatted as input_format.
         :param start_epoche:
-        :return: self
+        :return: self.
         '''
         for i in range(self._epochs):
             self._run_train_step(train_set)
@@ -245,8 +245,8 @@ class RBM(object):
         '''
             Iterates over the whole training set.
 
-        :param train_set: The input data formatted as input_format
-        :return: self
+        :param train_set: The input data formatted as input_format.
+        :return: self.
         '''
         updates = [self._tf_w_upd8, self._tf_bh_upd8, self._tf_bv_upd8]
 
@@ -262,9 +262,9 @@ class RBM(object):
             called tensors are save to the logs file. Also the loss is calculated and also saved. The progress of the
             network can be monitored by tensorboard.
 
-        :param train_set: [Update Needed] Can either operate the validation or the trainset
-        :param epoch: An integer to plot the summary data to an x-value
-        :return: self
+        :param train_set: [Update Needed] Can either operate the validation or the trainset.
+        :param epoch: An integer to plot the summary data to an x-value.
+        :return: self.
         '''
 
         loss, summary_str = self._tf_session.run([self._tf_loss_function, self._tf_merged_summaries],
@@ -295,8 +295,8 @@ class RBM(object):
             Helper function, which slices the inputdata at every iteration and feeds the data in a dictionary.
             The dictionary is used to feed the tensorplaceholders.
 
-        :param data: takes the whole train_set in form of input_format
-        :return: A dictionary with the data to feed to the network
+        :param data: takes the whole train_set in form of input_format.
+        :return: A dictionary with the data to feed to the network.
         '''
         x, y = data.next_batch(self._batch_size)
         return {
@@ -315,8 +315,8 @@ class RBM(object):
             This function works like create_feed_dict but it also feeds a placeholder(self._tf_desired_output) with the desired output
             of the network.
 
-        :param data: Validation data as input_format
-        :return: A Dictionary with all data that needs to be feed to the network
+        :param data: Validation data as input_format.
+        :return: A Dictionary with all data that needs to be feed to the network.
         '''
         x = data.images
         return {
@@ -338,7 +338,7 @@ class RBM(object):
             The steps are structured with tf.name_scope to format the graph displayed in tensorboard.
             The build function also includes a graph for the accuracy and loss function.
 
-        :return: self
+        :return: self.
         '''
 
         self._create_placeholders()
@@ -347,17 +347,17 @@ class RBM(object):
 
         with tf.name_scope('learning_process'):
             with tf.name_scope('gibbs_sapmling_step'):
-                hprobs0, hstates0, vprobs, hprobs1, hstates1 = self.gibbs_sampling_step(
+                hprobs0, hstates0, vprobs, hprobs1, hstates1 = self._gibbs_sampling_step(
                     self._sample_prob(self._tf_input_data, self._tf_vrand)
                 )
-            with tf.name_scope('compute_positive_association'):
-                positive = self.compute_positive_association(self._tf_input_data, hprobs0, hstates0)
+            with tf.name_scope('_compute_positive_association'):
+                positive = self._compute_positive_association(self._tf_input_data, hprobs0, hstates0)
 
             with tf.name_scope('gibbs_sampling_steps'):
                 nn_input = vprobs
 
                 for step in range(self._gibbs_sampling_steps - 1):
-                    hprobs, hstates, vprobs, hprobs1, hstates1 = self.gibbs_sampling_step(nn_input)
+                    hprobs, hstates, vprobs, hprobs1, hstates1 = self._gibbs_sampling_step(nn_input)
                     nn_input = vprobs
 
             with tf.name_scope('compute_negative_association'):
@@ -378,7 +378,7 @@ class RBM(object):
                 self._tf_bv_upd8 = self._tf_bv.assign_add(d_bv)
 
         with tf.name_scope('accuracy'):
-            result = self.sample_hidden_from_visible(self._tf_input_data)
+            result = self._sample_hidden_from_visible(self._tf_input_data)
 
             correct_prediction = tf.equal(tf.argmax(result[0], 1), tf.argmax(self._tf_desired_output, 1))
             self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -391,7 +391,7 @@ class RBM(object):
         '''
             Creates all needed Placeholders in one call. The placeholders can be feed at runtime.
 
-        :return: self
+        :return: self.
         '''
         self._tf_input_data = tf.placeholder(tf.float32, [None, self._input_size], name="x-input")
         self._tf_hrand = tf.placeholder(tf.float32, [None, self._hidden_size], name="hrand")
@@ -409,7 +409,7 @@ class RBM(object):
             Tensor specified as tf.Variable are save by the tf.train.Saver after every succefull call of fit.
             If restore_previous_model is true the pre-initialised values we'll be overwritten by the previously save one.
 
-        :return: self
+        :return: self.
         '''
         self._tf_w = tf.Variable(
             tf.random_normal((self._input_size, self._hidden_size), mean=0.0, stddev=self._standard_derivation),
@@ -421,74 +421,73 @@ class RBM(object):
         self._tf_delta_bh = tf.Variable(tf.zeros([self._hidden_size]), name="delta_bh_" + self._model_name)
         self._tf_delta_bv = tf.Variable(tf.zeros([self._input_size]), name="delta_bv_" + self._model_name)
 
-    def gibbs_sampling_step(self, visible):
+    def _gibbs_sampling_step(self, visible):
 
         '''
-            Performes a complete Gibbs-Sapmling-Step
+            Performes a complete Gibbs-Sapmling-Step.
 
         :param visible: input vector
         :return: probality of the hidden layer, visible layer and a new hidden layer after one down up pass. Also the
                     binary staes of the hidden and the new hidden layer.
         '''
-        hprobs, hstates = self.sample_hidden_from_visible(visible)
-        vprobs = self.sample_visible_from_hidden(hprobs)
-        hprobs1, hstates1 = self.sample_hidden_from_visible(vprobs)
+        hprobs, hstates = self._sample_hidden_from_visible(visible)
+        vprobs = self._sample_visible_from_hidden(hprobs)
+        hprobs1, hstates1 = self._sample_hidden_from_visible(vprobs)
 
         return hprobs, hstates, vprobs, hprobs1, hstates1
 
-    def sample_hidden_from_visible(self, visible):
+    def _sample_hidden_from_visible(self, visible):
 
         '''
             Helper function. Performs an up-pass from the visible into the hidden layer.
 
-        :param visible: Input vector with size of the visible layer
-        :return: The probability and the states of the hidden layer after the up-pass
+        :param visible: Input vector with size of the visible layer.
+        :return: The probability and the states of the hidden layer after the up-pass.
         '''
         hprobs = tf.nn.sigmoid(tf.matmul(visible, self._tf_w) + self._tf_bh)
         hstates = self._sample_prob(hprobs, self._tf_hrand)
 
         return hprobs, hstates
 
-    def sample_visible_from_hidden(self, hidden):
+    def _sample_visible_from_hidden(self, hidden):
 
         '''
         Helper function. Performs an down-pass from the hidden into the visible layer.
 
         :param hidden: Input vector with size of hidden layer.
-        :return: The
+        :return: self
         '''
         return tf.nn.sigmoid(tf.matmul(hidden, tf.transpose(self._tf_w)) + self._tf_bv)
 
-    def compute_positive_association(self, visible, hidden_probs, hidden_states):
+    def _compute_positive_association(self, visible, hidden_probs, hidden_states):
         '''
         Helper function to compute the positive association in one function call.
 
         :param visible:
         :param hidden_probs:
         :param hidden_states:
-        :return:
+        :return: self
         '''
         return tf.matmul(tf.transpose(visible), hidden_states)
 
     def _sample_prob(self, probs, rand):
         '''
+        Helperfunction to randomly convert a value into 1 or 0.
 
-        :param probs:
-        :param rand:
-        :return:
+        :param probs: The probability vector of the up or down pass.
+        :param rand: A Vector with the same size as probs which contains random values.
+        :return: self.
         '''
         return tf.nn.relu(tf.sign(probs - rand))
 
-    def _create_summary_nodes(self, validation_set):
+    def _create_summary_nodes(self):
         '''
-
-        :param validation_set:
-        :return:
+        This function adds additional nodes to the computation graph. These are sidenodes which get only evaluated when
+                self._tf_merged_summarys runs. The summary nodes create Data which is visualized with Tensorboard.
+        :return: self.
         '''
         with tf.name_scope('summaries'):
             with tf.name_scope('learning_progress'):
-                # if validation_set:
-                # tf.summary.scalar("accuracy", self._tf_accuracy)
                 tf.summary.scalar("loss", self._tf_loss_function)
             with tf.name_scope('weight_development'):
                 tf.summary.scalar("max_Weight", tf.reduce_max(self._tf_w))
@@ -501,8 +500,9 @@ class RBM(object):
 
     def _create_data_directories(self):
         '''
+        A Helper function to create the directories to save the logs and the model weights.
 
-        :return:
+        :return: Returns the path as string for the model, data and summary directory.
         '''
         self._main_dir = self._main_dir + '/' if self._main_dir[-1] != '/' else self._main_dir
 
@@ -518,8 +518,10 @@ class RBM(object):
 
     def get_weights(self):
         '''
+        Initializes a Session and loads the model data. The tensorflow eval function returns the variable values as
+                a numpy array. The numpy array is used to initialize the DBN weights.
 
-        :return:
+        :return: Return the weights and biases as numpy array
         '''
 
         self._create_variables()
@@ -535,14 +537,16 @@ class RBM(object):
         return w, bh
 
     def get_weights_as_images(self, width, height, outdir='img/', n_images=10, img_type='grey'):
-        """ Create and save the weights of the hidden units with respect to the
-        visible units as images.
+        """
+        Create and save the weights of the hidden units with respect to the
+                visible units as images.
+
         :param width:
         :param height:
         :param outdir:
         :param n_images:
         :param img_type:
-        :return: self
+        :return: self.
         """
 
         outdir = self._data_dir + outdir

@@ -7,8 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Project Code &#8212; Gi-Projekt 1.0 documentation</title>
-    
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+
+      <link rel="stylesheet" href="_static/classic.css" type="text/css"/>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -26,19 +26,33 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Projekt Summary" href="explanation.html" />
-    <link rel="prev" title="Welcome to Gi-Projekt’s documentation!" href="index.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+      <link rel="next" title="Experiment Results" href="results.html"/>
+      <link rel="prev" title="Introducing the learning mechanism" href="explanation.html"/>
   </head>
   <body role="document">
-  
+  <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+          <li class="right" style="margin-right: 10px">
+              <a href="genindex.html" title="General Index"
+                 accesskey="I">index</a></li>
+          <li class="right">
+              <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+          </li>
+          <li class="right">
+              <a href="results.html" title="Experiment Results"
+                 accesskey="N">next</a> |
+          </li>
+          <li class="right">
+              <a href="explanation.html" title="Introducing the learning mechanism"
+                 accesskey="P">previous</a> |
+          </li>
+          <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li>
+      </ul>
+  </div>
 
-    <div class="document">
+  <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -244,22 +258,1145 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
 :param const: multiplicative constant</p>
 </dd></dl>
 
-</div>
+      <dl class="class">
+          <dt id="RBM_CDK.RBM">
+              <em class="property">class </em><code class="descclassname">RBM_CDK.</code><code
+                  class="descname">RBM</code><span class="sig-paren">(</span><em>input_size</em>, <em>hidden_size</em>,
+              <em>main_dir='rbm'</em>, <em>model_name='rbm_model'</em>, <em>standard_derivation=0.01</em>, <em>input_to_binary=False</em>,
+              <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                       href="_modules/RBM_CDK.html#RBM"><span
+                  class="viewcode-link">[source]</span></a><a class="headerlink" href="#RBM_CDK.RBM"
+                                                              title="Permalink to this definition">¶</a></dt>
+          <dd>
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM.fit">
+                      <code class="descname">fit</code><span class="sig-paren">(</span><em>train_set</em>, <em>validation_set=None</em>,
+                      <em>restore_previous_model=None</em>, <em>start_epoche=0</em>, <em>epochs=300</em>, <em>gibbs_sampling_steps=1</em>,
+                      <em>learning_rate=0.01</em>, <em>momentum_factor=0.9</em>, <em>weight_decay_factor=0.0001</em>,
+                      <em>batch_size=10</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                               href="_modules/RBM_CDK.html#RBM.fit"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#RBM_CDK.RBM.fit"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first last simple">
+                                      <li><strong>train_set</strong> &#8211; Trainset formatted as input_format.</li>
+                                      <li><strong>validation_set</strong> &#8211; Validationset formatted as
+                                          input_format.
+                                      </li>
+                                      <li><strong>restore_previous_model</strong> &#8211; If true restores learned model
+                                          weights.
+                                      </li>
+                                      <li><strong>start_epoche</strong> &#8211; Already passed epochs to keep the
+                                          Tensorboard graph well formatted.
+                                      </li>
+                                      <li><strong>epochs</strong> &#8211; Number of epochs the learning should last.
+                                      </li>
+                                      <li><strong>gibbs_sampling_steps</strong> &#8211; Number of gibbs sampling steps
+                                          the net should performs.
+                                      </li>
+                                      <li><strong>learning_rate</strong> &#8211; Hyperparameter Learning rate parameter;
+                                          will be devided by batch_size.
+                                      </li>
+                                      <li><strong>momentum_factor</strong> &#8211; Specifies the momentumterm.</li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                      <p>:param weight_decay_factor:Specifies how strong the high weights are penetalized.
+                          :param batch_size: The trainingset is sliced in mini batches. One batch has the size of
+                          batch_size.
+                          :return: self.</p>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM.classify">
+                      <code class="descname">classify</code><span class="sig-paren">(</span><em>input</em>, <em>input_to_binary=False</em>,
+                      <em>return_hstates=False</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                                      href="_modules/RBM_CDK.html#RBM.classify"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#RBM_CDK.RBM.classify"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>input</strong> &#8211; the input vectors to classify as input_format.
+                                      </li>
+                                      <li><strong>input_to_binary</strong> &#8211; if true input is normalized to 0 or
+                                          1.
+                                      </li>
+                                      <li><strong>return_hstates</strong> &#8211; if true returns only the values of 0
+                                          or 1.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">binary vector or probabilty which indicates
+                                  the corresponding class of the inputdata.</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._initialize_tf_utilities_and_ops">
+                      <code class="descname">_initialize_tf_utilities_and_ops</code><span class="sig-paren">(</span><em>restore_previous_model</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._initialize_tf_utilities_and_ops"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._initialize_tf_utilities_and_ops"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>restore_previous_model</strong> &#8211; if set to true the
+                                  lastest learned weights are loaded to continue training.
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._train_model">
+                      <code class="descname">_train_model</code><span class="sig-paren">(</span><em>train_set</em>, <em>validation_set</em>,
+                      <em>start_epoche</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                              href="_modules/RBM_CDK.html#RBM._train_model"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._train_model"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Devides the training process into the number of epochs. Every epoch run_train_step is
+                              called to iterate
+                              over the whole train_set.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>train_set</strong> &#8211; The input data formatted as input_format.
+                                      </li>
+                                      <li><strong>validation_set</strong> &#8211; The validation data formatted as
+                                          input_format.
+                                      </li>
+                                      <li><strong>start_epoche</strong> &#8211; </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self.</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._run_train_step">
+                      <code class="descname">_run_train_step</code><span
+                          class="sig-paren">(</span><em>train_set</em><span class="sig-paren">)</span><a
+                          class="reference internal" href="_modules/RBM_CDK.html#RBM._run_train_step"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._run_train_step"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Iterates over the whole training set.</div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>train_set</strong> &#8211; The input data formatted as
+                                  input_format.
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._run_summary">
+                      <code class="descname">_run_summary</code><span class="sig-paren">(</span><em>train_set</em>, <em>epoch</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._run_summary"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._run_summary"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>After every 20 completed epochs the network performs a mergesummary call. The in
+                              create_summary_node
+                              called tensors are save to the logs file. Also the loss is calculated and also saved. The
+                              progress of the
+                              network can be monitored by tensorboard.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>train_set</strong> &#8211; [Update Needed] Can either operate the
+                                          validation or the trainset.
+                                      </li>
+                                      <li><strong>epoch</strong> &#8211; An integer to plot the summary data to an
+                                          x-value.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self.</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._run_validation_results">
+                      <code class="descname">_run_validation_results</code><span
+                          class="sig-paren">(</span><em>mnist</em><span class="sig-paren">)</span><a
+                          class="reference internal" href="_modules/RBM_CDK.html#RBM._run_validation_results"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._run_validation_results"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>[Update Needed] Not in use</div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>mnist</strong> &#8211; </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"></td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._create_feed_dict">
+                      <code class="descname">_create_feed_dict</code><span class="sig-paren">(</span><em>data</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._create_feed_dict"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._create_feed_dict"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Helper function, which slices the inputdata at every iteration and feeds the data in a
+                              dictionary.
+                              The dictionary is used to feed the tensorplaceholders.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>data</strong> &#8211; takes the whole train_set in form of
+                                  input_format.
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">A dictionary with the data to feed to the network.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._create_complete_dict">
+                      <code class="descname">_create_complete_dict</code><span
+                          class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a
+                          class="reference internal" href="_modules/RBM_CDK.html#RBM._create_complete_dict"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._create_complete_dict"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>This function works like create_feed_dict but it also feeds a
+                              placeholder(self._tf_desired_output) with the desired output
+                              of the network.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>data</strong> &#8211; Validation data as input_format.</td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">A Dictionary with all data that needs to be feed to the network.
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._build_model">
+                      <code class="descname">_build_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a
+                          class="reference internal" href="_modules/RBM_CDK.html#RBM._build_model"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._build_model"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>For Tensorflow we need to specify the graph we want to run beforehand. A need graph is
+                              build by every call
+                              of fit. the build model has every needed to train the network.
+                              It creates the placeholders and variables. Then it performs the gibbs sampling steps to
+                              update the weights.
+                              The steps are structured with tf.name_scope to format the graph displayed in tensorboard.
+                              The build function also includes a graph for the accuracy and loss function.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._create_placeholders">
+                      <code class="descname">_create_placeholders</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._create_placeholders"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._create_placeholders"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Creates all needed Placeholders in one call. The placeholders can be feed at runtime.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._create_variables">
+                      <code class="descname">_create_variables</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._create_variables"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._create_variables"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Creates all Variables in one function call. The variables contain the weights and weight
+                              changes.
+                              Tensor specified as tf.Variable are save by the tf.train.Saver after every succefull call
+                              of fit.
+                              If restore_previous_model is true the pre-initialised values we&#8217;ll be overwritten by
+                              the previously save one.
+                          </div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._gibbs_sampling_step">
+                      <code class="descname">_gibbs_sampling_step</code><span class="sig-paren">(</span><em>visible</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._gibbs_sampling_step"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._gibbs_sampling_step"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Performes a complete Gibbs-Sapmling-Step.</div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>visible</strong> &#8211; input vector</td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">probality of the hidden layer, visible layer and a new hidden layer
+                                  after one down up pass. Also the
+                                  binary staes of the hidden and the new hidden layer.
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._sample_hidden_from_visible">
+                      <code class="descname">_sample_hidden_from_visible</code><span class="sig-paren">(</span><em>visible</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._sample_hidden_from_visible"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._sample_hidden_from_visible"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <blockquote>
+                          <div>Helper function. Performs an up-pass from the visible into the hidden layer.</div>
+                      </blockquote>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>visible</strong> &#8211; Input vector with size of the
+                                  visible layer.
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">The probability and the states of the hidden layer after the
+                                  up-pass.
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._sample_visible_from_hidden">
+                      <code class="descname">_sample_visible_from_hidden</code><span class="sig-paren">(</span><em>hidden</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._sample_visible_from_hidden"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._sample_visible_from_hidden"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>Helper function. Performs an down-pass from the hidden into the visible layer.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body"><strong>hidden</strong> &#8211; Input vector with size of hidden
+                                  layer.
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._compute_positive_association">
+                      <code class="descname">_compute_positive_association</code><span class="sig-paren">(</span><em>visible</em>,
+                      <em>hidden_probs</em>, <em>hidden_states</em><span class="sig-paren">)</span><a
+                          class="reference internal"
+                          href="_modules/RBM_CDK.html#RBM._compute_positive_association"><span class="viewcode-link">[source]</span></a><a
+                          class="headerlink" href="#RBM_CDK.RBM._compute_positive_association"
+                          title="Permalink to this definition">¶</a></dt>
+                  <dd><p>Helper function to compute the positive association in one function call.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>visible</strong> &#8211; </li>
+                                      <li><strong>hidden_probs</strong> &#8211; </li>
+                                      <li><strong>hidden_states</strong> &#8211; </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._sample_prob">
+                      <code class="descname">_sample_prob</code><span class="sig-paren">(</span><em>probs</em>,
+                      <em>rand</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                      href="_modules/RBM_CDK.html#RBM._sample_prob"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._sample_prob"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>Helperfunction to randomly convert a value into 1 or 0.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>probs</strong> &#8211; The probability vector of the up or down pass.
+                                      </li>
+                                      <li><strong>rand</strong> &#8211; A Vector with the same size as probs which
+                                          contains random values.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self.</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._create_summary_nodes">
+                      <code class="descname">_create_summary_nodes</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._create_summary_nodes"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._create_summary_nodes"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>This function adds additional nodes to the computation graph. These are sidenodes which
+                              get only evaluated when
+                          </dt>
+                          <dd>self._tf_merged_summarys runs. The summary nodes create Data which is visualized with
+                              Tensorboard.
+                          </dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self.</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM._create_data_directories">
+                      <code class="descname">_create_data_directories</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM._create_data_directories"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM._create_data_directories"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function to create the directories to save the logs and the model weights.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">Returns the path as string for the model, data and summary
+                                  directory.
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM.get_weights">
+                      <code class="descname">get_weights</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM.get_weights"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#RBM_CDK.RBM.get_weights"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Initializes a Session and loads the model data. The tensorflow eval function returns the
+                              variable values as
+                          </dt>
+                          <dd>a numpy array. The numpy array is used to initialize the DBN weights.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">Return the weights and biases as numpy array</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="RBM_CDK.RBM.get_weights_as_images">
+                      <code class="descname">get_weights_as_images</code><span class="sig-paren">(</span><em>width</em>,
+                      <em>height</em>, <em>outdir='img/'</em>, <em>n_images=10</em>, <em>img_type='grey'</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/RBM_CDK.html#RBM.get_weights_as_images"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#RBM_CDK.RBM.get_weights_as_images"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Create and save the weights of the hidden units with respect to the</dt>
+                          <dd>visible units as images.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>width</strong> &#8211; </li>
+                                      <li><strong>height</strong> &#8211; </li>
+                                      <li><strong>outdir</strong> &#8211; </li>
+                                      <li><strong>n_images</strong> &#8211; </li>
+                                      <li><strong>img_type</strong> &#8211; </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self.</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+          </dd>
+      </dl>
+
+      <dl class="class">
+          <dt id="DBN.DBN">
+              <em class="property">class </em><code class="descclassname">DBN.</code><code
+                  class="descname">DBN</code><span class="sig-paren">(</span><em>layer_size</em>,
+              <em>main_dir='dbn'</em>, <em>model_name='dbn_model'</em><span class="sig-paren">)</span><a
+                  class="reference internal" href="_modules/DBN.html#DBN"><span
+                  class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN"
+                                                              title="Permalink to this definition">¶</a></dt>
+          <dd>
+              <dl class="method">
+                  <dt id="DBN.DBN.pretraining">
+                      <code class="descname">pretraining</code><span class="sig-paren">(</span><em>train_set,
+                      gibbs_sampling_steps=[1], learning_rate=[0.1], weight_decay=[0.0001], momentum=[0.9],
+                      epoch_steps=[500], first_layer_binary=True, layer_output_binary=False, continue_training=[False],
+                      batch_size=[10]</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                             href="_modules/DBN.html#DBN.pretraining"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN.pretraining"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>The pretrainfunction is used to find good initial weights for the finetuning part. The
+                              arguments of the function
+                          </dt>
+                          <dd>contain lists which all have to have the same size to specify the training parameters.
+                              All layers but the top one specified in the constructor are then train with the rbm.fit()
+                              function.
+                              All networkparameters have default values but the should be overriden.
+                          </dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>train_set</strong> &#8211; The input data formatted as input_format.
+                                      </li>
+                                      <li><strong>gibbs_sampling_steps</strong> &#8211; The number of Gibbs sampling
+                                          steps.
+                                      </li>
+                                      <li><strong>learning_rate</strong> &#8211; The learningrate.</li>
+                                      <li><strong>weight_decay</strong> &#8211; The weight decay term to punish high
+                                          weight values.
+                                      </li>
+                                      <li><strong>momentum</strong> &#8211; The momentum term to speed up or slow down
+                                          learning.
+                                      </li>
+                                      <li><strong>epoch_steps</strong> &#8211; The number of epochs that should be
+                                          performed for the hyperparameters at the time .
+                                      </li>
+                                      <li><strong>first_layer_binary</strong> &#8211; When set true the first RBM will
+                                          convert the input into a dta vector with values
+                                          between 0 and 1.
+                                      </li>
+                                      <li><strong>layer_output_binary</strong> &#8211; When set true all networks will
+                                          return a data vector with values between 0 and 1.
+                                      </li>
+                                      <li><strong>continue_training</strong> &#8211; Is a list with the same size as
+                                          epoch_steps. If at a given index set to true the
+                                          RBM will restore the previously learned weights and continues training with
+                                          them.
+                                      </li>
+                                      <li><strong>batch_size</strong> &#8211; Is a list with the same size as
+                                          epoch_steps. The value at an index of the list is the size
+                                          of the batches.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN.supervised_finetuning">
+                      <code class="descname">supervised_finetuning</code><span
+                          class="sig-paren">(</span><em>data_set</em>, <em>make_dbn=False</em>, <em>batch_size=1</em>,
+                      <em>epochs=1</em>, <em>validation_set=None</em><span class="sig-paren">)</span><a
+                          class="reference internal" href="_modules/DBN.html#DBN.supervised_finetuning"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN.supervised_finetuning"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>The finetuning function uses a data_set to train a pretrained network. It uses the
+                              backpropagation algorithm.
+                          </dt>
+                          <dd>Before the training can start the DBN has to be build. Build_dbn_from_rbms combines the
+                              weights of the
+                              pretrained RBMs and creates the DBN weights with it. The DBN has one more softmax layer
+                          </dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>data_set</strong> &#8211; The data to train the network with. This
+                                          dataset has to have the desired output.
+                                      </li>
+                                      <li><strong>make_dbn</strong> &#8211; A boolean variable. If true the dbn will be
+                                          build from the pretrained RBMs
+                                      </li>
+                                      <li><strong>batch_size</strong> &#8211; Specifies the size of batches the data_set
+                                          is slices into.
+                                      </li>
+                                      <li><strong>epochs</strong> &#8211; Number of epochs the network should train.
+                                      </li>
+                                      <li><strong>validation_set</strong> &#8211; If a validation_set is given the
+                                          network will calculate it&#8217;s accuracy after every epoch.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN.classify">
+                      <code class="descname">classify</code><span class="sig-paren">(</span><em>input</em>, <em>build_dbn=False</em><span
+                          class="sig-paren">)</span><a class="reference internal" href="_modules/DBN.html#DBN.classify"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN.classify"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>This function is used to get predictions for a given input. The network has to be build and
+                      should be trained.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>input</strong> &#8211; The data used to make the prediction.</li>
+                                      <li><strong>build_dbn</strong> &#8211; If the prediction has to be made before the
+                                          finetuning the network can be build from
+                                          pretrained RBMs.
+                                      </li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">The prediction</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._initialize_tf_utilities_and_ops">
+                      <code class="descname">_initialize_tf_utilities_and_ops</code><span class="sig-paren">(</span><em>create_from_rbms=False</em><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._initialize_tf_utilities_and_ops"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._initialize_tf_utilities_and_ops"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Helper function which initializes all tensorflow variables.</dt>
+                          <dd>If the network is first created from multiple RBMs only the tf_saver is used to restore
+                              only the
+                              pretrained variables. Otherwise an error will occure. If the network was already build the
+                              weights
+                              will be load completely and from a different directory.
+                          </dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._run_train_step">
+                      <code class="descname">_run_train_step</code><span class="sig-paren">(</span><em>data_set</em>,
+                      <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                            href="_modules/DBN.html#DBN._run_train_step"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN._run_train_step"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>Helper function to run the training for one epoch</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>data_set</strong> &#8211; The data_set formatted as input_format</li>
+                                      <li><strong>batch_size</strong> &#8211; The size for the batches</li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._run_validation_results">
+                      <code class="descname">_run_validation_results</code><span class="sig-paren">(</span><em>validation_set</em>,
+                      <em>epoch</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                       href="_modules/DBN.html#DBN._run_validation_results"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._run_validation_results"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>This function is called every epoch to calculate the accuracy.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Parameters:</th>
+                              <td class="field-body">
+                                  <ul class="first simple">
+                                      <li><strong>validation_set</strong> &#8211; The data set to validate formatted as
+                                          input_format
+                                      </li>
+                                      <li><strong>epoch</strong> &#8211; Am integer to pin the result to an epoch</li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr class="field-even field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"><p class="first last">self</p>
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_restore_dict">
+                      <code class="descname">_create_restore_dict</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_restore_dict"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_restore_dict"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>Helper function to dynamically get all names and tensorflow variables in one dictionary.
+                              This is used to load
+                          </dt>
+                          <dd>only these pretrained variables.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">dict with the variable names as keys and the variables as values
+                              </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._build_dbn_from_rbms">
+                      <code class="descname">_build_dbn_from_rbms</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._build_dbn_from_rbms"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._build_dbn_from_rbms"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd>
+                      <dl class="docutils">
+                          <dt>This function takes all pretrained layers weights and temporarily saves them as numpy
+                              arrays.
+                          </dt>
+                          <dd>With the values the tensorflow variables are initialized.</dd>
+                      </dl>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._build_deterministic_model">
+                      <code class="descname">_build_deterministic_model</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._build_deterministic_model"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._build_deterministic_model"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>THis function builds the computation graph for the supervised finetuning and the classification
+                      function.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_variables">
+                      <code class="descname">_create_variables</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_variables"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_variables"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function which creates the weights and bias variables.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">self</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_placeholder">
+                      <code class="descname">_create_placeholder</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_placeholder"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_placeholder"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function wich creates the placesholders for the inputdata and the desired output.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body"></td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+              <dl class="method">
+                  <dt id="DBN.DBN._create_data_directories">
+                      <code class="descname">_create_data_directories</code><span class="sig-paren">(</span><span
+                          class="sig-paren">)</span><a class="reference internal"
+                                                       href="_modules/DBN.html#DBN._create_data_directories"><span
+                          class="viewcode-link">[source]</span></a><a class="headerlink"
+                                                                      href="#DBN.DBN._create_data_directories"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                  <dd><p>A Helper function to create the directories to save the logs and the model weights.</p>
+                      <table class="docutils field-list" frame="void" rules="none">
+                          <col class="field-name"/>
+                          <col class="field-body"/>
+                          <tbody valign="top">
+                          <tr class="field-odd field">
+                              <th class="field-name">Returns:</th>
+                              <td class="field-body">Returns the path to the logs and model directories</td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </dd>
+              </dl>
+
+          </dd>
+      </dl>
+
+  </div>
 
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Gi-Projekt&#8217;s documentation!</a></li>
-      <li>Next: <a href="explanation.html" title="next chapter">Projekt Summary</a></li>
-  </ul></li>
-</ul>
-</div>
+          <div class="sphinxsidebarwrapper">
+              <h4>Previous topic</h4>
+              <p class="topless"><a href="explanation.html"
+                                    title="previous chapter">Introducing the learning mechanism</a></p>
+              <h4>Next topic</h4>
+              <p class="topless"><a href="results.html"
+                                    title="next chapter">Experiment Results</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -281,20 +1418,30 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2017, Niels Nuthmann.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
-      |
-      <a href="_sources/code.rst.txt"
-          rel="nofollow">Page source</a>
+  <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+          <li class="right" style="margin-right: 10px">
+              <a href="genindex.html" title="General Index"
+              >index</a></li>
+          <li class="right">
+              <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+          </li>
+          <li class="right">
+              <a href="results.html" title="Experiment Results"
+              >next</a> |
+          </li>
+          <li class="right">
+              <a href="explanation.html" title="Introducing the learning mechanism"
+              >previous</a> |
+          </li>
+          <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li>
+      </ul>
+  </div>
+  <div class="footer" role="contentinfo">
+      &#169; Copyright 2017, Niels Nuthmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
-
-    
-
-    
   </body>
 </html>

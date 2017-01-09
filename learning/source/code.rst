@@ -4,12 +4,17 @@ Project Code
 .. autoclass:: input_format.DataSet
    :members:
    :undoc-members:
+      :private-members:
 
 .. automodule:: utilities
    :members:
 
-.. automodule:: RBM_CDK
+.. autoclass:: RBM_CDK.RBM
    :members:
+         :private-members:
+      :member-order: bysource
 
-.. automodule:: DBN
+.. autoclass:: DBN.DBN
    :members:
+         :private-members:
+      :member-order: bysource
