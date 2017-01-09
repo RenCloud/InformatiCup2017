@@ -242,7 +242,8 @@ class DBN(object):
 
         sum, accuracy = self._tf_session.run([self._tf_merged_summaries, self._tf_accuracy],
                                              feed_dict={self._tf_input_data: validation_set.images,
-                                                        self._tf_desired_output: validation_set.labels})
+                                                        self._tf_desired_output: validation_set.labels,
+                                                        self._tf_keep_prob: 1})
 
         self._tf_summary_writer.add_summary(sum, epoch)
 
