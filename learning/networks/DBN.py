@@ -127,7 +127,8 @@ class DBN(object):
             train_set = DataSet(results, results)
             print("[INFO] new dataset generated")
 
-    def supervised_finetuning(self, data_set, make_dbn=False, batch_size=1, epochs=1, validation_set=None):
+    def supervised_finetuning(self, data_set, make_dbn=False, batch_size=1, epochs=1, validation_set=None,
+                              global_epoch=0):
 
         '''
         The finetuning function uses a data_set to train a pretrained network. It uses the backpropagation algorithm.
@@ -154,7 +155,7 @@ class DBN(object):
                 self._run_train_step(data_set, batch_size)
 
                 if validation_set:
-                    self._run_validation_results(validation_set, i)
+                    self._run_validation_results(validation_set, i + global_epoch)
 
             self._tf_finetune_saver.save(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
@@ -205,10 +206,10 @@ class DBN(object):
         self._tf_saver = tf.train.Saver(self._create_restore_dict())
         self._tf_finetune_saver = tf.train.Saver()
 
-        if create_from_rbms:
+        if not create_from_rbms:
             self._tf_finetune_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
         else:
-            self._tf_saver.restore(self._tf_session, self._model_path)
+            self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
         self._tf_summary_writer = tf.train.SummaryWriter(self._summary_dir, self._tf_session.graph)
 
@@ -260,8 +261,6 @@ class DBN(object):
         for i in range(len(self._layer_size) - 2):
             dict[self._tf_w[i].name.split(':0')[0]] = self._tf_w[i]
             dict[self._tf_bh[i].name.split(':0')[0]] = self._tf_bh[i]
-
-        print(dict)
         
         return dict
 
@@ -321,15 +320,17 @@ class DBN(object):
         output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
 
         # dropout to prevent overfitting
-        output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+        self._tf_output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
 
-        cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, self._tf_desired_output))
+        cross_entropy = tf.reduce_mean(
+            tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output))
 
-        self._tf_train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+        self._tf_train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
         correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(self._tf_desired_output, 1))
         self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+        tf.summary.scalar("weights", tf.reduce_max(self._tf_w[0]))
         tf.summary.scalar("accuracy", self._tf_accuracy)
 
     def _create_variables(self):

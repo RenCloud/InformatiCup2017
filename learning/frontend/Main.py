@@ -105,17 +105,15 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
         dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
                                   validation_set=validation_set)
         print("[INFO] First pretraining ended succefully")
-        for i in range(100):
+        for i in range(10):
             dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
-                                      validation_set=validation_set)
+                                      validation_set=validation_set, global_epoch=i + 1)
 
             examples = input.next_batch(100 + 5 * i)
 
             prediction = dbn.classify(examples[0])
 
             train_set.append(examples[0], prediction)
-
-            print("[INFO] ", i, " pretraining ended successfully")
 
 
 def classify_dbn(data_set, main_dir="dbn/"):
