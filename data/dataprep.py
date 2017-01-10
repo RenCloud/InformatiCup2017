@@ -99,17 +99,18 @@ def prep(file, training = 0):
             dictionary.filter_extremes(10, 0.8, None)
             dictionary.compactify()
             print(dictionary)
-            #dictionaryEndings.filter_extremes(10, 0.8, None)
-            #dictionaryEndings.compactify()
-            #print(dictionaryEndings)
+            dictionaryEndings.filter_extremes(10, 0.8, None)
+            dictionaryEndings.compactify()
+            print(dictionaryEndings)
         elif(training == 1):
             dictionary.merge_with(gensim.corpora.Dictionary(tmp))
             corpus.append(dictionary.doc2bow(res))
+            print(dictionaryEndings)
             dictionaryEndings.merge_with(gensim.corpora.Dictionary(endingstmp))
             corpusEndings.append(dictionary.doc2bow(endings))
         elif(training == 0):
             tfidf = gensim.models.TfidfModel(corpus)
-            json_out_raw = [0 for x in range(dictionary.__len__())]
+            json_out_raw = [0 for x in range(dictionary.__len__() + dictionaryEndings.__len__())]
             for elem in tfidf[dictionary.doc2bow(res)]:
                 #print(json_out_raw)
                 if(elem[0] is not None and elem[1] is not None):
@@ -117,6 +118,13 @@ def prep(file, training = 0):
                         json_out_raw.append(elem[1])
                     else:
                         json_out_raw[elem[0]] = elem[1]
+            for elem in tfidf[dictionaryEndings.doc2bow(endings)]:
+                #print(json_out_raw)
+                if(elem[0] is not None and elem[1] is not None):
+                    if(elem[0]>=len(json_out_raw)):
+                        json_out_raw.append(elem[1])
+                    else:
+                        json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
 
             #for elem in tfidf[dictionary.doc2bow(end)]:
                 #print(json_out_raw)
@@ -143,5 +151,7 @@ def prep(file, training = 0):
         #print(json_out_raw)
     dictionary.save("dic.txt")
     gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
+    dictionaryEndings.save("dicEnd.txt")
+    gensim.corpora.MmCorpus.serialize("corEnd.mm", corpusEndings)
     #print(dump)
     return json_out_raw_arr
