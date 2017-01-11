@@ -1,0 +1,54 @@
+﻿@model GitRepoToJSON.Models.ViewRepoOverview
+@{
+    ViewBag.Title = "Fetch Data";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+<p>@Model.Repositories[@Model.Repositories.Length - 1].name</p>
+
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Truncated</th>
+            <th>Tree Size</th>
+            <th>Readme</th>
+            <th>Main Language</th>
+            <th>Commit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Repositories.Length; i++)
+        {
+            <tr>
+                <td><a href="@Model.Repositories[i].html_url">@Model.Repositories[i].id</a></td>
+                <td>@Model.Repositories[i].name</td>
+                <td>@Model.Repositories[i].owner.login</td>
+                <td>@Model.Tree[i].Truncated</td>
+                <td>
+                    @if (Model.Tree[i].Tree != null)
+                {
+                    @Model.Tree[i].Tree.Count}
+            </td>
+            <td>
+                @if (@Model.Readmes[i].Name != null)
+            {
+                @Model.Readmes[i].Name}
+        </td>
+        <td>
+            @if (@Model.Languagen[i] != null)
+        {
+            @Model.Languagen[i].First().Name}
+    </td>
+    <td>
+        @if (@Model.CommitS[i] != null)
+    {
+        @Model.CommitS[i].First().Commit.Author.Email}
+</td>
+</tr>
+        }
+    </tbody>
+</table>

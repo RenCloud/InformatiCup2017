@@ -22,6 +22,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Startseite", "Index", "Home")</li>
+                    <li>@Html.ActionLink("GetTagRepos","GetTag","Home")</li>
                     <li>@Html.ActionLink("GetRepos", "Get", "Home")</li>
                     <li>@Html.ActionLink("Info", "About", "Home")</li>
                     <li>@Html.ActionLink("Kontakt", "Contact", "Home")</li>
@@ -33,7 +34,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - GitRepoToJson</p>
+            <p>&copy; @DateTime.Now.Year - Jonas Fabisiak Repository Analyser</p>
         </footer>
     </div>
 
