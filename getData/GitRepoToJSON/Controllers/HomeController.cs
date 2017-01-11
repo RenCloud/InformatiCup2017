@@ -37,6 +37,11 @@ namespace GitRepoToJSON.Controllers {
         private readonly GitHubClient client = new GitHubClient(new ProductHeaderValue("ReproAnalyser"));
 
         /// <summary>
+        /// Default Save Path
+        /// </summary>
+        private const string path = @"\GithubTag\";
+
+        /// <summary>
         ///     Open Index page (Mainpage)
         /// </summary>
         /// <returns>Index View</returns>
@@ -132,16 +137,25 @@ namespace GitRepoToJSON.Controllers {
         public async Task<ActionResult> Start() {
             ViewBag.Message = "100 ID Downloaded";
             //Load Process
-            var directory = new DirectoryInfo(@"E:\Github\fortschrit");
+            var given = new DirectoryInfo(path);
+            if (!given.Exists) {
+                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(path+"ausgabe");
+                Directory.CreateDirectory(path+"fortschrit");
+                Directory.CreateDirectory(path+"id");
+                Directory.CreateDirectory(path+"tagged");
+            }
+
+            var directory = new DirectoryInfo(path + "fortschrit");
             var idPreFile = 0l;
             var currentID = 0l;
             var directoryFiles = directory.GetFiles();
-            //is there a current process?
+            //is there current process?
             if (directoryFiles.Length != 0) {
                 currentID = int.Parse(directoryFiles[0].Name);
                 idPreFile = currentID;
             }
-            directory = new DirectoryInfo(@"E:\Github\id");
+            directory = new DirectoryInfo(path + "id");
             directoryFiles = directory.GetFiles();
             var data = new List<Repo[]>();
             var data3 = new List<Repo>();
@@ -168,8 +182,8 @@ namespace GitRepoToJSON.Controllers {
                 var response = (HttpWebResponse)request.GetResponse();
                 var newFile = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 var fullDataArray = JsonConvert.DeserializeObject<Repo[]>(newFile);
-                System.IO.File.WriteAllText(@"E:\Github\id\" + fullDataArray[0].id, newFile);
-                directory = new DirectoryInfo(@"E:\Github\id");
+                System.IO.File.WriteAllText(path + "id\\" + fullDataArray[0].id, newFile);
+                directory = new DirectoryInfo(path + "id");
                 directoryFiles = directory.GetFiles();
                 currentID = fullDataArray[0].id;
                 //add Data to list after write to file
@@ -398,10 +412,10 @@ namespace GitRepoToJSON.Controllers {
             //json = json.Replace("},{", "},\n{");
             //Write Json file and Delete Process file and create new 
             System.IO.File.WriteAllText(
-                                        @"E:\Github\ausgabe\" + currentID + "-" + data3[data3.Count - 1].id + ".json",
+                                        path+"ausgabe\\" + currentID + "-" + data3[data3.Count - 1].id + ".json",
                                         json);
-            System.IO.File.Delete(@"E:\Github\fortschrit\" + idPreFile);
-            System.IO.File.WriteAllText(@"E:\Github\fortschrit\" + data3[data3.Count - 1].id, "");
+            System.IO.File.Delete(path+"fortschrit\\" + idPreFile);
+            System.IO.File.WriteAllText(path+"fortschrit\\" + data3[data3.Count - 1].id, "");
 
             //Get Remaining Api calls, try it 
             try
@@ -444,8 +458,17 @@ namespace GitRepoToJSON.Controllers {
         /// </summary>
         /// <returns>Start Page</returns>
         public async Task<ActionResult> StartTag() {
+            var given = new DirectoryInfo(path);
+            if (!given.Exists)
+            {
+                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(path + "ausgabe");
+                Directory.CreateDirectory(path + "fortschrit");
+                Directory.CreateDirectory(path + "id");
+                Directory.CreateDirectory(path + "tagged");
+            }
             //Load Repository ID's
-            var fileString = System.IO.File.ReadAllText(@"E:\Github\tagged\idlist.txt");
+            var fileString = System.IO.File.ReadAllText(path+"tagged\\idlist.txt");
             var fileArray = fileString.Split(',');
             //Get every single ID
             var fileArrayInt = new int[fileArray.Length];
@@ -744,7 +767,7 @@ namespace GitRepoToJSON.Controllers {
             var json = JsonConvert.SerializeObject(complete);
             //json = json.Replace("},{", "},\n{");
             //Write Json file
-            System.IO.File.WriteAllText(@"E:\Github\tagged\jsontest.json", json);
+            System.IO.File.WriteAllText(path+"tagged\\jsontest.json", json);
 
             //Get Remaining Api calls, try it 
             try
