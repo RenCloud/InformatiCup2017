@@ -4,9 +4,14 @@ Introducing the learning mechanism
 Basic Structure
 ---------------
 
-This part of Project exists of three directories: :file:`frontend`, :file:`networks` and :file:`utils`.
+To handle such a complexe task we split the project in three parts. Every one of use got one of them.
+    #. Data Download, GUI and handling of the GitHub API
+    #. Datapreparation
+    #. Neural Networks ( The learning part)
 
-The networks are contained in :file:`networks`. The package :file:`frontend.Main` is a wrapper for the learning process.
+The learning part of Project exists of three directories: :file:`frontend`, :file:`networks` and :file:`utils`.
+
+The networks are contained in :file:`networks`. The package :file:`frontend` is a wrapper for the learning process.
 The :file:`utils` is a package containing all helper modules.
 
 

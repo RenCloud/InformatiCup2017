@@ -1054,8 +1054,9 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
                   <dt id="DBN.DBN.supervised_finetuning">
                       <code class="descname">supervised_finetuning</code><span
                           class="sig-paren">(</span><em>data_set</em>, <em>make_dbn=False</em>, <em>batch_size=1</em>,
-                      <em>epochs=1</em>, <em>validation_set=None</em><span class="sig-paren">)</span><a
-                          class="reference internal" href="_modules/DBN.html#DBN.supervised_finetuning"><span
+                      <em>epochs=1</em>, <em>validation_set=None</em>, <em>global_epoch=0</em>, <em>finetune_load_dir='dbn/'</em>,
+                      <em>finetune_save_dir='dbn/'</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                                          href="_modules/DBN.html#DBN.supervised_finetuning"><span
                           class="viewcode-link">[source]</span></a><a class="headerlink"
                                                                       href="#DBN.DBN.supervised_finetuning"
                                                                       title="Permalink to this definition">¶</a></dt>
@@ -1106,8 +1107,9 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
 
               <dl class="method">
                   <dt id="DBN.DBN.classify">
-                      <code class="descname">classify</code><span class="sig-paren">(</span><em>input</em>, <em>build_dbn=False</em><span
-                          class="sig-paren">)</span><a class="reference internal" href="_modules/DBN.html#DBN.classify"><span
+                      <code class="descname">classify</code><span class="sig-paren">(</span><em>input</em>, <em>build_dbn=False</em>,
+                      <em>finetune_sub_dir='dbn/'</em><span class="sig-paren">)</span><a class="reference internal"
+                                                                                         href="_modules/DBN.html#DBN.classify"><span
                           class="viewcode-link">[source]</span></a><a class="headerlink" href="#DBN.DBN.classify"
                                                                       title="Permalink to this definition">¶</a></dt>
                   <dd><p>This function is used to get predictions for a given input. The network has to be build and
@@ -1140,7 +1142,8 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
 
               <dl class="method">
                   <dt id="DBN.DBN._initialize_tf_utilities_and_ops">
-                      <code class="descname">_initialize_tf_utilities_and_ops</code><span class="sig-paren">(</span><em>create_from_rbms=False</em><span
+                      <code class="descname">_initialize_tf_utilities_and_ops</code><span class="sig-paren">(</span><em>create_from_rbms=False</em>,
+                      <em>finetune_load_dir='dbn/'</em>, <em>finetune_save_dir='dbn/'</em><span
                           class="sig-paren">)</span><a class="reference internal"
                                                        href="_modules/DBN.html#DBN._initialize_tf_utilities_and_ops"><span
                           class="viewcode-link">[source]</span></a><a class="headerlink"
@@ -1299,7 +1302,7 @@ Taken from tensorflow/models/rnn/ptb/reader.py</p>
                           class="viewcode-link">[source]</span></a><a class="headerlink"
                                                                       href="#DBN.DBN._build_deterministic_model"
                                                                       title="Permalink to this definition">¶</a></dt>
-                  <dd><p>THis function builds the computation graph for the supervised finetuning and the classification
+                  <dd><p>This function builds the computation graph for the supervised finetuning and the classification
                       function.</p>
                       <table class="docutils field-list" frame="void" rules="none">
                           <col class="field-name"/>

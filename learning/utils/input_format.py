@@ -67,6 +67,8 @@ class DataSet(object):
         self._images = np.append(self._images, data, axis=0)
         self._labels = np.append(self._labels, labels, axis=0)
 
+        self._num_examples = len(self._images)
+
 
     @property
     def num_examples(self):
