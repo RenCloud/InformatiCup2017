@@ -31,9 +31,10 @@ def search_repo(repo):
 
 """
 Returns an array of all words in the given description and the readme
-Also filters values, which are not in above one percent of the extensions
-@param repo An object of all repository files and paths
-@return array of filename extensions
+Also filters values, which are not in above one percent of the value array
+@param desc text of the project description
+@param readme text of the project readme
+@return array of all words
 """
 def search_desc(desc, readme):
     dic_desc = defaultdict(int)
@@ -56,7 +57,6 @@ def search_desc(desc, readme):
         else:
             for i in range (0, dic_desc[e]):
                 words.append(e)
-    #print(dic_desc)
     return words
 # corpus ergebnis zuordnen
 # similarities mit ergebnissen
@@ -94,12 +94,8 @@ def prep(file, training = 0):
     json_out_raw_arr = []
     for rep in data:
 
-        res = search_desc(rep['description'], rep['readme'])
-        endings = search_repo(rep['repository'])
-        endingstmp = []
-        endingstmp.append(endings)
-        tmp = []
-        tmp.append(res)
+        endingstmp = [search_repo(rep['repository'])]
+        tmp = [search_desc(rep['description'], rep['readme'])]
         dump = ""
 
         if(training == 2):
@@ -111,54 +107,33 @@ def prep(file, training = 0):
             print(dictionaryEndings)
         elif(training == 1):
             dictionary.merge_with(gensim.corpora.Dictionary(tmp))
-            corpus.append(dictionary.doc2bow(res))
+            corpus.append(dictionary.doc2bow(tmp[0]))
             print(dictionaryEndings)
             dictionaryEndings.merge_with(gensim.corpora.Dictionary(endingstmp))
-            corpusEndings.append(dictionary.doc2bow(endings))
+            corpusEndings.append(dictionary.doc2bow(endingstmp[0]))
         elif(training == 0):
             tfidf = gensim.models.TfidfModel(corpus)
             json_out_raw = [0 for x in range(dictionary.__len__() + dictionaryEndings.__len__())]
-            for elem in tfidf[dictionary.doc2bow(res)]:
-                #print(json_out_raw)
+            for elem in tfidf[dictionary.doc2bow(tmp[0])]:
                 if(elem[0] is not None and elem[1] is not None):
                     if(elem[0]>=len(json_out_raw)):
                         json_out_raw.append(elem[1])
                     else:
                         json_out_raw[elem[0]] = elem[1]
-            for elem in tfidf[dictionaryEndings.doc2bow(endings)]:
-                #print(json_out_raw)
+            for elem in tfidf[dictionaryEndings.doc2bow(endingstmp[0])]:
                 if(elem[0] is not None and elem[1] is not None):
                     if(elem[0]>=len(json_out_raw)):
                         json_out_raw.append(elem[1])
                     else:
                         json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
-
-            #for elem in tfidf[dictionary.doc2bow(end)]:
-                #print(json_out_raw)
-            #    if(elem[0] is not None and elem[1] is not None):
-            #        if(elem[0]>=len(json_out_raw)):
-            #            json_out_raw.append(elem[1])
-            #        else:
-            #            json_out_raw[elem[0]+dictionary.__len__()] = elem[1]
             json_out_raw_arr.append(json_out_raw)
         else:
             print("param error")
-        #lsi = gensim.models.LsiModel(corpus)
-        #vec_lsi = lsi[dictionary.doc2bow(res)]
-        #print(vec_lsi)
-        #über corpora iterieren
-        #tfidf * res des corpus(Network)
-        # auf einen 7Tupel addieren
-        #Gewichtung des Network hinfällig
-        #json_out_raw_arr.append(json_out_raw)
-        #Funktionsaufruf
-        #resu = Network.?
-        #kriegt 7Tupel
-        #results.append([0.5, 0.3, 0, 0, 0.1, 0.7, 0.5])
-        #print(json_out_raw)
+
+    #save dictionary and corpus
     dictionary.save("dic.txt")
     gensim.corpora.MmCorpus.serialize("cor.mm", corpus)
     dictionaryEndings.save("dicEnd.txt")
     gensim.corpora.MmCorpus.serialize("corEnd.mm", corpusEndings)
-    #print(dump)
+
     return json_out_raw_arr
