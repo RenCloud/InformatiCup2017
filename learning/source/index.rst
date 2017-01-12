@@ -15,10 +15,10 @@ Welcome to Gi-Projekt's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-                       introduction
+   introduction
    explanation
-                       code
-                       results
+   code
+   results
 
 
 

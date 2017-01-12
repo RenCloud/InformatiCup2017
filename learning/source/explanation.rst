@@ -14,113 +14,70 @@ The learning part of Project exists of three directories: :file:`frontend`, :fil
 The networks are contained in :file:`networks`. The package :file:`frontend` is a wrapper for the learning process.
 The :file:`utils` is a package containing all helper modules.
 
+:file:`Main` has four function for training and classifying a given dataset. The :meth:`Main.fit_rbm` and :meth:`Main.classify_rbm`
+are functions to demonstrate how the training of an RBM would look like. But we only used :meth:`Main.fit_dbn` and :meth:`Main.classify_dbn`
+:meth:`Main.fit_dbn` performs a complete pretraining with the given dataset. Then it calls :meth:`DBN.supervised_finetuning`.
 
-The networks
+:class:`DBN` has three public functions which hide most of the implementation from the user. But additionally they should provide
+the user full controll over the learning process. That's why the :meth:`DBN.pretraining` and :meth:`DBN.supervised_finetuning`
+give the user access to all hyperparameters and the loading and saving directory. But the training process itself is hidden from
+the user.
+
+The class :class:`DBN` uses the the class :class:`RBM` to pretrain the layers. Then it extracts them, adds an additional output
+layer and trains them with a supervised finetune method.
+
+Network: RBM
 ------------
 
-Restricted Boltzmann machine
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The restricted `Boltzmann machine <https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine>`_
+is a unsupervised neural network. The network consists of two layers, the visible and the hidden layer.
+The visisble layer has the size of the input data vector. The hidden layer has the size of the number off features it should extract.
 
-"A restricted Boltzmann machine (RBM) is a generative stochastic artificial neural network that can learn a probability
-distribution over its set of inputs."[WikiBoltz]_.
-"As their name implies, RBMs are a variant of Boltzmann machines, with the restriction that their neurons must form a
-bipartite graph: a pair of nodes from each of the two groups of units (commonly referred to as the "visible" and "hidden"
-units respectively) may have a symmetric connection between them; and there are no connections between nodes within a group.
-By contrast, "unrestricted" Boltzmann machines may have connections between hidden units. This restriction allows for more
-efficient training algorithms than are available for the general class of Boltzmann machines, in particular the gradient-based
-contrastive divergence algorithm"[WikiBoltz]_.
+The network is learning stochastically and unsupervised with the CD-k algorithm (constrative divergence).
 
+The visualization of this learning algorithm was already used in the :doc:`introduction`.
 
+.. image:: RBM_pretraining_learning_MNIST.png
 
-If you are interested in a deeper understanding of Restricted Boltzmann machines free to read this
-`introduction to Restricted Roltzmann Machines <http://image.diku.dk/igel/paper/AItRBM-proof.pdf>`_.
-Additionally the Paper of `Geoffrey Hinton <https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf>`_ is nice read if you
-are intending to use Boltzmann machines in practice.
+The input from the visible layer is passed up to the hidden layer and then back down to the visible layer. This process is called
+Gibbs sampling step. After a specified number of Gibbs sampling steps the the original input and the sampled input are compared.
+The error between the two values is used to adapt the weights of the network.
 
+For a more in depth description of this network see the `introductionto restricted Boltmann machines <http://image.diku.dk/igel/paper/AItRBM-proof.pdf>`_
+or the `practical guide on how to train them <http://ai2-s2-pdfs.s3.amazonaws.com/77c3/cf0e846a8485acf82beed186c086d9d9e68b.pdf>`_
 
-Deep Belief Network
-^^^^^^^^^^^^^^^^^^^
+Network: DBN
+------------
 
-"In machine learning, a deep belief network (DBN) is a generative graphical model, or alternatively a type of deep neural network,
-composed of multiple layers of latent variables ("hidden units"), with connections between the layers but not between units within each layer.
+In the paper `A fast learning algorithm for deep belief nets <https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf>`_ the author
+describes a procedure to stack multiple RBMs on top of each other. Each one is trained unsupervised and then the next network takes
+the output of the previsous one to train itself. This can be done multiple time and every time more features are learned.
+This is a way of effectively pretrain a `Deep Belief Network <https://en.wikipedia.org/wiki/Deep_belief_network>`_.[HintonPretraining]_
 
-When trained on a set of examples in an unsupervised way, a DBN can learn to probabilistically reconstruct its inputs.
-The layers then act as feature detectors on inputs.[1] After this learning step, a DBN can be further trained
-in a supervised way to perform classification.[2]
+After the pretraining supervised backpropagation can be used to train an effective discriminative model.[HintonDiscrim]_
 
-DBNs can be viewed as a composition of simple, unsupervised networks such as restricted Boltzmann machines (RBMs)
-or autoencoders,[3] where each sub-network's hidden layer serves as the visible layer for the next. This also leads
-to a fast, layer-by-layer unsupervised training procedure, where contrastive divergence is applied to each sub-network
-in turn, starting from the "lowest" pair of layers (the lowest visible layer being a training set).
+The pretraining helps to kind of initialize the weights for the supervised training. So the networks progress is better.
+It also limits the amount of labeled training date which is needed to train the model.
 
-The observation, due to Yee-Whye Teh,[2] that DBNs can be trained greedily, one layer at a time,
-led to one of the first effective deep learning algorithms."[WikiDBN]_
+The supervised training is visualized by this Tensorboard graph:
+
+.. image::
 
 
-How to
-------
+For the supervised training we only had 300 labeled data touples. That's why after the network generates it's own training data after
+the first two epochs.::
 
-In this section we discribe how to use the :mod:`~../learning` module. You can easily utilize the :mod:`../frontend`
-module to train your own GitHub-Classifier or you can use the general structure of :class:`../networks.RBM_CDK.RBM` or
-:class:`../networks.DBN.DBN` to create your on learning task.
+    dbn.supervised_finetuning()
 
-First we start with using the :mod:`~../frontend.Main`:
-The :meth:`~../frontend.Main.fit_dbn` uses JSON strings to require it's data.::
+    examples = input.next_batch(100 + 5 * i)
 
-    def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set=None):
-        # convert JSON string to numpy arrays
-        # ...
-        # initialize network
-        dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
+    prediction = dbn.classify(examples[0])
 
-        # start pretraining
-        dbn.pretraining(input, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
-                    weight_decay=[0.0001, 0.0001, 0.0001],
-                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
-                    batch_size=[10, 100, 100])
+    train_set.append(examples[0], prediction)
 
-        # our used finetuning algortihm
-        dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
-                                  validation_set=validation_set)
-
-        for i in range(100):
-            dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
-                                      validation_set=validation_set)
-
-            examples = train_set.next_batch(25 + i)
-
-            prediction = dbn.classify(examples[0])
-
-            train_set.append(examples[0], prediction)
-
-The function uses a :class:`../networks.DBN.DBN` with 5 layers. The first four are used for pretraining. During the pretraining
-the network is split in 3 :class:`../networks.RBM_CDK.RBM`. Each is trained 3 times always with different hyperparameters.
-The different hyperparameters can be seen in the argument list.
-
-After this initial phase two epochs of :meth:`~../networks.DBN.DBN.supervised_pretraining` is performed with the supervised
-training set. The set was classified by hand. But the trainingset only consists of ca. 300 examples. That's why the network
-predicts classes for the unsupervised traingset and adds them to the supervised trainingset.
-
-
-Now let's take a look at what the :class:`../networks.DBN.DBN` is doing.
-:class:`../networks.DBN.DBN` has two important public functions:::
-
-    def pretraining(self, train_set, gibbs_sampling_steps=[1], learning_rate=[0.1], weight_decay=[0.0001], momentum=[0.9],
-                    epoch_steps=[500], first_layer_binary=True, layer_output_binary=False, continue_training=[False], batch_size=[10]):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+With this technique we are trying to prevent the network from overfitting.
 
 .. [WikiBoltz] https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine
 .. [WikiDBN] https://en.wikipedia.org/wiki/Deep_belief_network
+.. [HintonDiscrim] https://www.youtube.com/watch?v=43hJRLhRidg
+.. [HintonPretraining] https://www.youtube.com/watch?v=8fHpaKm9x4w

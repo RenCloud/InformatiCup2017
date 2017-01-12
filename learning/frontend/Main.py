@@ -79,7 +79,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
     input_list = json.loads(data_set)
     input_np = np.asarray(input_list)
-    input = DataSet(input_np, None)
+    input = DataSet(input_np, input_np)
 
     input_list = None
     input_no = None
