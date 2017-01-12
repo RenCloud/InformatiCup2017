@@ -30,7 +30,7 @@
             <td>@Model.Repositories[i].owner.login</td>
             <td>@Model.Tree[i].Truncated</td>
             <td>@if (Model.Tree[i].Tree != null) {
-                    @Model.Tree[i].Tree[0].Size}</td>
+                    @Model.Tree[i].Tree.Count}</td>
             <td>@if (@Model.Readmes[i].Name != null){
                     @Model.Readmes[i].Name}</td>
             <td>@if (@Model.Languagen[i] != null){

@@ -10,6 +10,9 @@ namespace GitRepoToJSON
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        /// <summary>
+        /// Entry Point of Application
+        /// </summary>
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();

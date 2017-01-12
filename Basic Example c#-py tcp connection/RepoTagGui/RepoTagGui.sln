@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.25914.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoTagGui", "RepoTagGui\RepoTagGui.csproj", "{7DAA1C9C-9A75-4ECC-B6E0-8FC96CC17A82}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PhytonTCPServer", "PhytonTCPServer\PhytonTCPServer.pyproj", "{CC4EA642-8328-4E7D-871F-4D5DDBC8AFD9}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonTCPServer", "PythonTCPServer\PythonTCPServer.pyproj", "{EA721693-F1C9-438E-9059-FFBEFB8A35A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTCPC", "ServerTCPC\ServerTCPC.csproj", "{F461C93F-DA1B-4A43-B5F2-5C28534336C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,8 +19,12 @@ Global
 		{7DAA1C9C-9A75-4ECC-B6E0-8FC96CC17A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DAA1C9C-9A75-4ECC-B6E0-8FC96CC17A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DAA1C9C-9A75-4ECC-B6E0-8FC96CC17A82}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC4EA642-8328-4E7D-871F-4D5DDBC8AFD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC4EA642-8328-4E7D-871F-4D5DDBC8AFD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA721693-F1C9-438E-9059-FFBEFB8A35A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA721693-F1C9-438E-9059-FFBEFB8A35A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F461C93F-DA1B-4A43-B5F2-5C28534336C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F461C93F-DA1B-4A43-B5F2-5C28534336C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F461C93F-DA1B-4A43-B5F2-5C28534336C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F461C93F-DA1B-4A43-B5F2-5C28534336C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

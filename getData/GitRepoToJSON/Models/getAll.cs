@@ -1,9 +1,11 @@
 ﻿namespace GitRepoToJSON.Models
 {
-
+    /// <summary>
+    /// A Object of the Github Api Call for a single repository
+    /// </summary>
     public struct Repo
     {
-        public int id;
+        public long id;
         public string name;
         public string full_name;
         public Owner owner;
@@ -50,6 +52,9 @@
         public string deployments_url;
     }
 
+    /// <summary>
+    /// Owner Part of api call
+    /// </summary>
     public struct Owner
     {
         public string login;
