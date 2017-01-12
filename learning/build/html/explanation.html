@@ -5,10 +5,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-      <title>Introducing the learning mechanism &#8212; Gi-Projekt 1.0 documentation</title>
-
-      <link rel="stylesheet" href="_static/classic.css" type="text/css"/>
+    
+    <title>Introducing the learning mechanism &#8212; Gi-Projekt 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -26,276 +26,107 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-      <link rel="next" title="Project Code" href="code.html"/>
-      <link rel="prev" title="Get Started with Tensorflow" href="introduction.html"/>
+    <link rel="next" title="Project Code" href="code.html" />
+    <link rel="prev" title="Get Started with Tensorflow" href="introduction.html" /> 
   </head>
   <body role="document">
-  <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
-          <li class="right" style="margin-right: 10px">
-              <a href="genindex.html" title="General Index"
-                 accesskey="I">index</a></li>
-          <li class="right">
-              <a href="py-modindex.html" title="Python Module Index"
-              >modules</a> |
-          </li>
-          <li class="right">
-              <a href="code.html" title="Project Code"
-                 accesskey="N">next</a> |
-          </li>
-          <li class="right">
-              <a href="introduction.html" title="Get Started with Tensorflow"
-                 accesskey="P">previous</a> |
-          </li>
-          <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Project Code"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Get Started with Tensorflow"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li> 
       </ul>
-  </div>
+    </div>  
 
-  <div class="document">
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-
-              <div class="section" id="introducing-the-learning-mechanism">
-                  <h1>Introducing the learning mechanism<a class="headerlink" href="#introducing-the-learning-mechanism"
-                                                           title="Permalink to this headline">¶</a></h1>
-                  <div class="section" id="basic-structure">
-                      <h2>Basic Structure<a class="headerlink" href="#basic-structure"
-                                            title="Permalink to this headline">¶</a></h2>
-                      <p>This part of Project exists of three directories: <code class="file docutils literal"><span
-                              class="pre">frontend</span></code>, <code class="file docutils literal"><span class="pre">networks</span></code>
-                          and <code class="file docutils literal"><span class="pre">utils</span></code>.</p>
-                      <p>The networks are contained in <code class="file docutils literal"><span
-                              class="pre">networks</span></code>. The package <code class="file docutils literal"><span
-                              class="pre">frontend.Main</span></code> is a wrapper for the learning process.
-                          The <code class="file docutils literal"><span class="pre">utils</span></code> is a package
-                          containing all helper modules.</p>
+            
+  <div class="section" id="introducing-the-learning-mechanism">
+<h1>Introducing the learning mechanism<a class="headerlink" href="#introducing-the-learning-mechanism" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-structure">
+<h2>Basic Structure<a class="headerlink" href="#basic-structure" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>To handle such a complexe task we split the project in three parts. Every one of use got one of them.</dt>
+<dd><ol class="first last arabic simple">
+<li>Data Download, GUI and handling of the GitHub API</li>
+<li>Datapreparation</li>
+<li>Neural Networks ( The learning part)</li>
+</ol>
+</dd>
+</dl>
+<p>The learning part of Project exists of three directories: <code class="file docutils literal"><span class="pre">frontend</span></code>, <code class="file docutils literal"><span class="pre">networks</span></code> and <code class="file docutils literal"><span class="pre">utils</span></code>.</p>
+<p>The networks are contained in <code class="file docutils literal"><span class="pre">networks</span></code>. The package <code class="file docutils literal"><span class="pre">frontend</span></code> is a wrapper for the learning process.
+The <code class="file docutils literal"><span class="pre">utils</span></code> is a package containing all helper modules.</p>
+<p><code class="file docutils literal"><span class="pre">Main</span></code> has four function for training and classifying a given dataset. The <code class="xref py py-meth docutils literal"><span class="pre">Main.fit_rbm()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">Main.classify_rbm()</span></code>
+are functions to demonstrate how the training of an RBM would look like. But we only used <code class="xref py py-meth docutils literal"><span class="pre">Main.fit_dbn()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">Main.classify_dbn()</span></code>
+<code class="xref py py-meth docutils literal"><span class="pre">Main.fit_dbn()</span></code> performs a complete pretraining with the given dataset. Then it calls <code class="xref py py-meth docutils literal"><span class="pre">DBN.supervised_finetuning()</span></code>.</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">DBN</span></code> has three public functions which hide most of the implementation from the user. But additionally they should provide
+the user full controll over the learning process. That&#8217;s why the <code class="xref py py-meth docutils literal"><span class="pre">DBN.pretraining()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">DBN.supervised_finetuning()</span></code>
+give the user access to all hyperparameters and the loading and saving directory. But the training process itself is hidden from
+the user.</p>
+<p>The class <code class="xref py py-class docutils literal"><span class="pre">DBN</span></code> uses the the class <code class="xref py py-class docutils literal"><span class="pre">RBM</span></code> to pretrain the layers. Then it extracts them, adds an additional output
+layer and trains them with a supervised finetune method.</p>
 </div>
-                  <div class="section" id="the-networks">
-                      <h2>The networks<a class="headerlink" href="#the-networks"
-                                         title="Permalink to this headline">¶</a></h2>
-                      <div class="section" id="restricted-boltzmann-machine">
-                          <h3>Restricted Boltzmann machine<a class="headerlink" href="#restricted-boltzmann-machine"
-                                                             title="Permalink to this headline">¶</a></h3>
-                          <p>&#8220;A restricted Boltzmann machine (RBM) is a generative stochastic artificial neural
-                              network that can learn a probability
-                              distribution over its set of inputs.&#8221;<a class="reference internal" href="#wikiboltz"
-                                                                            id="id1">[WikiBoltz]</a>.
-                              &#8220;As their name implies, RBMs are a variant of Boltzmann machines, with the
-                              restriction that their neurons must form a
-                              bipartite graph: a pair of nodes from each of the two groups of units (commonly referred
-                              to as the &#8220;visible&#8221; and &#8220;hidden&#8221;
-                              units respectively) may have a symmetric connection between them; and there are no
-                              connections between nodes within a group.
-                              By contrast, &#8220;unrestricted&#8221; Boltzmann machines may have connections between
-                              hidden units. This restriction allows for more
-                              efficient training algorithms than are available for the general class of Boltzmann
-                              machines, in particular the gradient-based
-                              contrastive divergence algorithm&#8221;<a class="reference internal" href="#wikiboltz"
-                                                                        id="id2">[WikiBoltz]</a>.</p>
-                          <p>If you are interested in a deeper understanding of Restricted Boltzmann machines free to
-                              read this
-                              <a class="reference external" href="http://image.diku.dk/igel/paper/AItRBM-proof.pdf">introduction
-                                  to Restricted Roltzmann Machines</a>.
-                              Additionally the Paper of <a class="reference external"
-                                                           href="https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf">Geoffrey
-                                  Hinton</a> is nice read if you
-                              are intending to use Boltzmann machines in practice.</p>
+<div class="section" id="network-rbm">
+<h2>Network: RBM<a class="headerlink" href="#network-rbm" title="Permalink to this headline">¶</a></h2>
+<p>The restricted <a class="reference external" href="https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine">Boltzmann machine</a>
+is a unsupervised neural network. The network consists of two layers, the visible and the hidden layer.
+The visisble layer has the size of the input data vector. The hidden layer has the size of the number off features it should extract.</p>
+<p>The network is learning stochastically and unsupervised with the CD-k algorithm (constrative divergence).</p>
+<p>The visualization of this learning algorithm was already used in the <a class="reference internal" href="introduction.html"><span class="doc">Get Started with Tensorflow</span></a>.</p>
+<img alt="_images/RBM_pretraining_learning_MNIST.png" src="_images/RBM_pretraining_learning_MNIST.png" />
+<p>The input from the visible layer is passed up to the hidden layer and then back down to the visible layer. This process is called
+Gibbs sampling step. After a specified number of Gibbs sampling steps the the original input and the sampled input are compared.
+The error between the two values is used to adapt the weights of the network.</p>
+<p>For a more in depth description of this network see the <a class="reference external" href="http://image.diku.dk/igel/paper/AItRBM-proof.pdf">introductionto restricted Boltmann machines</a>
+or the <a class="reference external" href="http://ai2-s2-pdfs.s3.amazonaws.com/77c3/cf0e846a8485acf82beed186c086d9d9e68b.pdf">practical guide on how to train them</a></p>
 </div>
-                      <div class="section" id="deep-belief-network">
-                          <h3>Deep Belief Network<a class="headerlink" href="#deep-belief-network"
-                                                    title="Permalink to this headline">¶</a></h3>
-                          <p>&#8220;In machine learning, a deep belief network (DBN) is a generative graphical model, or
-                              alternatively a type of deep neural network,
-                              composed of multiple layers of latent variables (&#8220;hidden units&#8221;), with
-                              connections between the layers but not between units within each layer.</p>
-                          <p>When trained on a set of examples in an unsupervised way, a DBN can learn to
-                              probabilistically reconstruct its inputs.
-                              The layers then act as feature detectors on inputs.[1] After this learning step, a DBN can
-                              be further trained
-                              in a supervised way to perform classification.[2]</p>
-                          <p>DBNs can be viewed as a composition of simple, unsupervised networks such as restricted
-                              Boltzmann machines (RBMs)
-                              or autoencoders,[3] where each sub-network&#8217;s hidden layer serves as the visible
-                              layer for the next. This also leads
-                              to a fast, layer-by-layer unsupervised training procedure, where contrastive divergence is
-                              applied to each sub-network
-                              in turn, starting from the &#8220;lowest&#8221; pair of layers (the lowest visible layer
-                              being a training set).</p>
-                          <p>The observation, due to Yee-Whye Teh,[2] that DBNs can be trained greedily, one layer at a
-                              time,
-                              led to one of the first effective deep learning algorithms.&#8221;<a
-                                      class="reference internal" href="#wikidbn" id="id3">[WikiDBN]</a></p>
-                      </div>
-                  </div>
-                  <div class="section" id="how-to">
-                      <h2>How to<a class="headerlink" href="#how-to" title="Permalink to this headline">¶</a></h2>
-                      <p>In this section we discribe how to use the <code class="xref py py-mod docutils literal"><span
-                              class="pre">/learning</span></code> module. You can easily utilize the <code
-                              class="xref py py-mod docutils literal"><span class="pre">/frontend</span></code>
-                          module to train your own GitHub-Classifier or you can use the general structure of <code
-                                  class="xref py py-class docutils literal"><span
-                                  class="pre">/networks.RBM_CDK.RBM</span></code> or
-                          <code class="xref py py-class docutils literal"><span
-                                  class="pre">/networks.DBN.DBN</span></code> to create your on learning task.</p>
-                      <p>First we start with using the <code class="xref py py-mod docutils literal"><span class="pre">Main</span></code>:
-                          The <code class="xref py py-meth docutils literal"><span class="pre">fit_dbn()</span></code>
-                          uses JSON strings to require it&#8217;s data.:</p>
-                      <div class="highlight-default">
-                          <div class="highlight"><pre><span></span><span class="k">def</span> <span
-                                  class="nf">fit_dbn</span><span class="p">(</span><span class="n">data_set</span><span
-                                  class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span
-                                  class="s2">&quot;dbn/&quot;</span><span class="p">,</span> <span class="n">supervised_train_set</span><span
-                                  class="o">=</span><span class="kc">None</span><span class="p">,</span> <span
-                                  class="n">validation_set</span><span class="o">=</span><span
-                                  class="kc">None</span><span class="p">):</span>
-    <span class="c1"># convert JSON string to numpy arrays</span>
-    <span class="c1"># ...</span>
-    <span class="c1"># initialize network</span>
-    <span class="n">dbn</span> <span class="o">=</span> <span class="n">DBN</span><span class="p">([</span><span
-                                      class="nb">input</span><span class="o">.</span><span
-                                      class="n">input_dim</span><span class="p">,</span> <span
-                                      class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span
-                                      class="p">,</span> <span class="mi">1500</span><span class="p">,</span> <span
-                                      class="mi">7</span><span class="p">],</span> <span class="n">main_dir</span><span
-                                      class="o">=</span><span class="n">main_dir</span><span class="p">)</span>
-
-    <span class="c1"># start pretraining</span>
-    <span class="n">dbn</span><span class="o">.</span><span class="n">pretraining</span><span class="p">(</span><span
-                                      class="nb">input</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span
-                                      class="o">=</span><span class="p">[</span><span class="mi">1</span><span
-                                      class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span
-                                      class="mi">5</span><span class="p">],</span> <span
-                                      class="n">learning_rate</span><span class="o">=</span><span
-                                      class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span
-                                      class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span
-                                      class="p">],</span>
-                <span class="n">weight_decay</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0001</span><span
-                                      class="p">,</span> <span class="mf">0.0001</span><span class="p">,</span> <span
-                                      class="mf">0.0001</span><span class="p">],</span>
-                <span class="n">momentum</span><span class="o">=</span><span class="p">[</span><span
-                                      class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span
-                                      class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span
-                                      class="n">continue_training</span><span class="o">=</span><span class="p">[</span><span
-                                      class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span
-                                      class="p">,</span> <span class="kc">True</span><span class="p">],</span> <span
-                                      class="n">epoch_steps</span><span class="o">=</span><span class="p">[</span><span
-                                      class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span
-                                      class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-                <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span
-                                      class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span
-                                      class="p">,</span> <span class="mi">100</span><span class="p">])</span>
-
-    <span class="c1"># our used finetuning algortihm</span>
-    <span class="n">dbn</span><span class="o">.</span><span class="n">supervised_finetuning</span><span
-                                      class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span
-                                      class="mi">1</span><span class="p">,</span> <span class="n">data_set</span><span
-                                      class="o">=</span><span class="n">train_set</span><span class="p">,</span> <span
-                                      class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span
-                                      class="p">,</span> <span class="n">make_dbn</span><span class="o">=</span><span
-                                      class="kc">True</span><span class="p">,</span>
-                              <span class="n">validation_set</span><span class="o">=</span><span class="n">validation_set</span><span
-                                      class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span
-                                      class="p">(</span><span class="mi">100</span><span class="p">):</span>
-        <span class="n">dbn</span><span class="o">.</span><span class="n">supervised_finetuning</span><span
-                                      class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span
-                                      class="mi">1</span><span class="p">,</span> <span class="n">data_set</span><span
-                                      class="o">=</span><span class="n">train_set</span><span class="p">,</span> <span
-                                      class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span
-                                      class="p">,</span> <span class="n">make_dbn</span><span class="o">=</span><span
-                                      class="kc">False</span><span class="p">,</span>
-                                  <span class="n">validation_set</span><span class="o">=</span><span class="n">validation_set</span><span
-                                      class="p">)</span>
-
-        <span class="n">examples</span> <span class="o">=</span> <span class="n">train_set</span><span
-                                      class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span
-                                      class="mi">25</span> <span class="o">+</span> <span class="n">i</span><span
-                                      class="p">)</span>
-
-        <span class="n">prediction</span> <span class="o">=</span> <span class="n">dbn</span><span
-                                      class="o">.</span><span class="n">classify</span><span class="p">(</span><span
-                                      class="n">examples</span><span class="p">[</span><span class="mi">0</span><span
-                                      class="p">])</span>
-
-        <span class="n">train_set</span><span class="o">.</span><span class="n">append</span><span
-                                      class="p">(</span><span class="n">examples</span><span class="p">[</span><span
-                                      class="mi">0</span><span class="p">],</span> <span
-                                      class="n">prediction</span><span class="p">)</span>
-</pre>
-                          </div>
-                      </div>
-                      <p>The function uses a <code class="xref py py-class docutils literal"><span class="pre">/networks.DBN.DBN</span></code>
-                          with 5 layers. The first four are used for pretraining. During the pretraining
-                          the network is split in 3 <code class="xref py py-class docutils literal"><span class="pre">/networks.RBM_CDK.RBM</span></code>.
-                          Each is trained 3 times always with different hyperparameters.
-                          The different hyperparameters can be seen in the argument list.</p>
-                      <p>After this initial phase two epochs of <code class="xref py py-meth docutils literal"><span
-                              class="pre">supervised_pretraining()</span></code> is performed with the supervised
-                          training set. The set was classified by hand. But the trainingset only consists of ca. 300
-                          examples. That&#8217;s why the network
-                          predicts classes for the unsupervised traingset and adds them to the supervised trainingset.
-                      </p>
-                      <p>Now let&#8217;s take a look at what the <code class="xref py py-class docutils literal"><span
-                              class="pre">/networks.DBN.DBN</span></code> is doing.
-                          <code class="xref py py-class docutils literal"><span
-                                  class="pre">/networks.DBN.DBN</span></code> has two important public functions::</p>
-                      <div class="highlight-default">
-                          <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pretraining</span><span
-                                  class="p">(</span><span class="bp">self</span><span class="p">,</span> <span
-                                  class="n">train_set</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span
-                                  class="o">=</span><span class="p">[</span><span class="mi">1</span><span
-                                  class="p">],</span> <span class="n">learning_rate</span><span class="o">=</span><span
-                                  class="p">[</span><span class="mf">0.1</span><span class="p">],</span> <span
-                                  class="n">weight_decay</span><span class="o">=</span><span class="p">[</span><span
-                                  class="mf">0.0001</span><span class="p">],</span> <span class="n">momentum</span><span
-                                  class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">],</span>
-                <span class="n">epoch_steps</span><span class="o">=</span><span class="p">[</span><span
-                                      class="mi">500</span><span class="p">],</span> <span
-                                      class="n">first_layer_binary</span><span class="o">=</span><span
-                                      class="kc">True</span><span class="p">,</span> <span
-                                      class="n">layer_output_binary</span><span class="o">=</span><span
-                                      class="kc">False</span><span class="p">,</span> <span
-                                      class="n">continue_training</span><span class="o">=</span><span class="p">[</span><span
-                                      class="kc">False</span><span class="p">],</span> <span class="n">batch_size</span><span
-                                      class="o">=</span><span class="p">[</span><span class="mi">10</span><span
-                                      class="p">]):</span>
-</pre>
-                          </div>
-                      </div>
-                      <table class="docutils citation" frame="void" id="wikiboltz" rules="none">
-                          <colgroup>
-                              <col class="label"/>
-                              <col/>
-                          </colgroup>
-                          <tbody valign="top">
-                          <tr>
-                              <td class="label">[WikiBoltz]</td>
-                              <td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em>
-                                  <a class="reference external"
-                                     href="https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine">https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine</a>
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                      <table class="docutils citation" frame="void" id="wikidbn" rules="none">
-                          <colgroup>
-                              <col class="label"/>
-                              <col/>
-                          </colgroup>
-                          <tbody valign="top">
-                          <tr>
-                              <td class="label"><a class="fn-backref" href="#id3">[WikiDBN]</a></td>
-                              <td><a class="reference external"
-                                     href="https://en.wikipedia.org/wiki/Deep_belief_network">https://en.wikipedia.org/wiki/Deep_belief_network</a>
-                              </td>
-                          </tr>
-                          </tbody>
-                      </table>
-                  </div>
-              </div>
+<div class="section" id="network-dbn">
+<h2>Network: DBN<a class="headerlink" href="#network-dbn" title="Permalink to this headline">¶</a></h2>
+<p>In the paper <a class="reference external" href="https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf">A fast learning algorithm for deep belief nets</a> the author
+describes a procedure to stack multiple RBMs on top of each other. Each one is trained unsupervised and then the next network takes
+the output of the previsous one to train itself. This can be done multiple time and every time more features are learned.
+This is a way of effectively pretrain a <a class="reference external" href="https://en.wikipedia.org/wiki/Deep_belief_network">Deep Belief Network</a>.[HintonPretraining]_</p>
+<p>After the pretraining supervised backpropagation can be used to train an effective discriminative model.[HintonDiscrim]_</p>
+<table class="docutils citation" frame="void" id="wikiboltz" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WikiBoltz]</td><td><a class="reference external" href="https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine">https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="wikidbn" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WikiDBN]</td><td><a class="reference external" href="https://en.wikipedia.org/wiki/Deep_belief_network">https://en.wikipedia.org/wiki/Deep_belief_network</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="hintondiscrim" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[HintonDiscrim]</td><td><a class="reference external" href="https://www.youtube.com/watch?v=43hJRLhRidg">https://www.youtube.com/watch?v=43hJRLhRidg</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="hintonpretraining" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[HintonPretraining]</td><td><a class="reference external" href="https://www.youtube.com/watch?v=8fHpaKm9x4w">https://www.youtube.com/watch?v=8fHpaKm9x4w</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
           </div>
@@ -305,27 +136,20 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-      <li><a class="reference internal" href="#">Introducing the learning mechanism</a>
-          <ul>
-              <li><a class="reference internal" href="#basic-structure">Basic Structure</a></li>
-              <li><a class="reference internal" href="#the-networks">The networks</a>
-                  <ul>
-                      <li><a class="reference internal" href="#restricted-boltzmann-machine">Restricted Boltzmann
-                          machine</a></li>
-                      <li><a class="reference internal" href="#deep-belief-network">Deep Belief Network</a></li>
-                  </ul>
-              </li>
-              <li><a class="reference internal" href="#how-to">How to</a></li>
+<li><a class="reference internal" href="#">Introducing the learning mechanism</a><ul>
+<li><a class="reference internal" href="#basic-structure">Basic Structure</a></li>
+<li><a class="reference internal" href="#network-rbm">Network: RBM</a></li>
+<li><a class="reference internal" href="#network-dbn">Network: DBN</a></li>
 </ul>
 </li>
 </ul>
 
-            <h4>Previous topic</h4>
-            <p class="topless"><a href="introduction.html"
-                                  title="previous chapter">Get Started with Tensorflow</a></p>
-            <h4>Next topic</h4>
-            <p class="topless"><a href="code.html"
-                                  title="next chapter">Project Code</a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Get Started with Tensorflow</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="code.html"
+                        title="next chapter">Project Code</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -347,29 +171,26 @@
       </div>
       <div class="clearer"></div>
     </div>
-  <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
-          <li class="right" style="margin-right: 10px">
-              <a href="genindex.html" title="General Index"
-              >index</a></li>
-          <li class="right">
-              <a href="py-modindex.html" title="Python Module Index"
-              >modules</a> |
-          </li>
-          <li class="right">
-              <a href="code.html" title="Project Code"
-              >next</a> |
-          </li>
-          <li class="right">
-              <a href="introduction.html" title="Get Started with Tensorflow"
-              >previous</a> |
-          </li>
-          <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Project Code"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Get Started with Tensorflow"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Projekt 1.0 documentation</a> &#187;</li> 
       </ul>
-  </div>
-  <div class="footer" role="contentinfo">
-      &#169; Copyright 2017, Niels Nuthmann.
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Niels Nuthmann.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
     </div>
   </body>

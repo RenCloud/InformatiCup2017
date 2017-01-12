@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 import numpy as np
 
@@ -19,7 +18,6 @@ from learning.utils.input_format import DataSet
 
 
 class DBN(object):
-
     def __init__(self,
                  layer_size,
                  main_dir="dbn",
@@ -105,6 +103,7 @@ class DBN(object):
             rbm = RBM(self._layer_size[i], self._layer_size[i + 1], main_dir=self._main_dir + "/rbm_" + repr(i),
                       model_name="rbm_model_" + repr(i), input_to_binary=input_to_binary)
 
+            # print(train_set._images.shape[0], train_set._images.shape[1])
             start_epoch = 0
 
             for n in range(len(epoch_steps)):
@@ -128,7 +127,7 @@ class DBN(object):
             print("[INFO] new dataset generated")
 
     def supervised_finetuning(self, data_set, make_dbn=False, batch_size=1, epochs=1, validation_set=None,
-                              global_epoch=0):
+                              global_epoch=0, finetune_load_dir="dbn/", finetune_save_dir="dbn/"):
 
         '''
         The finetuning function uses a data_set to train a pretrained network. It uses the backpropagation algorithm.
@@ -148,8 +147,11 @@ class DBN(object):
 
         self._build_deterministic_model()
 
+        self._create_finetune_dir(finetune_save_dir)
+
         with tf.Session() as self._tf_session:
-            self._initialize_tf_utilities_and_ops(create_from_rbms=make_dbn)
+            self._initialize_tf_utilities_and_ops(create_from_rbms=make_dbn, finetune_load_dir=finetune_load_dir,
+                                                  finetune_save_dir=finetune_save_dir)
 
             for i in range(epochs):
                 self._run_train_step(data_set, batch_size)
@@ -157,11 +159,11 @@ class DBN(object):
                 if validation_set:
                     self._run_validation_results(validation_set, i + global_epoch)
 
-            self._tf_finetune_saver.save(self._tf_session, self._model_dir + "dbn/" + self._model_name)
+            self._tf_finetune_saver.save(self._tf_session, self._model_dir + finetune_save_dir + self._model_name)
 
         tf.reset_default_graph()
 
-    def classify(self, input, build_dbn=False):
+    def classify(self, input, build_dbn=False, finetune_sub_dir="dbn/"):
 
         '''
         This function is used to get predictions for a given input. The network has to be build and should be trained.
@@ -180,7 +182,7 @@ class DBN(object):
         with tf.Session() as self._tf_session:
             self._tf_session.run(tf.global_variables_initializer())
             self._tf_saver = tf.train.Saver()
-            self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
+            self._tf_saver.restore(self._tf_session, self._model_dir + finetune_sub_dir + self._model_name)
 
             output = self._tf_session.run(self._tf_output, feed_dict={self._tf_input_data: input,
                                                                       self._tf_keep_prob: 1})
@@ -189,7 +191,8 @@ class DBN(object):
 
         return output
 
-    def _initialize_tf_utilities_and_ops(self, create_from_rbms=False):
+    def _initialize_tf_utilities_and_ops(self, create_from_rbms=False, finetune_load_dir="dbn/",
+                                         finetune_save_dir="dbn/"):
 
         '''
         Helper function which initializes all tensorflow variables.
@@ -207,11 +210,11 @@ class DBN(object):
         self._tf_finetune_saver = tf.train.Saver()
 
         if not create_from_rbms:
-            self._tf_finetune_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
+            self._tf_finetune_saver.restore(self._tf_session, self._model_dir + finetune_load_dir + self._model_name)
         else:
             self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
-        self._tf_summary_writer = tf.train.SummaryWriter(self._summary_dir, self._tf_session.graph)
+        self._tf_summary_writer = tf.summary.FileWriter(self._summary_dir + finetune_save_dir, self._tf_session.graph)
 
     def _run_train_step(self, data_set, batch_size):
 
@@ -261,7 +264,7 @@ class DBN(object):
         for i in range(len(self._layer_size) - 2):
             dict[self._tf_w[i].name.split(':0')[0]] = self._tf_w[i]
             dict[self._tf_bh[i].name.split(':0')[0]] = self._tf_bh[i]
-        
+
         return dict
 
     def _build_dbn_from_rbms(self):
@@ -325,7 +328,7 @@ class DBN(object):
         cross_entropy = tf.reduce_mean(
             tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output))
 
-        self._tf_train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+        self._tf_train_step = tf.train.GradientDescentOptimizer(0.001).minimize(cross_entropy)
 
         correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(self._tf_desired_output, 1))
         self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -343,7 +346,7 @@ class DBN(object):
 
         for i in range(len(self._layer_size) - 1):
             self._tf_w[i] = tf.Variable(tf.random_normal((self._layer_size[i], self._layer_size[i + 1]), mean=0.0,
-                                                     stddev=0.1), name="dbn_weight_" + repr(i))
+                                                         stddev=0.1), name="dbn_weight_" + repr(i))
             self._tf_bh[i] = tf.Variable(tf.zeros([self._layer_size[i + 1]]), name="dbn_bias_hidden_" + repr(i))
 
     def _create_placeholder(self):
@@ -380,3 +383,21 @@ class DBN(object):
             os.makedirs(models_dir + "dbn/")
 
         return models_dir, data_dir, summary_dir
+
+    def _create_finetune_dir(self, finetune_dir):
+        if not os.path.isdir("models/" + self._main_dir + finetune_dir):
+            os.makedirs("models/" + self._main_dir + finetune_dir)
+
+        if not os.path.isdir("logs/" + self._main_dir + finetune_dir):
+            os.makedirs("logs/" + self._main_dir + finetune_dir)
+
+
+if __name__ == '__main__':
+    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+    dbn = DBN([784, 500, 500, 1500, 10], main_dir="mnist_test")
+
+    dbn.pretraining(mnist, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
+                    weight_decay=[0.0001, 0.0001, 0.0002],
+                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[10, 10, 10],
+                    batch_size=[10, 10, 10])

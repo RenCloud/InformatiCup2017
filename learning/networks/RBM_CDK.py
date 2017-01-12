@@ -219,7 +219,7 @@ class RBM(object):
         if restore_previous_model:
             self._tf_saver.restore(self._tf_session, self._model_path)
 
-        self._tf_summary_writer = tf.train.SummaryWriter(self.summary_dir, self._tf_session.graph)
+        self._tf_summary_writer = tf.summary.FileWriter(self.summary_dir, self._tf_session.graph)
 
     def _train_model(self, train_set, validation_set, start_epoche):
 
@@ -232,9 +232,10 @@ class RBM(object):
         :param start_epoche:
         :return: self.
         '''
+
         for i in range(self._epochs):
             self._run_train_step(train_set)
-
+            print("finished train-step ", i)
             if i % 20 == 0:
                 self._run_summary(train_set, i + start_epoche)
                 if validation_set:
@@ -492,8 +493,8 @@ class RBM(object):
             with tf.name_scope('weight_development'):
                 tf.summary.scalar("max_Weight", tf.reduce_max(self._tf_w))
                 tf.summary.scalar("min_weight", tf.reduce_min(self._tf_w))
-                tf.summary.histogram("delta_weights", self._tf_delta_w)
-                tf.summary.histogram("weights", self._tf_w)
+                # tf.summary.histogram("delta_weights", self._tf_delta_w)
+                # tf.summary.histogram("weights", self._tf_w)
             with tf.name_scope('hyperparameter'):
                 tf.summary.scalar("_learning_rate", self._learning_rate)
                 tf.summary.scalar("Gibbs_sampling_steps", self._gibbs_sampling_steps)
@@ -564,7 +565,7 @@ class RBM(object):
                 w = np.array([i[p] for i in weights])
                 image_path = outdir + self._model_name + '_{}.png'.format(p)
 
-                utils.utilities.gen_image(w, width, height, image_path, img_type)
+                utilities.gen_image(w, width, height, image_path, img_type)
 
 
 if __name__ == "__main__":
