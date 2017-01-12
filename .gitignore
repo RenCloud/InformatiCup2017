@@ -256,3 +256,9 @@ learning/networks/data
 learning/networks/logs
 learning/networks/models
 learning/networks/MNIST_data
+
+#Jan ignores
+*.pyc
+dic*
+cor*
+vecfile.txt

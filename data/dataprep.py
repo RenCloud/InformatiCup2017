@@ -4,7 +4,12 @@ import numpy
 import gensim
 import os.path
 
-
+"""
+Returns an array of all filename extensions of the given repository
+Also filters values, which are not in above one percent of the extensions
+@param repo An object of all repository files and paths
+@return array of filename extensions
+"""
 def search_repo(repo):
     dic_end = defaultdict(int)
     sum = 0;
@@ -24,6 +29,12 @@ def search_repo(repo):
                 endings.append(e)
     return endings
 
+"""
+Returns an array of all words in the given description and the readme
+Also filters values, which are not in above one percent of the extensions
+@param repo An object of all repository files and paths
+@return array of filename extensions
+"""
 def search_desc(desc, readme):
     dic_desc = defaultdict(int)
     sum = 0
@@ -82,10 +93,6 @@ def prep(file, training = 0):
 
     json_out_raw_arr = []
     for rep in data:
-        #TODO file endings
-        end = search_repo(rep['repository'])
-        endTmp = []
-        endTmp.append(end)
 
         res = search_desc(rep['description'], rep['readme'])
         endings = search_repo(rep['repository'])
@@ -96,10 +103,10 @@ def prep(file, training = 0):
         dump = ""
 
         if(training == 2):
-            dictionary.filter_extremes(10, 0.8, None)
+            dictionary.filter_extremes(50, 0.8, None)
             dictionary.compactify()
             print(dictionary)
-            dictionaryEndings.filter_extremes(10, 0.8, None)
+            dictionaryEndings.filter_extremes(50, 0.8, None)
             dictionaryEndings.compactify()
             print(dictionaryEndings)
         elif(training == 1):

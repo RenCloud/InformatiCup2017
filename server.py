@@ -2,7 +2,8 @@ import data.dataprep
 import os
 import learning.frontend.Main
 import json
-inp = input("Select mode:\n t - training\n d - filter_extremes\n other key - normal mode\n$")
+
+inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
         print ("data/json/"+jsonFile)
