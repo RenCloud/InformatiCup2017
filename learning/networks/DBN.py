@@ -44,6 +44,8 @@ class DBN(object):
         self._tf_w = {}
         self._tf_bh = {}
 
+        # self._tf_global_step = None
+
         self._tf_input_data = None
         self._tf_desired_output = None
         self._tf_keep_prob = None
@@ -314,26 +316,34 @@ class DBN(object):
 
         output = self._tf_input_data
 
-        for i in range(len(self._layer_size) - 2):
+        with tf.name_scope("forward-pass"):
+
+            for i in range(len(self._layer_size) - 2):
+                # dropout to prevent overfitting
+                output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+
+                output = tf.nn.sigmoid(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
+
+            output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
+
             # dropout to prevent overfitting
-            output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+            self._tf_output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
 
-            output = tf.nn.sigmoid(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
+        with tf.name_scope("backpropagation"):
 
-        output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
+            cross_entropy = tf.reduce_mean(
+                tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output))
 
-        # dropout to prevent overfitting
-        self._tf_output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+            self._tf_train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
-        cross_entropy = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output))
+        with tf.name_scope("accuracy"):
+            correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(self._tf_desired_output, 1))
+            self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-        self._tf_train_step = tf.train.GradientDescentOptimizer(0.001).minimize(cross_entropy)
-
-        correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(self._tf_desired_output, 1))
-        self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-        tf.summary.scalar("weights", tf.reduce_max(self._tf_w[0]))
+        with tf.name_scope("weight_development"):
+            for i in range(len(self._layer_size) - 1):
+                tf.summary.scalar("weights_max_" + repr(i), tf.reduce_max(self._tf_w[i]))
+                tf.summary.scalar("weights_min_" + repr(i), tf.reduce_max(self._tf_w[i]))
         tf.summary.scalar("accuracy", self._tf_accuracy)
 
     def _create_variables(self):
@@ -343,6 +353,8 @@ class DBN(object):
 
         :return: self
         '''
+
+        # self._tf_global_step = tf.Variable(0, dtype=tf.int64, name='global_step', trainable=False)
 
         for i in range(len(self._layer_size) - 1):
             self._tf_w[i] = tf.Variable(tf.random_normal((self._layer_size[i], self._layer_size[i + 1]), mean=0.0,

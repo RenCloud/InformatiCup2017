@@ -235,7 +235,7 @@ class RBM(object):
 
         for i in range(self._epochs):
             self._run_train_step(train_set)
-            print("finished train-step ", i)
+            # print("finished train-step ", i)
             if i % 20 == 0:
                 self._run_summary(train_set, i + start_epoche)
                 if validation_set:

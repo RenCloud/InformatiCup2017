@@ -38,8 +38,10 @@ elif(inp == "v"):
     vs = []
     vs.append(json.dumps(data.dataprep.prep("./gegeben.json")))
     vs.append(open("./gegebenarray.json").read())
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=vs,
-                                         do_pretraining=True)
+
+    # vs
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=svt,
+                                         do_pretraining=False)
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):

@@ -56,10 +56,26 @@ This is a way of effectively pretrain a `Deep Belief Network <https://en.wikiped
 
 After the pretraining supervised backpropagation can be used to train an effective discriminative model.[HintonDiscrim]_
 
+The pretraining helps to kind of initialize the weights for the supervised training. So the networks progress is better.
+It also limits the amount of labeled training date which is needed to train the model.
+
+The supervised training is visualized by this Tensorboard graph:
+
+.. image::
 
 
+For the supervised training we only had 300 labeled data touples. That's why after the network generates it's own training data after
+the first two epochs.::
 
+    dbn.supervised_finetuning()
 
+    examples = input.next_batch(100 + 5 * i)
+
+    prediction = dbn.classify(examples[0])
+
+    train_set.append(examples[0], prediction)
+
+With this technique we are trying to prevent the network from overfitting.
 
 .. [WikiBoltz] https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine
 .. [WikiDBN] https://en.wikipedia.org/wiki/Deep_belief_network
