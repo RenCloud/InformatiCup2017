@@ -1,4 +1,4 @@
-import data.dataprep
+import data.dataprepNumeric as dataprep
 import os
 import learning.frontend.Main
 import json
@@ -7,16 +7,16 @@ inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training wi
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
         print ("data/json/"+jsonFile)
-        vec = data.dataprep.prep("data/json/"+jsonFile, 1)
+        vec = dataprep.prep("data/json/"+jsonFile, 1)
 elif(inp == "d"):
-    data.dataprep.prep("data/test.json", 2)
+    dataprep.prep("data/test.json", 2)
 elif(inp == "v"):
     svt = []
     tmp = []
     for i in range(1,5):
     #for jsonFile in os.listdir("./tagged/data"):
         print(i)
-        tmp = tmp + data.dataprep.prep("./tagged/data/jsontest"+str(i)+".json")
+        tmp = tmp + dataprep.prep("./tagged/data/jsontest"+str(i)+".json")
     svt.append(json.dumps(tmp))
     tmp = []
     for i in range(1,5):
@@ -30,13 +30,13 @@ elif(inp == "v"):
     else:
         for jsonFile in os.listdir("./data/json"):
             print(jsonFile)
-            tmp = tmp + data.dataprep.prep("data/json/"+jsonFile)
+            tmp = tmp + dataprep.prep("data/json/"+jsonFile)
         vec = json.dumps(tmp)
         vecFile = open("vecfile.txt", "w")
         vecFile.write(vec)
         vecFile.close()
     vs = []
-    vs.append(json.dumps(data.dataprep.prep("./gegeben.json")))
+    vs.append(json.dumps(dataprep.prep("./gegeben.json")))
     vs.append(open("./gegebenarray.json").read())
 
     # vs
@@ -45,6 +45,6 @@ elif(inp == "v"):
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
-        tmp = tmp + data.dataprep.prep("data/json/"+jsonFile)
+        tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
     cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
