@@ -335,9 +335,7 @@ class DBN(object):
 
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
 
-                self._tf_train_step = tf.train.ProximalAdagradOptimizer(learning_rate=0.001,
-                                                                        l1_regularization_strength=0.001,
-                                                                        l2_regularization_strength=0.001).minimize(cross_entropy, global_step=self._tf_global_step)
+                self._tf_train_step = tf.train.AdamOptimizer(0.01).minimize(cross_entropy, global_step=self._tf_global_step)
 
         with tf.name_scope("accuracy"):
             prediction = tf.nn.softmax(self._tf_output)
