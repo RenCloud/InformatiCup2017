@@ -36,8 +36,8 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
     else:
         learning.frontend.Main.fit_dbn(vec, main_dir="test")
 
-def classifiy(json):
-    return learning.frontend.Main.classifiy_rbm(dataprep.prep(json))
+def classify(json):
+    return learning.frontend.Main.classify_rbm(dataprep.prep(json, 2))
 
 """inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
 if(inp == "t"):

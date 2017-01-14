@@ -19,12 +19,14 @@ def logisFile(value):
 def prep(file, training = 0):
     json_out_raw_arr = []
 
-    if(os.path.isfile(file)):
-        data = json.loads(open(file).read())
-    else:
-        data = file
-        if(training != 2):
-            print("file not found: "+file)
+    if training == 0:
+        if(os.path.isfile(file)):
+            data = json.loads(open(file).read())
+        else:
+            if(training != 2):
+                print("file not found: "+file)
+    elif training == 2:
+        data = json.loads(file)
 
     for repo in data:
         files = 1
