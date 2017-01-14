@@ -1,6 +1,10 @@
 import json
 import sys
 
+
+from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QCheckBox
@@ -8,6 +12,7 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import (QMainWindow, QLineEdit, QFileDialog, QApplication)
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QScrollBar
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QWidget
@@ -91,11 +96,13 @@ class Example(QMainWindow):
         bshowTrain.clicked.connect(self.bshowtrainclicked)
 
         self.view = QTableView(tab2)  # declare table view
-        self.view.setGeometry(0, 0, 500, 300)
+        self.view.setGeometry(0, 0, 495, 250)
         self.model = QStandardItemModel()  # declare model
         self.view.setModel(self.model)  # assign model to table view
         item = QStandardItem('SolutionTable')
         self.model.setHorizontalHeaderLabels(['Link', 'Classsifiy'])
+        self.view.setAutoScroll(True)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
         # create buttons
         blogging = QPushButton('Login to Github', tab1)
@@ -251,7 +258,7 @@ class Example(QMainWindow):
         # Redirect user to GitHub for authorization
         authorization_url, state = self.github.authorization_url(authorization_base_url)
 
-        # QDesktopServices.openUrl((QUrl(authorization_url)))
+        QDesktopServices.openUrl((QUrl(authorization_url)))
         print(authorization_url)
 
     def bpasteclicked(self):

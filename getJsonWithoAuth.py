@@ -68,21 +68,17 @@ def getJson2(url, github):
 
 
 
-                k = 0
+
                 for i in range(2, int(end)+1):
                     r = github.get(
                         'https://api.github.com/repos/' + owner + '/' + repos + '/commits?per_page=100&page=' + str(i))
                     repoItemCommits += json.loads(r.text or r.content)
-                    j = 0
+
                     for i in repoItemCommits:
                         author = i['author']['login']
                         commiter = i['committer']['login']
-                        if j < (len(repoItemCommits) - 1) or k < 9:
-                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
-                        else:
-                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"}'
-                        j = j + 1
-                    k = k + 1
+                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+
 
 
             else:
@@ -93,26 +89,20 @@ def getJson2(url, github):
                     commiter = i['committer']['login']
                     stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
 
-                k = 0
+
                 for i in range(2, 11):
                     r = github.get('https://api.github.com/repos/' + owner + '/' + repos + '/commits?per_page=100&page=' + str(i))
                     repoItemCommits += json.loads(r.text or r.content)
-                    j = 0
                     for i in repoItemCommits:
                         author = i['author']['login']
                         commiter = i['committer']['login']
-                        if j < (len(repoItemCommits) - 1) or k < 9:
-                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
-                        else:
-                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"}'
-                        j = j + 1
-
-                    k=k+1
+                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
 
 
 
 
 
+            stringcommiter = stringcommiter[0:len(stringcommiter)-1]
         except:
             repoItemCommits = json.loads(r.text or r.content)
             j = 0
@@ -209,19 +199,21 @@ def getJson2(url, github):
 
     # Convert all Object to JSON
     infoJson = json.dumps(repoInfo)
+    infoJson = infoJson[1:len(infoJson)-1]
+
     treeJson = json.dumps(repoItemTree)
     start = treeJson.find('"tree":')
     short = treeJson[start:len(treeJson)]
     short = short.replace('tree','repository',1)
-    end = short.find('],')
+    end = short.find(']')
     treeJson = short[0:end+1]
-    readmeJson = '{\n"readme":' + json.dumps(readme) + '\n}'
-    languageJson = json.dumps(repoItemLanguage)
+    readmeJson = '"readme":' + json.dumps(readme)
+    languageJson = '"languages":'+json.dumps(repoItemLanguage)
     commitsJson = '"commits":['+stringcommiter+']'
-    commentsJson = json.dumps(repoItemsComment)
-    issueJson = json.dumps(repoItemIssue)
+    commentsJson = '"comments":'+json.dumps(repoItemsComment)
+    issueJson = '"issues":'+json.dumps(repoItemIssue)
     # Create one Big JSON File
-    finalReposItem = '[' + infoJson + ',' + treeJson + ',' + readmeJson + ',' + languageJson + ',' + commitsJson + ',' + commentsJson + ',' + issueJson + ']'
+    finalReposItem = '{' + infoJson + ',' + treeJson + ',' + readmeJson + ',' + languageJson + ',' + commitsJson + ',' + commentsJson + ',' + issueJson + '}'
     # return the Big JSON File
     return finalReposItem
 
