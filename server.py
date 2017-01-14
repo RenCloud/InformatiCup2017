@@ -40,7 +40,7 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="new_vector_l2_rbms", supervised_train_set=svt, validation_set=svt,
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="vector_l2_rbms", supervised_train_set=svt, validation_set=svt,
                                          do_pretraining=True)
 else:
     tmp = []
