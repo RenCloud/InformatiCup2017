@@ -8,6 +8,7 @@ if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
         print ("data/json/"+jsonFile)
         vec = dataprep.prep("data/json/"+jsonFile, 1)
+        print(vec)
 elif(inp == "d"):
     dataprep.prep("data/test.json", 2)
 elif(inp == "v"):

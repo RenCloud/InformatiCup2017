@@ -20,15 +20,22 @@ def prep(file, training = 0):
             print("file not found: "+file)
 
     for repo in data:
-        i = 0
+        files = 1
         vec = []
         for path in repo['repository']:
             if(path['type'] == "Blob"):
-                i=i+1
-        vec.append(i/1000)
-        vec.append(len(repo['commits'])/1000)
-        vec.append(len(repo['comments'])/1000)
-        vec.append(len(repo['issue'])/1000)
+                files+=1
+        vec.append(files/1000)
+        vec.append((len(repo['commits'])/files)/1000) #relativ zu Anzahl Ordner+Files
+        vec.append((len(repo['comments'])/len(repo['commits']))/1000) #relativ zu commits
+        openI = 0
+        closedI = 1
+        for i in range(len(repo['issue'])):
+            if(repo['issue'][i]['state'] == 'open'):
+                openI += 1
+            elif(repo['issue'][i]['state'] == 'closed'):
+                closedI += 1
+        vec.append((openI/closedI)/1000) #nur open-closed
         author = []
         for commit in repo['commits']:
             if(commit['author_login'] not in author):
@@ -39,6 +46,8 @@ def prep(file, training = 0):
             if((commit['committer_login'] not in committer)):
                 committer.append(commit['committer_login'])
         vec.append(len(committer)/1000)
+
+        #ordnernamen
 
         """dic_end = defaultdict(int)
         sum = 0;
