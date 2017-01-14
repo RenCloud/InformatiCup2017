@@ -41,13 +41,16 @@ class Example(QMainWindow):
         # create a Status bar at the bottom of the window
         self.statusBar()
         tabs = QTabWidget(self)
-        tabs.setGeometry(0, 0, 500, 300)
+        tabs.setGeometry(0, 0, 500, 280)
         tab1 = QWidget()
         tabs.addTab(tab1, 'Classify')
+        tab1.setStatusTip('Set Classify Option and start it')
         tab2 = QWidget()
         tabs.addTab(tab2, 'Solution')
+        tab2.setStatusTip('Solution of Classify')
         tab3 = QWidget()
         tabs.addTab(tab3, 'Training')
+        tab3.setStatusTip('Training option and start training')
 
         # create a button
         btraining = QPushButton('Training', tab3)
@@ -195,8 +198,16 @@ class Example(QMainWindow):
         """
 
         # start filepicker at '/home' place
-        fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
-        self.letrainingpath.setText(fname)
+        # fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
+
+        name = QFileDialog.getOpenFileNames(self, 'Select Files')
+        nameString = ''
+        for i in name[0]:
+            nameString += i+';'
+        self.letrainingpath.setText(nameString)
+        self.files = name[0]
+
+
 
     def btagclicked(self):
         """
