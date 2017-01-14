@@ -18,7 +18,12 @@ def getJson2(url, github):
     if r.ok:
         # create object from JSON response
         repoItemTree = json.loads(r.text or r.content)
-
+    else:
+        r = github.get('https://api.github.com/repos/' + owner + '/' + repos)
+        if r.ok:
+            return json.loads(r.text or r.context)
+        else:
+            return None
     # if tree empty-> all empty
     # if object later empty set ???
 
@@ -36,6 +41,8 @@ def getJson2(url, github):
     if r.ok:
         # LanguageJson -> object
         repoItemLanguage = json.loads(r.text or r.content)
+
+
 
     # Request Commits Data ( up to 100 commits)
     r = github.get('https://api.github.com/repos/' + owner + '/' + repos + '/commits?per_page=100')
