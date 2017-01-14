@@ -84,13 +84,13 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
     input_list = None
     input_no = None
 
-    dbn = DBN([input.input_dim, 750, 500, 1500, 7], main_dir=main_dir)
+    dbn = DBN([input.input_dim, 150, 150, 300, 7], main_dir=main_dir)
 
     print("[INFO] Dataset input size ", input.input_dim, " num examples: ", input.num_examples)
 
     if do_pretraining:
         dbn.pretraining(input, gibbs_sampling_steps=[1, 1, 3, 4], learning_rate=[0.1, 0.01, 0.005, 0.0001],
-                        weight_decay=[0.001, 0.001, 0.002, 0.002],
+                        weight_decay=[0.1, 0.1, 0.1, 0.1],
                         momentum=[0.5, 0.9, 0.9, 0.9], continue_training=[False, True, True, True],
                         epoch_steps=[10, 50, 25, 25], batch_size=[10, 10, 10, 10])
 
@@ -119,13 +119,13 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
         vdata_np = None
         vlables_np = None
 
-        dir = "AdamOptimizer_l_0.0001/"
+        dir = "Adam_nearest_2/"
 
         dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
                                   validation_set=validation_set, finetune_save_dir=dir,
                                   finetune_load_dir=dir)
         print("[INFO] First pretraining ended succefully")
-        for i in range(20):
+        for i in range(30):
             dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
                                       validation_set=validation_set, global_epoch=i + 1,
                                       finetune_load_dir=dir,
@@ -143,13 +143,14 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
         print("[Info] supervised training set extended it's size to ", train_set.num_examples, " examples")
 
-def classify_dbn(data_set, main_dir="dbn/"):
+
+def classify_dbn(data_set, main_dir="dbn/", sub_dir="dbn/"):
     input_list = json.loads(data_set)
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
 
     dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
 
-    output = dbn.classify(input.images, build_dbn=False)
+    output = dbn.classify(input.images, build_dbn=False, finetune_sub_dir=sub_dir)
 
     return output

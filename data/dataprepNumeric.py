@@ -6,7 +6,7 @@ import os.path
 import math
 
 def logis(value):
-    return((1/(1+math.exp(-100*(value/200))))-0.5)*2
+    return((1/(1+math.exp(-25*(value/200))))-0.5)*2
 
 """
 @param file json file to analyze or train with

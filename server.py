@@ -41,8 +41,8 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="vector_l2_rbms", supervised_train_set=svt, validation_set=svt,
-                                         do_pretraining=True)
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="vector", supervised_train_set=svt, validation_set=svt,
+                                         do_pretraining=False)
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
