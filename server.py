@@ -9,7 +9,7 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
 
     if(len(data)<100):
         print("Error: DataSet zu klein")
-        return
+        return None
 
     tmp = []
     for i in range(len(data)):
@@ -35,6 +35,10 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
         learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
     else:
         learning.frontend.Main.fit_dbn(vec, main_dir="test")
+
+def classifiy(json):
+    return learning.frontend.Main.classifiy_rbm(dataprep.prep(json))
+
 """inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):

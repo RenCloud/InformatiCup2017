@@ -6,7 +6,10 @@ import os.path
 import math
 
 def logis(value):
-    return((1/(1+math.exp(-100*(value/200))))-0.5)*2
+    return((1/(1+math.exp(-25*(value/200))))-0.5)*2
+
+def logisFile(value):
+    return((1/(1+math.exp(-1*(value/1000))))-0.5)*2
 
 """
 @param file json file to analyze or train with
@@ -19,6 +22,7 @@ def prep(file, training = 0):
     if(os.path.isfile(file)):
         data = json.loads(open(file).read())
     else:
+        data = file
         if(training != 2):
             print("file not found: "+file)
 
@@ -28,7 +32,7 @@ def prep(file, training = 0):
         for path in repo['repository']:
             if(path['type'] == "Blob"):
                 files+=1
-        vec.append(logis(files))
+        vec.append(logisFile(files))
         vec.append(logis(len(repo['commits'])/files)) #relativ zu Anzahl Ordner+Files
         vec.append(logis(len(repo['comments'])/len(repo['commits']))) #relativ zu commits
         openI = 0

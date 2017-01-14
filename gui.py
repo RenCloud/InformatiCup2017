@@ -181,10 +181,10 @@ class Example(QMainWindow):
 
         if self.cbt.isChecked():
             print('Validation')
-            server.training([], False, True, [], [], [], [])
+            server.training(self.files, False, True, [], [], [], [])
         else:
             print('Standard')
-            server.training([], False, False)
+            server.training(self.files, False, False)
 
     def showdialog(self):
         """
@@ -238,6 +238,8 @@ class Example(QMainWindow):
 
             if len(repositorys) != 0:
                 keineahnung = getJson2(repositorys, self.github)
+                cat = server.classify(keineahnung)
+                print(cat)
         self.view.resizeColumnsToContents()
         self.data = data
 
