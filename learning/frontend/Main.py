@@ -84,7 +84,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
     input_list = None
     input_no = None
 
-    dbn = DBN([input.input_dim, 150, 150, 300, 7], main_dir=main_dir)
+    dbn = DBN([input.input_dim, 200, 85, 50, 7], main_dir=main_dir)
 
     print("[INFO] Dataset input size ", input.input_dim, " num examples: ", input.num_examples)
 
@@ -119,7 +119,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
         vdata_np = None
         vlables_np = None
 
-        dir = "Adam_nearest_2/"
+        dir = "AdaDelta_l12_0.001/"
 
         dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
                                   validation_set=validation_set, finetune_save_dir=dir,

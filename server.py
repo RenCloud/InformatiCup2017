@@ -41,7 +41,7 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="vector", supervised_train_set=svt, validation_set=svt,
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="small_network", supervised_train_set=svt, validation_set=svt,
                                          do_pretraining=False)
 else:
     tmp = []

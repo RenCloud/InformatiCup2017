@@ -314,29 +314,33 @@ class DBN(object):
         self._create_variables()
         self._create_placeholder()
 
-        output = self._tf_input_data
+        with tf.name_scope("learning"):
 
-        with tf.name_scope("forward-pass"):
+            output = self._tf_input_data
 
-            for i in range(len(self._layer_size) - 2):
+            with tf.name_scope("forward-pass"):
+
+                for i in range(len(self._layer_size) - 2):
+                    # dropout to prevent overfitting
+                    output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+
+                    output = tf.nn.relu(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
+
+                self._tf_output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
+
                 # dropout to prevent overfitting
-                output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
+                self._tf_output = tf.nn.dropout(self._tf_output, keep_prob=self._tf_keep_prob)
 
-                output = tf.nn.relu(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
+            with tf.name_scope("backpropagation"):
 
-            output = tf.matmul(output, self._tf_w[len(self._layer_size) - 2]) + self._tf_bh[len(self._layer_size) - 2]
+                cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
 
-            # dropout to prevent overfitting
-            self._tf_output = tf.nn.dropout(output, keep_prob=self._tf_keep_prob)
-
-        with tf.name_scope("backpropagation"):
-
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
-
-            self._tf_train_step = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cross_entropy, global_step=self._tf_global_step)
+                self._tf_train_step = tf.train.ProximalAdagradOptimizer(learning_rate=0.001,
+                                                                        l1_regularization_strength=0.001,
+                                                                        l2_regularization_strength=0.001).minimize(cross_entropy, global_step=self._tf_global_step)
 
         with tf.name_scope("accuracy"):
-            prediction = tf.nn.softmax(output)
+            prediction = tf.nn.softmax(self._tf_output)
             correct_prediction = tf.equal(tf.argmax(prediction, 1), tf.argmax(self._tf_desired_output, 1))
 
             # correct_prediction = tf.nn.in_top_k(prediction, tf.argmax(self._tf_desired_output, 1), 2)
