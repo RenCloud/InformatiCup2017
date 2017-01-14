@@ -49,7 +49,7 @@ def getJson2(url, github):
 
     if r.ok:
         # CommitJson -> Object
-
+        stringcommiter = ''
         try:
             headers = r.headers['link']
             test = headers.split(',')
@@ -60,18 +60,54 @@ def getJson2(url, github):
 
             if int(end)<10:
                 repoItemCommits = json.loads(r.text or r.content)
+
+                for i in repoItemCommits:
+                    author = i['author']['login']
+                    commiter = i['committer']['login']
+                    stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+
+
+
+                k = 0
                 for i in range(2, int(end)+1):
                     r = github.get(
                         'https://api.github.com/repos/' + owner + '/' + repos + '/commits?per_page=100&page=' + str(i))
                     repoItemCommits += json.loads(r.text or r.content)
-
+                    j = 0
+                    for i in repoItemCommits:
+                        author = i['author']['login']
+                        commiter = i['committer']['login']
+                        if j < (len(repoItemCommits) - 1) or k < 9:
+                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                        else:
+                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"}'
+                        j = j + 1
+                    k = k + 1
 
 
             else:
                 repoItemCommits = json.loads(r.text or r.content)
+
+                for i in repoItemCommits:
+                    author = i['author']['login']
+                    commiter = i['committer']['login']
+                    stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+
+                k = 0
                 for i in range(2, 11):
                     r = github.get('https://api.github.com/repos/' + owner + '/' + repos + '/commits?per_page=100&page=' + str(i))
                     repoItemCommits += json.loads(r.text or r.content)
+                    j = 0
+                    for i in repoItemCommits:
+                        author = i['author']['login']
+                        commiter = i['committer']['login']
+                        if j < (len(repoItemCommits) - 1) or k < 9:
+                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                        else:
+                            stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"}'
+                        j = j + 1
+
+                    k=k+1
 
 
 
@@ -79,6 +115,21 @@ def getJson2(url, github):
 
         except:
             repoItemCommits = json.loads(r.text or r.content)
+            j = 0
+            for i in repoItemCommits:
+
+                try:
+
+                    author = i['author']['login']
+                    commiter = i['committer']['login']
+                    if j < (len(repoItemCommits) - 1):
+                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                    else:
+                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"}'
+                    j=j+1
+                except:
+
+                    j=j+1
 
 
     # Request Comments Data ( up to 100)
@@ -159,9 +210,14 @@ def getJson2(url, github):
     # Convert all Object to JSON
     infoJson = json.dumps(repoInfo)
     treeJson = json.dumps(repoItemTree)
+    start = treeJson.find('"tree":')
+    short = treeJson[start:len(treeJson)]
+    short = short.replace('tree','repository',1)
+    end = short.find('],')
+    treeJson = short[0:end+1]
     readmeJson = '{\n"readme":' + json.dumps(readme) + '\n}'
     languageJson = json.dumps(repoItemLanguage)
-    commitsJson = json.dumps(repoItemCommits)
+    commitsJson = '"commits":['+stringcommiter+']'
     commentsJson = json.dumps(repoItemsComment)
     issueJson = json.dumps(repoItemIssue)
     # Create one Big JSON File
