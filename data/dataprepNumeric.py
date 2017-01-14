@@ -3,7 +3,10 @@ from collections import defaultdict
 import numpy
 import gensim
 import os.path
+import math
 
+def logis(value):
+    return((1/(1+math.exp(-100*(value/200))))-0.5)*2
 
 """
 @param file json file to analyze or train with
@@ -25,9 +28,9 @@ def prep(file, training = 0):
         for path in repo['repository']:
             if(path['type'] == "Blob"):
                 files+=1
-        vec.append(files/1000)
-        vec.append((len(repo['commits'])/files)/1000) #relativ zu Anzahl Ordner+Files
-        vec.append((len(repo['comments'])/len(repo['commits']))/1000) #relativ zu commits
+        vec.append(logis(files))
+        vec.append(logis(len(repo['commits'])/files)) #relativ zu Anzahl Ordner+Files
+        vec.append(logis(len(repo['comments'])/len(repo['commits']))) #relativ zu commits
         openI = 0
         closedI = 1
         for i in range(len(repo['issue'])):
@@ -35,17 +38,17 @@ def prep(file, training = 0):
                 openI += 1
             elif(repo['issue'][i]['state'] == 'closed'):
                 closedI += 1
-        vec.append((openI/closedI)/1000) #nur open-closed
+        vec.append(logis(openI/closedI)) #nur open-closed
         author = []
         for commit in repo['commits']:
             if(commit['author_login'] not in author):
                 author.append(commit['author_login'])
-        vec.append(len(author)/1000)
+        vec.append(logis(len(author)))
         committer = []
         for commit in repo['commits']:
             if((commit['committer_login'] not in committer)):
                 committer.append(commit['committer_login'])
-        vec.append(len(committer)/1000)
+        vec.append(logis(len(committer)))
 
         #ordnernamen
 
