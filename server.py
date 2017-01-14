@@ -3,7 +3,39 @@ import os
 import learning.frontend.Main
 import json
 
-inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
+def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
+    if(newDataset):
+        print("new DataSet")
+
+    if(len(data)<100):
+        print("Error: DataSet zu klein")
+        return
+
+    tmp = []
+    for i in range(len(data)):
+        print(data[i])
+        tmp += dataprep.prep(data[i])
+        print(tmp)
+    vec = json.dumps(tmp)
+
+    if(valid):
+        svt = []
+        tmp = []
+        for i in range(len(svt)):
+            tmp += dataprep.prep(svtD[i])
+        svt.append(json.dumps(tmp))
+        tmp = []
+        for i in range(len(svt)):
+            tmp += dataprep.prep(svtR[i])
+        svt.append(json.dumps(tmp))
+
+        vs = []
+        vs.append(json.dumps(dataprep.prep(vsD)))
+        vs.append(open(vsR).read())
+        learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
+    else:
+        learning.frontend.Main.fit_dbn(vec, main_dir="test")
+"""inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
         print ("data/json/"+jsonFile)
@@ -46,4 +78,4 @@ else:
     for jsonFile in os.listdir("./data/json"):
         tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")"""

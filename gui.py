@@ -1,5 +1,6 @@
 import json
 import sys
+import server
 
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtGui import QStandardItemModel
@@ -171,12 +172,16 @@ class Example(QMainWindow):
         """
         # start different modes when checkboxes are checked
         if self.cb.isChecked():
-            print('New Dataset')
+            print("New DataSet")
+            #server.training([], True, False)
+            return
 
         if self.cbt.isChecked():
             print('Validation')
+            server.training([], False, True, [], [], [], [])
         else:
-            print('Standart')
+            print('Standard')
+            server.training([], False, False)
 
     def showdialog(self):
         """
