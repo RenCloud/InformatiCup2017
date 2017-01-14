@@ -101,6 +101,21 @@ describes a procedure to stack multiple RBMs on top of each other. Each one is t
 the output of the previsous one to train itself. This can be done multiple time and every time more features are learned.
 This is a way of effectively pretrain a <a class="reference external" href="https://en.wikipedia.org/wiki/Deep_belief_network">Deep Belief Network</a>.[HintonPretraining]_</p>
 <p>After the pretraining supervised backpropagation can be used to train an effective discriminative model.[HintonDiscrim]_</p>
+<p>The pretraining helps to kind of initialize the weights for the supervised training. So the networks progress is better.
+It also limits the amount of labeled training date which is needed to train the model.</p>
+<p>The supervised training is visualized by this Tensorboard graph:</p>
+<p>For the supervised training we only had 300 labeled data touples. That&#8217;s why after the network generates it&#8217;s own training data after
+the first two epochs.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dbn</span><span class="o">.</span><span class="n">supervised_finetuning</span><span class="p">()</span>
+
+<span class="n">examples</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="mi">100</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">train_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">prediction</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this technique we are trying to prevent the network from overfitting.</p>
 <table class="docutils citation" frame="void" id="wikiboltz" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">

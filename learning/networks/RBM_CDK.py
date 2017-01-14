@@ -235,8 +235,8 @@ class RBM(object):
 
         for i in range(self._epochs):
             self._run_train_step(train_set)
-            print("finished train-step ", i)
-            if i % 20 == 0:
+            # print("finished train-step ", i)
+            if i % 5 == 0:
                 self._run_summary(train_set, i + start_epoche)
                 if validation_set:
                     self._run_validation_results(validation_set)
@@ -369,7 +369,7 @@ class RBM(object):
             with tf.name_scope('calculate_delta_weights'):
                 d_w = self._tf_delta_w.assign(self._tf_lr * (positive - negative)
                                               + tf.scalar_mul(self._tf_momentum, self._tf_delta_w)
-                                              - tf.scalar_mul(self._tf_weight_decay, self._tf_w))
+                                              - tf.nn.tanh(tf.scalar_mul(self._tf_weight_decay, self._tf_w)))
                 d_bh = self._tf_delta_bh.assign(self._tf_lr * tf.reduce_mean(hprobs0 - hprobs1, 0))
                 d_bv = self._tf_delta_bv.assign(self._tf_lr * tf.reduce_mean(self._tf_input_data - vprobs, 0))
 

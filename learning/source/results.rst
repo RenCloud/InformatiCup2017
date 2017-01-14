@@ -15,27 +15,44 @@ First Experiment
 
 Our first run with only 4700 unlabeled datasets wasn't really succefull. The hyperparameters were as followed:
 
-===================== ================ ================ ================
+================== ================== ================== ==================
 Hyperparameter         Values 1         Values 2         Values 3
-===================== ================ ================ ================
-Epochs                  100             100              100
-Batch size              10              100              100
-learning rate           0.1             0.01             0.005
-Gibbs sampling steps    1               3                5
-Momentum term           0.5             0.9              0.9
-Weight decay            0.0001          0.0001           0.0001
-===================== ================= ================ ================
+================== ================== ================== ==================
+Epochs                  100              100               100
+Batchsize               10               100               100
+learningrate            0.1              0.01              0.005
+Gibbssamplingsteps      1                3                 5
+Momentumterm            0.5              0.9               0.9
+Weightdecay             0.0001           0.0001            0.0001
+================== ================== ================== ==================
 
-Network structure: 1370, 500, 500, 1500, 7
+Each layer is trained with the same 3 values.
+
+Network structure: [1370, 500, 500, 1500, 7]
 
 Accuracy got never over 16%. Sometimes way worse. But the weights stay small which was a win for us.
+The choice of Opitmizer and learning rate for the finetuning part didn't had any effect on the testresults.
 
 
 Next try with almost the same parameters but this time with 31700 unlabeled data sets. The initialization was long and the
 input vector got up to 7300. The program took just 3GB but after the first epoch the memory usage doubled. We expect that
-the :meth:`np.shuffle` and the ne permutated image and label array are the reason why the memeory usage exploded. In previouse tests
+the :meth:`np.random.shuffle` and the ne permutated image and label array are the reason why the memeory usage exploded. In previouse tests
 wasn't this in issue. We expect that there had to be some kind of an bug.
 
 Because of this we had to constrain the input vector. Every word which happens to occure to few or too much is cut out of the vector.
 
-After this we ended up with 1636 in input vector size.
+After this we ended up with 1636 in input vector size. The hyperparameters for the third test were as followed:
+
+
+================== ================== ================== ================== ==================
+Hyperparameter         Values 1         Values 2         Values 3            Values 4
+================== ================== ================== ================== ==================
+Epochs                  10               50                50                50
+Batchsize               10               10                10                10
+learningrate            0.1              0.01              0.005             0.001
+Gibbssamplingsteps      1                1                 3                 4
+Momentumterm            0.5              0.9               0.9               0.9
+Weightdecay             0.0001           0.0001            0.0002            0.0002
+================== ================== ================== ================== ==================
+
+Network structure: [1636, 500, 500, 1500, 7]
