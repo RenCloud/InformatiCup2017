@@ -369,7 +369,8 @@ class RBM(object):
             with tf.name_scope('calculate_delta_weights'):
                 d_w = self._tf_delta_w.assign(self._tf_lr * (positive - negative)
                                               + tf.scalar_mul(self._tf_momentum, self._tf_delta_w)
-                                              - tf.scalar_mul(self._tf_weight_decay, self._tf_w))
+                                                # adding l2 regulizer
+                                              - tf.scalar_mul(self._tf_weight_decay, tf.nn.l2_loss(self._tf_w)))
                 d_bh = self._tf_delta_bh.assign(self._tf_lr * tf.reduce_mean(hprobs0 - hprobs1, 0))
                 d_bv = self._tf_delta_bv.assign(self._tf_lr * tf.reduce_mean(self._tf_input_data - vprobs, 0))
 
