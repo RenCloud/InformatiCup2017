@@ -40,16 +40,16 @@ class Example(QMainWindow):
 
         # create a Status bar at the bottom of the window
         self.statusBar()
-        tabs = QTabWidget(self)
-        tabs.setGeometry(0, 0, 500, 280)
+        self.tabs = QTabWidget(self)
+        self.tabs.setGeometry(0, 0, 500, 280)
         tab1 = QWidget()
-        tabs.addTab(tab1, 'Classify')
+        self.tabs.addTab(tab1, 'Classify')
         tab1.setStatusTip('Set Classify Option and start it')
         tab2 = QWidget()
-        tabs.addTab(tab2, 'Solution')
+        self.tabs.addTab(tab2, 'Solution')
         tab2.setStatusTip('Solution of Classify')
         tab3 = QWidget()
-        tabs.addTab(tab3, 'Training')
+        self.tabs.addTab(tab3, 'Training')
         tab3.setStatusTip('Training option and start training')
 
         # create a button
@@ -194,7 +194,7 @@ class Example(QMainWindow):
 
     def bshowtrainclicked(self):
         """
-            user wants to pick a directory so we open the dir picker for him
+            user wants to pick fileS so we open the dir picker for him
         """
 
         # start filepicker at '/home' place
@@ -213,7 +213,8 @@ class Example(QMainWindow):
         """
             User wants to tag repositorys so the wish will done by the neural network recently
         """
-
+        self.tabs.setCurrentIndex(1)
+        app.processEvents()
         with open(self.lepath.text(), "r") as myfile:
             data = myfile.readlines()
             if self.cbown.isChecked():
@@ -230,6 +231,7 @@ class Example(QMainWindow):
             itemRow = item.row()
             indexOfColumn1 = self.model.index(itemRow, 1)
             self.model.setData(indexOfColumn1, 'not Classifed yet', 0)
+            app.processEvents()
 
             if len(repositorys) != 0:
                 keineahnung = getJson2(repositorys, self.github)

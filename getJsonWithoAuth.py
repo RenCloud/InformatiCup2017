@@ -21,7 +21,7 @@ def getJson2(url, github):
     else:
         r = github.get('https://api.github.com/repos/' + owner + '/' + repos)
         if r.ok:
-            return json.loads(r.text or r.context)
+            return json.dumps(json.loads(r.text or r.context))
         else:
             return None
     # if tree empty-> all empty
