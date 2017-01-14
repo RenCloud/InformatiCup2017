@@ -1,10 +1,17 @@
+import json
 import sys
+import server
 
+from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import (QMainWindow, QLineEdit, QFileDialog, QApplication)
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QTabWidget
+from PyQt5.QtWidgets import QTableView
+from PyQt5.QtWidgets import QWidget
 from requests_oauthlib import OAuth2Session
 
 from getJsonWithoAuth import getJson2
@@ -34,9 +41,17 @@ class Example(QMainWindow):
 
         # create a Status bar at the bottom of the window
         self.statusBar()
+        tabs = QTabWidget(self)
+        tabs.setGeometry(0, 0, 500, 300)
+        tab1 = QWidget()
+        tabs.addTab(tab1, 'Classify')
+        tab2 = QWidget()
+        tabs.addTab(tab2, 'Solution')
+        tab3 = QWidget()
+        tabs.addTab(tab3, 'Training')
 
         # create a button
-        btraining = QPushButton('Training', self)
+        btraining = QPushButton('Training', tab3)
         # when the cursor is move above the button show this text on the status bar
         btraining.setStatusTip('Start Training Mode')
         # resize button
@@ -47,50 +62,66 @@ class Example(QMainWindow):
         btraining.clicked.connect(self.btrainingclicked)
 
         # same like above
-        bfiledialog = QPushButton('Pick File', self)
+        bfiledialog = QPushButton('Pick File', tab1)
         bfiledialog.setStatusTip('Pick File with Repositorys Links')
         bfiledialog.resize(bfiledialog.sizeHint())
         bfiledialog.setGeometry(370, 50, 75, 25)
         bfiledialog.clicked.connect(self.showdialog)
 
         # create a 'textField'
-        self.lepath = QLineEdit(self)
-        self.lepath.setGeometry(150, 50, 200, 25)
+        self.lepath = QLineEdit(tab1)
+        self.lepath.setGeometry(50, 50, 300, 25)
         self.lepath.setStatusTip('Path to Repository Link List File')
 
-        btag = QPushButton('Tag Repositorys', self)
+        btag = QPushButton('Tag Repositorys', tab1)
         btag.setStatusTip('Tag Repositorys from File')
         btag.resize(btag.sizeHint())
         btag.setGeometry(50, 90, 395, 25)
         btag.clicked.connect(self.btagclicked)
 
+        self.letrainingpath = QLineEdit(tab3)
+        self.letrainingpath.setGeometry(50, 80, 300, 25)
+        self.letrainingpath.setStatusTip('Set Trainings Path')
+
+        bshowTrain = QPushButton('Set path', tab3)
+        bshowTrain.setGeometry(360, 80, 75, 25)
+        bshowTrain.setStatusTip('Set Trainings Path')
+        bshowTrain.clicked.connect(self.bshowtrainclicked)
+
+        self.view = QTableView(tab2)  # declare table view
+        self.view.setGeometry(0, 0, 500, 300)
+        self.model = QStandardItemModel()  # declare model
+        self.view.setModel(self.model)  # assign model to table view
+        item = QStandardItem('SolutionTable')
+        self.model.setHorizontalHeaderLabels(['Link', 'Classsifiy'])
+
         # create buttons
-        blogging = QPushButton('Login to Github', self)
+        blogging = QPushButton('Login to Github', tab1)
         blogging.setStatusTip('Login to Github for more features and private repository acces')
         blogging.resize(blogging.sizeHint())
         blogging.setGeometry(50, 130, 395, 25)
         blogging.clicked.connect(self.bloggingclicked)
 
         # create label
-        self.lurl = QLabel(self)
+        self.lurl = QLabel(tab1)
         self.lurl.setGeometry(50, 150, 395, 25)
 
         # create githuboAuthSession
         self.github = OAuth2Session(client_id)
 
         # create label
-        self.lback = QLabel(self)
+        self.lback = QLabel(tab1)
         self.lback.setGeometry(50, 170, 395, 25)
         # hide label
         self.lback.hide()
 
         # create TextField
-        self.leback = QLineEdit(self)
+        self.leback = QLineEdit(tab1)
         self.leback.setGeometry(50, 190, 395, 25)
         self.leback.hide()
 
         # hiden button
-        self.bpaste = QPushButton('Login', self)
+        self.bpaste = QPushButton('Login', tab1)
         self.bpaste.setStatusTip('Get Login Token')
         self.bpaste.resize(self.bpaste.sizeHint())
         self.bpaste.setGeometry(50, 220, 395, 25)
@@ -98,10 +129,16 @@ class Example(QMainWindow):
         self.bpaste.hide()
 
         # Create two Check boxes for training
-        self.cbt = QCheckBox('with Validation Set', self)
+        self.cbt = QCheckBox('with Validation Set', tab3)
         self.cbt.setGeometry(50, 20, 150, 25)
-        self.cb = QCheckBox('new Read of Dataset', self)
+        self.cb = QCheckBox('new Read of Dataset', tab3)
         self.cb.setGeometry(50, 5, 150, 25)
+
+        # own repositorys?
+        self.cbown = QCheckBox('Add own repositorys', tab1)
+        self.cbown.setGeometry(50, 220, 150, 25)
+        self.cbown.hide()
+        self.cbown.setStatusTip('Add Own Repositorys automaticly to the list')
 
         # set geometry of main window
         self.setGeometry(300, 300, 500, 300)
@@ -135,12 +172,16 @@ class Example(QMainWindow):
         """
         # start different modes when checkboxes are checked
         if self.cb.isChecked():
-            print('New Dataset')
+            print("New DataSet")
+            #server.training([], True, False)
+            return
 
         if self.cbt.isChecked():
             print('Validation')
+            server.training([], False, True, [], [], [], [])
         else:
-            print('Standart')
+            print('Standard')
+            server.training([], False, False)
 
     def showdialog(self):
         """
@@ -150,12 +191,17 @@ class Example(QMainWindow):
         # start filepicker at '/home' place
         fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
 
-        if fname[0]:
-            f = open(fname[0], 'r')
+        # set textfiel text with filepath
+        self.lepath.setText(fname[0])
 
-            with f:
-                # set textfiel text with filepath
-                self.lepath.setText(fname[0])
+    def bshowtrainclicked(self):
+        """
+            user wants to pick a directory so we open the dir picker for him
+        """
+
+        # start filepicker at '/home' place
+        fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
+        self.letrainingpath.setText(fname)
 
     def btagclicked(self):
         """
@@ -164,12 +210,25 @@ class Example(QMainWindow):
 
         with open(self.lepath.text(), "r") as myfile:
             data = myfile.readlines()
+            if self.cbown.isChecked():
+                r = self.github.get('https://api.github.com/user/repos')
+                if r.ok:
+                    jsonstring = json.loads(r.text or r.content)
+                    for ownrepos in jsonstring:
+                        data.append(ownrepos['html_url'])
 
-        for blabala in data:
-            blabala = blabala.replace('\n', '')
-            print(blabala)
-            if len(blabala) == 0:
-                keineahnung = getJson2(blabala, self.github)
+        for repositorys in data:
+            repositorys = repositorys.replace('\n', '')
+            item = QStandardItem(repositorys)
+            self.model.appendRow(item)
+            itemRow = item.row()
+            indexOfColumn1 = self.model.index(itemRow, 1)
+            self.model.setData(indexOfColumn1, 'not Classifed yet', 0)
+
+            if len(repositorys) != 0:
+                keineahnung = getJson2(repositorys, self.github)
+        self.view.resizeColumnsToContents()
+        self.data = data
 
     def bloggingclicked(self):
         """
@@ -201,6 +260,7 @@ class Example(QMainWindow):
                                 authorization_response=completeurl)
         # hide login button so user not try to relogin and an exception is create
         self.bpaste.hide()
+        self.cbown.show()
 
 
 if __name__ == '__main__':
