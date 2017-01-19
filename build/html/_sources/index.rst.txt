@@ -10,13 +10,42 @@ Welcome to Gi-Projekt's documentation!
 
    Hier was das projekt so abstract macht als einleitung.
 
+Jonas
+-----
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    introduction
-   Code
+   explanation
+   code
+   results
+
+Jan
+---
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   introduction
+   explanation
+   code
+   results
+
+
+Niels
+-----
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   introduction
+   explanation
+   code
+   results
 
 
 
