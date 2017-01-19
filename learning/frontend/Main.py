@@ -183,7 +183,6 @@ def _load_and_normalize(data, load=True):
         tf.reset_default_graph()
         return output
 
-
     else:
         return input_np
 
