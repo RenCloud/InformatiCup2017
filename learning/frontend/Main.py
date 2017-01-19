@@ -4,6 +4,8 @@ import json
 import numpy as np
 from learning.utils.input_format import DataSet
 
+import tensorflow as tf
+
 
 def fit_rbm(data_set, main_dir="rbm_test"):
 
@@ -77,71 +79,110 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
     :return:
     '''
 
-    input_list = json.loads(data_set)
-    input_np = np.asarray(input_list)
-    input = DataSet(input_np, input_np)
+    output = _load_and_normalize(data_set)
+    input = DataSet(output, output)
 
-    input_list = None
-    input_no = None
+    dbn = DBN([input.input_dim, 50, 100, 200, 400, 7], main_dir=main_dir)
 
-    dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
+    print("[INFO] Dataset input size ", input.input_dim, " num examples: ", input.num_examples)
 
     if do_pretraining:
-        dbn.pretraining(input, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
-                        weight_decay=[0.0001, 0.0001, 0.0002],
-                        momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[100, 100, 100],
-                        batch_size=[10, 10, 10])
+        dbn.pretraining(input, gibbs_sampling_steps=[1, 1, 3, 4], learning_rate=[0.1, 0.01, 0.001, 0.0001],
+                        weight_decay=[0.1, 0.01, 0.01, 0.01, 0.001],
+                        momentum=[0.5, 0.9, 0.9, 0.9], continue_training=[False, True, True, True],
+                        epoch_steps=[10, 50, 10, 10], batch_size=[10, 10, 10, 10])
 
     if supervised_train_set and validation_set:
-        data = json.loads(supervised_train_set[0])
-        labels = json.loads(supervised_train_set[1])
-        data_np = np.asarray(data)
-        labels_np = np.asarray(labels)
+
+        data_np = _load_and_normalize(supervised_train_set[0])
+        labels_np = _load_and_normalize(supervised_train_set[1], False)
+
         train_set = DataSet(data_np, labels_np)
 
-        data = None
-        labels = None
-        data_np = None
-        labels_np = None
+        vdata_np = _load_and_normalize(validation_set[0])
+        vlabels_np = _load_and_normalize(validation_set[1], False)
 
-        vdata = json.loads(validation_set[0])
-        vlabels = json.loads(validation_set[1])
-        vdata_np = np.asarray(vdata)
-        vlabels_np = np.asarray(vlabels)
         validation_set = DataSet(vdata_np, vlabels_np)
 
-        vdata = None
-        vlabels = None
-        vdata_np = None
-        vlables_np = None
+        dir = "Decent_high_lr_functioning/"
 
         dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
-                                  validation_set=validation_set, finetune_save_dir="second_test",
-                                  finetune_load_dir="second_test")
+                                  validation_set=validation_set, finetune_save_dir=dir,
+                                  finetune_load_dir=dir)
         print("[INFO] First pretraining ended succefully")
-        for i in range(10):
-            dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
-                                      validation_set=validation_set, global_epoch=i + 1,
-                                      finetune_load_dir="second_test",
-                                      finetune_save_dir="second_test")
 
-            examples = input.next_batch(100 + 5 * i)
+        accuracy = 0
+        old_a = 0
+        counter = 0
 
-            prediction = dbn.classify(examples[0])
+        for i in range(300):
+            accuracy = dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
+                                                 validation_set=validation_set, global_epoch=i + 1,
+                                                 finetune_load_dir=dir,
+                                                 finetune_save_dir=dir)
 
-            train_set.append(examples[0], prediction)
+            print("[INFO] accuracy ", accuracy)
+            # examples = input.next_batch(100 + 50 * i)
 
+            # prediction = dbn.classify(examples[0], finetune_sub_dir=dir)
+
+            # train_set.append(examples[0], prediction)
+
+            # free the unused memory
             examples = None
             prediction = None
 
+        print("[Info] supervised training set extended it's size to ", train_set.num_examples, " examples")
 
-def classify_dbn(data_set, main_dir="dbn/"):
+
+def classify_dbn(data_set, main_dir="dbn/", sub_dir="dbn/"):
     input_list = json.loads(data_set)
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
 
     dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
 
-    output = dbn.classify(input.images, build_dbn=False)
+    output = dbn.classify(input.images, build_dbn=False, finetune_sub_dir=sub_dir)
 
     return output
+
+
+def _load_and_normalize(data, load=True):
+    tf.reset_default_graph()
+
+    input_list = json.loads(data)
+    input_np = np.asarray(input_list)
+
+    print("old")
+    print(input_np[0])
+    print(input_np[1])
+
+    if load:
+        with tf.Session() as sess:
+
+            batch_size = input_np.shape[1]
+
+            input_np = tf.cast(input_np, tf.float32)
+            '''
+            normalized = tf.nn.l2_normalize(input_np, 0)
+            '''
+
+            batch_mean2, batch_var2 = tf.nn.moments(input_np, [0])
+            scale2 = tf.Variable(tf.ones([batch_size]))
+            beta2 = tf.Variable(tf.zeros([batch_size]))
+            normalized = tf.nn.batch_normalization(input_np, batch_mean2, batch_var2, beta2, scale2, 1e-3)
+
+            sess.run(tf.global_variables_initializer())
+            output = sess.run(normalized)
+
+            print("new")
+            print(output[0])
+            print(output[1])
+            print(output.shape[0], " ", output.shape[1])
+
+        tf.reset_default_graph()
+        return output
+
+
+    else:
+        return input_np

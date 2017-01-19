@@ -1,22 +1,60 @@
-import data.dataprep
+import data.dataprepNumeric as dataprep
 import os
 import learning.frontend.Main
 import json
+def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
+    if(newDataset):
+        print("new DataSet")
 
-inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
+    if(len(data)<100):
+        print("Error: DataSet zu klein")
+        return None
+
+    tmp = []
+    for i in range(len(data)):
+        print(data[i])
+        tmp += dataprep.prep(data[i])
+        print(tmp)
+    vec = json.dumps(tmp)
+
+    if(valid):
+        svt = []
+        tmp = []
+        for i in range(len(svt)):
+            tmp += dataprep.prep(svtD[i])
+        svt.append(json.dumps(tmp))
+        tmp = []
+        for i in range(len(svt)):
+            tmp += dataprep.prep(svtR[i])
+        svt.append(json.dumps(tmp))
+
+        vs = []
+        vs.append(json.dumps(dataprep.prep(vsD)))
+        vs.append(open(vsR).read())
+        learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
+    else:
+        learning.frontend.Main.fit_dbn(vec, main_dir="test")
+
+def classify(json_str):
+    print(json.dumps(dataprep.prep(json_str,2)))
+    return learning.frontend.Main.classify_dbn(json.dumps(dataprep.prep(json_str, 2)), main_dir="third_try")
+
+"""inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
+
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
         print ("data/json/"+jsonFile)
-        vec = data.dataprep.prep("data/json/"+jsonFile, 1)
+        vec = dataprep.prep("data/json/"+jsonFile, 1)
+        print(vec)
 elif(inp == "d"):
-    data.dataprep.prep("data/test.json", 2)
+    dataprep.prep("data/test.json", 2)
 elif(inp == "v"):
     svt = []
     tmp = []
     for i in range(1,5):
     #for jsonFile in os.listdir("./tagged/data"):
         print(i)
-        tmp = tmp + data.dataprep.prep("./tagged/data/jsontest"+str(i)+".json")
+        tmp = tmp + dataprep.prep("./tagged/data/jsontest"+str(i)+".json")
     svt.append(json.dumps(tmp))
     tmp = []
     for i in range(1,5):
@@ -30,19 +68,21 @@ elif(inp == "v"):
     else:
         for jsonFile in os.listdir("./data/json"):
             print(jsonFile)
-            tmp = tmp + data.dataprep.prep("data/json/"+jsonFile)
+            tmp = tmp + dataprep.prep("data/json/"+jsonFile)
         vec = json.dumps(tmp)
         vecFile = open("vecfile.txt", "w")
         vecFile.write(vec)
         vecFile.close()
     vs = []
-    vs.append(json.dumps(data.dataprep.prep("./gegeben.json")))
+    vs.append(json.dumps(dataprep.prep("./gegeben.json")))
     vs.append(open("./gegebenarray.json").read())
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=vs,
-                                         do_pretraining=True)
+
+    # vs
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_3", supervised_train_set=svt, validation_set=svt,
+                                         do_pretraining=False)
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
-        tmp = tmp + data.dataprep.prep("data/json/"+jsonFile)
+        tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")"""

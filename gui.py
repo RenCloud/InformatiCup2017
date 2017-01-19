@@ -1,5 +1,6 @@
 import json
 import sys
+import server
 
 from PyQt5.QtCore import QUrl
 from PyQt5.QtCore import Qt
@@ -200,12 +201,16 @@ class Example(QMainWindow):
         """
         # start different modes when checkboxes are checked
         if self.cb.isChecked():
-            print('New Dataset')
+            print("New DataSet")
+            #server.training([], True, False)
+            return
 
         if self.cbt.isChecked():
             print('Validation')
+            server.training(self.files, False, True, [], [], [], [])
         else:
-            print('Standart')
+            print('Standard')
+            server.training(self.files, False, False)
 
     def showdialog(self):
         """
@@ -260,6 +265,8 @@ class Example(QMainWindow):
 
             if len(repositorys) != 0:
                 keineahnung = getJson(repositorys, self.github)
+                cat = server.classify(keineahnung)
+                print(cat)
         self.view.resizeColumnsToContents()
         self.data = data
 
