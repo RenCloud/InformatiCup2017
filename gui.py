@@ -283,7 +283,7 @@ class Example(QMainWindow):
         # Redirect user to GitHub for authorization
         authorization_url, state = self.github.authorization_url(authorization_base_url)
 
-        #QDesktopServices.openUrl((QUrl(authorization_url)))
+        QDesktopServices.openUrl((QUrl(authorization_url)))
         print(authorization_url)
 
     def bpasteclicked(self):

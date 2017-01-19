@@ -31,7 +31,7 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
         vs = []
         vs.append(json.dumps(dataprep.prep(vsD)))
         vs.append(open(vsR).read())
-        learning.frontend.Main.fit_dbn(vec, main_dir="third_try", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
+        learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_3", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
     else:
         learning.frontend.Main.fit_dbn(vec, main_dir="test")
 

@@ -197,7 +197,30 @@ class DBN(object):
 
         return output
 
-    def _initialize_tf_utilities_and_ops(self, create_from_rbms=False, finetune_load_dir="dbn/",
+    def supervised_training(self, train_set, validation_set, epochs=1, batch_size=1,
+                            sub_dir="dbn/", global_epoch=0, restore_previouse_model=True):
+        self._build_deterministic_model()
+
+        accuracy = 0
+
+        with tf.Session() as self._tf_session:
+            self._initialize_tf_utilities_and_ops(create_from_rbms=False, finetune_load_dir=sub_dir,
+                                                  finetune_save_dir=sub_dir,
+                                                  restore_previouse_model=restore_previouse_model)
+
+            for i in range(epochs):
+                self._run_train_step(train_set, batch_size)
+
+                if validation_set:
+                    accuracy = self._run_validation_results(validation_set, i + global_epoch)
+
+            self._tf_finetune_saver.save(self._tf_session, self._model_dir + sub_dir + self._model_name)
+
+        tf.reset_default_graph()
+
+        return accuracy
+
+    def _initialize_tf_utilities_and_ops(self, create_from_rbms=False, restore_previouse_model=True, finetune_load_dir="dbn/",
                                          finetune_save_dir="dbn/"):
 
         '''
@@ -215,7 +238,7 @@ class DBN(object):
         self._tf_saver = tf.train.Saver(self._create_restore_dict())
         self._tf_finetune_saver = tf.train.Saver()
 
-        if not create_from_rbms:
+        if not create_from_rbms and restore_previouse_model:
             self._tf_finetune_saver.restore(self._tf_session, self._model_dir + finetune_load_dir + self._model_name)
         else:
             self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
@@ -342,7 +365,7 @@ class DBN(object):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
 
                 self.learningrate = 0.5
-                learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 300, 0.99,
+                learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 100, 0.99,
                                                            staircase=True)
 
                 self._tf_train_step = tf.train.ProximalAdagradOptimizer(learning_rate=learning_rate,
