@@ -35,16 +35,10 @@ def prep(file, training=0):
         vec = []
         for path in repo['repository']:
             if(path['type'] == "Blob"):
-                files += 1
-        # all values are normalized with a logistic function
-        vec.append(logisFile(files))  # number of files normalized
-
-        # commits per file ratio normalized
-        vec.append(logis(len(repo['commits']) / files))
-
-        # average comments per commit normalized
-        vec.append(logis(len(repo['comments']) / len(repo['commits'])))
-
+                files+=1
+        # vec.append(logisFile(files))
+        vec.append(len(repo['commits'])) #relativ zu Anzahl Ordner+Files
+        vec.append(len(repo['comments'])) #relativ zu commits
         openI = 0
         closedI = 1
         for i in range(len(repo['issue'])):
@@ -52,21 +46,18 @@ def prep(file, training=0):
                 openI += 1
             elif(repo['issue'][i]['state'] == 'closed'):
                 closedI += 1
-        # open-closed issue ratio normalized
-        vec.append(logis(openI / closedI))
-
+        vec.append(openI) #nur open-closed
+        vec.append(closedI)
         author = []
         for commit in repo['commits']:
             if(commit['author_login'] not in author):
                 author.append(commit['author_login'])
-        vec.append(logis(len(author)))  # number of unique authors normalized
-
+        vec.append(len(author))
         committer = []
         for commit in repo['commits']:
             if((commit['committer_login'] not in committer)):
                 committer.append(commit['committer_login'])
-        # number of unique commiters normalized
-        vec.append(logis(len(committer)))
+        vec.append(len(committer))
 
         json_out_raw_arr.append(vec)
 

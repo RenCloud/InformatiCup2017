@@ -55,6 +55,7 @@ class DBN(object):
         self._tf_output = None
 
         self._gibbs_sampling_steps = None
+        self.learningrate = 0.1
 
         self._tf_session = None
         self._tf_saver = None
@@ -117,7 +118,7 @@ class DBN(object):
 
                 rbm.fit(train_set, restore_previous_model=continue_training[n], start_epoche=start_epoch,
                         validation_set=None, learning_rate=learning_rate[n],
-                        momentum_factor=momentum[n], epochs=epoch_steps[n], weight_decay_factor=weight_decay[n],
+                        momentum_factor=momentum[n], epochs=epoch_steps[n], weight_decay_factor=weight_decay[i],
                         gibbs_sampling_steps=gibbs_sampling_steps[n], batch_size=batch_size[n])
 
             print("[INFO] pretraining %d ended", i)
@@ -151,6 +152,8 @@ class DBN(object):
 
         self._create_finetune_dir(finetune_save_dir)
 
+        accuracy = 0
+
         with tf.Session() as self._tf_session:
             self._initialize_tf_utilities_and_ops(create_from_rbms=make_dbn, finetune_load_dir=finetune_load_dir,
                                                   finetune_save_dir=finetune_save_dir)
@@ -159,11 +162,13 @@ class DBN(object):
                 self._run_train_step(data_set, batch_size)
 
                 if validation_set:
-                    self._run_validation_results(validation_set, i + global_epoch)
+                    accuracy = self._run_validation_results(validation_set, i + global_epoch)
 
             self._tf_finetune_saver.save(self._tf_session, self._model_dir + finetune_save_dir + self._model_name)
 
         tf.reset_default_graph()
+
+        return accuracy
 
     def classify(self, input, build_dbn=False, finetune_sub_dir="dbn/"):
 
@@ -186,8 +191,7 @@ class DBN(object):
             self._tf_saver = tf.train.Saver()
             self._tf_saver.restore(self._tf_session, self._model_dir + finetune_sub_dir + self._model_name)
 
-            output = self._tf_session.run(self._tf_output, feed_dict={self._tf_input_data: input,
-                                                                      self._tf_keep_prob: 1})
+            output = self._tf_session.run(self._tf_output, feed_dict={self._tf_input_data: input})
 
         tf.reset_default_graph()
 
@@ -252,6 +256,8 @@ class DBN(object):
                                                         self._tf_keep_prob: 1})
 
         self._tf_summary_writer.add_summary(sum, epoch)
+
+        return accuracy
 
     def _create_restore_dict(self):
         '''
@@ -335,7 +341,14 @@ class DBN(object):
 
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
 
-                self._tf_train_step = tf.train.AdamOptimizer(0.01).minimize(cross_entropy, global_step=self._tf_global_step)
+                self.learningrate = 0.5
+                learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 300, 0.99,
+                                                           staircase=True)
+
+                self._tf_train_step = tf.train.ProximalAdagradOptimizer(learning_rate=learning_rate,
+                                                                        l1_regularization_strength=0.0001,
+                                                                        l2_regularization_strength=0.001).\
+                    minimize(cross_entropy, global_step=self._tf_global_step)
 
         with tf.name_scope("accuracy"):
             prediction = tf.nn.softmax(self._tf_output)
@@ -348,8 +361,22 @@ class DBN(object):
         with tf.name_scope("weight_development"):
             for i in range(len(self._layer_size) - 1):
                 tf.summary.scalar("weights_max_" + repr(i), tf.reduce_max(self._tf_w[i]))
-                tf.summary.scalar("weights_min_" + repr(i), tf.reduce_min(self._tf_w[i]))
+                tf.summary.scalar("weights_min_" + repr(i), tf.reduce_min(self._tf_w[ i]))
         tf.summary.scalar("accuracy", self._tf_accuracy)
+        tf.summary.scalar("loss", tf.reduce_mean(cross_entropy))
+        tf.summary.scalar("effective_learningrate", learning_rate)
+
+    def _classification_model(self):
+
+        self._create_variables()
+        self._create_placeholder()
+
+        output = self._tf_input_data
+
+        for i in range(len(self._layer_size) - 1):
+            output = tf.nn.relu(tf.matmul(output, self._tf_w[i]) + self._tf_bh[i])
+
+        self._tf_output = tf.nn.softmax(output)
 
     def _classification_model(self):
         self._create_variables()
