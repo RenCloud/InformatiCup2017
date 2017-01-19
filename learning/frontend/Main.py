@@ -140,7 +140,7 @@ def classify_dbn(data_set, main_dir="dbn/", sub_dir="dbn/"):
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
 
-    dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
+    dbn = DBN([input.input_dim, 50, 100, 200, 400, 7], main_dir=main_dir)
 
     output = dbn.classify(input.images, build_dbn=False, finetune_sub_dir=sub_dir)
 
@@ -164,13 +164,16 @@ def _load_and_normalize(data, load=True):
 
             input_np = tf.cast(input_np, tf.float32)
             '''
-            normalized = tf.nn.l2_normalize(input_np, 0)
-            '''
+
 
             batch_mean2, batch_var2 = tf.nn.moments(input_np, [0])
             scale2 = tf.Variable(tf.ones([batch_size]))
             beta2 = tf.Variable(tf.zeros([batch_size]))
             normalized = tf.nn.batch_normalization(input_np, batch_mean2, batch_var2, beta2, scale2, 1e-3)
+
+            '''
+
+            normalized = tf.nn.l2_normalize(input_np, 0)
 
             sess.run(tf.global_variables_initializer())
             output = sess.run(normalized)
