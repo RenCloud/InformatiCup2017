@@ -2,7 +2,7 @@ import data.dataprepNumeric as dataprep
 import os
 import learning.frontend.Main
 import json
-
+'''
 def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
     if(newDataset):
         print("new DataSet")
@@ -38,8 +38,8 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
 
 def classify(json):
     return learning.frontend.Main.classify_rbm(dataprep.prep(json, 2))
-
-"""inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
+'''
+inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
 if(inp == "t"):
     for jsonFile in os.listdir("./data/json"):
         print ("data/json/"+jsonFile)
@@ -77,11 +77,11 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="small_network", supervised_train_set=svt, validation_set=svt,
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_3", supervised_train_set=svt, validation_set=svt,
                                          do_pretraining=False)
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
         tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")"""
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")

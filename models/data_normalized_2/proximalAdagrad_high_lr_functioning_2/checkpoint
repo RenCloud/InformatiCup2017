@@ -1,0 +1,2 @@
+model_checkpoint_path: "dbn_model"
+all_model_checkpoint_paths: "dbn_model"

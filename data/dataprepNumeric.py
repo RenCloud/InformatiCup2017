@@ -34,9 +34,9 @@ def prep(file, training = 0):
         for path in repo['repository']:
             if(path['type'] == "Blob"):
                 files+=1
-        vec.append(logisFile(files))
-        vec.append(logis(len(repo['commits'])/files)) #relativ zu Anzahl Ordner+Files
-        vec.append(logis(len(repo['comments'])/len(repo['commits']))) #relativ zu commits
+        # vec.append(logisFile(files))
+        vec.append(len(repo['commits'])) #relativ zu Anzahl Ordner+Files
+        vec.append(len(repo['comments'])) #relativ zu commits
         openI = 0
         closedI = 1
         for i in range(len(repo['issue'])):
@@ -44,17 +44,18 @@ def prep(file, training = 0):
                 openI += 1
             elif(repo['issue'][i]['state'] == 'closed'):
                 closedI += 1
-        vec.append(logis(openI/closedI)) #nur open-closed
+        vec.append(openI) #nur open-closed
+        vec.append(closedI)
         author = []
         for commit in repo['commits']:
             if(commit['author_login'] not in author):
                 author.append(commit['author_login'])
-        vec.append(logis(len(author)))
+        vec.append(len(author))
         committer = []
         for commit in repo['commits']:
             if((commit['committer_login'] not in committer)):
                 committer.append(commit['committer_login'])
-        vec.append(logis(len(committer)))
+        vec.append(len(committer))
 
         #ordnernamen
 
