@@ -28,6 +28,7 @@ def getJson(url, github):
 
     # Request Readme Data
     r = github.get('https://api.github.com/repos/' + owner + '/' + repos + '/readme')
+    readme = ""
     if r.ok:
         # ReadmeDataJson -> object
         repoItemReadme = json.loads(r.text or r.content)

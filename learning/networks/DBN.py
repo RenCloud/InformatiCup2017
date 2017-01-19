@@ -378,17 +378,6 @@ class DBN(object):
 
         self._tf_output = tf.nn.softmax(output)
 
-    def _classification_model(self):
-        self._create_variables()
-        self._create_placeholder()
-
-        output = self._tf_input_data
-
-        for i in range(len(self._layer_size)):
-            output = tf.nn.relu(tf.matmul(output, self._tf_w[i] + self._tf_bh[i]))
-
-        self._tf_output = tf.nn.softmax(output)
-
     def _create_variables(self):
 
         '''

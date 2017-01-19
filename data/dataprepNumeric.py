@@ -2,6 +2,7 @@ import json
 import numpy
 import os.path
 import math
+from collections import defaultdict
 
 
 def logis(value):
@@ -10,6 +11,26 @@ def logis(value):
 
 def logisFile(value):
     return((1 / (1 + math.exp(-1 * (value / 1000)))) - 0.5) * 2
+
+def search_repo(repo):
+    dic_end = defaultdict(int)
+    sum = 0;
+    endings = []
+    for path in repo:
+        if(path['type'] == "Tree"):
+            parts = path['path'].split("/")
+            for part in parts:
+                last = part
+            dic_end[last] += 1
+            sum+=1;
+    for e in list(dic_end):
+        if(dic_end[e] <= sum/100):
+            del(dic_end[e])
+        else:
+            for i in range (0, dic_end[e]):
+                endings.append(e)
+    print(endings)
+    return endings
 
 """
 @param file json file to analyze or train with
@@ -33,6 +54,7 @@ def prep(file, training=0):
     for repo in data:
         files = 1
         vec = []
+        search_repo(repo['repository'])
         for path in repo['repository']:
             if(path['type'] == "Blob"):
                 files+=1
