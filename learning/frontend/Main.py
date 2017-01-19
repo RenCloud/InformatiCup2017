@@ -206,7 +206,7 @@ def supervised_fit_dbn(supervised_train_set, validation_set, main_dir="data_norm
     dir = "Decent_high_lr_functioning/"
 
     dbn.supervised_training(batch_size=1, train_set=train_set, epochs=1,
-                            validation_set=validation_set, sub_dir=dir)
+                            validation_set=validation_set, sub_dir=dir, restore_previouse_model=False)
     print("[INFO] First pretraining ended succefully")
 
     accuracy = 0
@@ -215,7 +215,7 @@ def supervised_fit_dbn(supervised_train_set, validation_set, main_dir="data_norm
 
     for i in range(100):
         accuracy = dbn.supervised_training(batch_size=1, train_set=train_set, epochs=1,
-                                           validation_set=validation_set, global_epoch=i + 1, sub_dir=dir)
+                                           validation_set=validation_set, global_epoch=i + 1, sub_dir=dir, restore_previouse_model=True)
 
         print("[INFO] accuracy ", accuracy)
         # examples = input.next_batch(100 + 50 * i)
