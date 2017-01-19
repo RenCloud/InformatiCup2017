@@ -3,6 +3,7 @@ import os
 import learning.frontend.Main
 import json
 """
+
 def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
     if(newDataset):
         print("new DataSet")

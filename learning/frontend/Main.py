@@ -171,7 +171,9 @@ def _load_and_normalize(data, load=True):
             scale2 = tf.Variable(tf.ones([batch_size]))
             beta2 = tf.Variable(tf.zeros([batch_size]))
             normalized = tf.nn.batch_normalization(input_np, batch_mean2, batch_var2, beta2, scale2, 1e-3)
+
             """
+
 
             sess.run(tf.global_variables_initializer())
             output = sess.run(normalized)
@@ -203,7 +205,7 @@ def supervised_fit_dbn(supervised_train_set, validation_set, main_dir="data_norm
 
     validation_set = DataSet(vdata_np, vlabels_np)
 
-    dir = "Decent_high_lr_functioning/"
+    dir = "ProximalAdagrad_not_softmax_2/"
 
     dbn.supervised_training(batch_size=1, train_set=train_set, epochs=1,
                             validation_set=validation_set, sub_dir=dir, restore_previouse_model=False)
