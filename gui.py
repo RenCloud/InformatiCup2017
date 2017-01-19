@@ -164,6 +164,63 @@ class Example(QMainWindow):
         self.cbown.hide()
         self.cbown.setStatusTip('Add Own Repositorys automaticly to the list')
 
+        # training
+        self.letraingdir1 = QLineEdit(tab3)
+        self.letraingdir1.setGeometry(50, 110, 300, 25)
+
+        self.btraindir1 = QPushButton('Set Dir', tab3)
+        self.btraindir1.setStatusTip('Set Dir')
+        self.btraindir1.resize(self.btraindir1.sizeHint())
+        self.btraindir1.setGeometry(370, 110, 80, 25)
+        self.btraindir1.clicked.connect(self.btraindir1clicked)
+
+        self.letraingdir2 = QLineEdit(tab3)
+        self.letraingdir2.setGeometry(50, 140, 300, 25)
+
+        self.btraindir2 = QPushButton('Set Dir', tab3)
+        self.btraindir2.setStatusTip('Set Dir')
+        self.btraindir2.resize(self.btraindir2.sizeHint())
+        self.btraindir2.setGeometry(370, 140, 80, 25)
+        self.btraindir2.clicked.connect(self.btraindir2clicked)
+
+        self.letrainfile1 = QLineEdit(tab3)
+        self.letrainfile1.setGeometry(50, 170, 140, 25)
+
+        self.btrainfile1 = QPushButton('Set Files', tab3)
+        self.btrainfile1.setStatusTip('Set Files')
+        self.btrainfile1.resize(self.btrainfile1.sizeHint())
+        self.btrainfile1.setGeometry(210, 170, 40, 25)
+        self.btrainfile1.clicked.connect(self.btrainfile1clicked)
+
+        self.letrainfile2 = QLineEdit(tab3)
+        self.letrainfile2.setGeometry(250, 170, 150, 25)
+
+        self.btrainfile2 = QPushButton('Set Files', tab3)
+        self.btrainfile2.setStatusTip('Set Files')
+        self.btrainfile2.resize(self.btrainfile2.sizeHint())
+        self.btrainfile2.setGeometry(410, 170, 40, 25)
+        self.btrainfile2.clicked.connect(self.btrainfile2clicked)
+
+        self.letrainfile3 = QLineEdit(tab3)
+        self.letrainfile3.setGeometry(50, 200, 140, 25)
+
+        self.btrainfile3 = QPushButton('Set Files', tab3)
+        self.btrainfile3.setStatusTip('Set Files')
+        self.btrainfile3.resize(self.btrainfile3.sizeHint())
+        self.btrainfile3.setGeometry(210, 200, 40, 25)
+        self.btrainfile3.clicked.connect(self.btrainfile3clicked)
+
+        self.letrainfile4 = QLineEdit(tab3)
+        self.letrainfile4.setGeometry(250, 200, 150, 25)
+
+        self.btrainfile4 = QPushButton('Set Files', tab3)
+        self.btrainfile4.setStatusTip('Set Files')
+        self.btrainfile4.resize(self.btrainfile4.sizeHint())
+        self.btrainfile4.setGeometry(410, 200, 40, 25)
+        self.btrainfile4.clicked.connect(self.btrainfile4clicked)
+
+
+
         # set geometry of main window
         self.setGeometry(300, 300, 500, 300)
         self.setMinimumSize(500, 300)
@@ -253,6 +310,7 @@ class Example(QMainWindow):
                     jsonstring = json.loads(r.text or r.content)
                     for ownrepos in jsonstring:
                         data.append(ownrepos['html_url'])
+                        
 
         for repositorys in data:
             repositorys = repositorys.replace('\n', '')
@@ -260,13 +318,18 @@ class Example(QMainWindow):
             self.model.appendRow(item)
             itemRow = item.row()
             indexOfColumn1 = self.model.index(itemRow, 1)
-            self.model.setData(indexOfColumn1, 'not Classifed yet', 0)
-            app.processEvents()
+            
 
             if len(repositorys) != 0:
                 keineahnung = getJson(repositorys, self.github)
                 cat = server.classify(keineahnung)
                 print(cat)
+            # where cat stay the value should stand and than it should work
+            self.model.setData(indexOfColumn1, cat, 0)
+            app.processEvents()
+
+
+        
         self.view.resizeColumnsToContents()
         self.data = data
 
@@ -325,7 +388,52 @@ class Example(QMainWindow):
         self.cbt.setGeometry((self.width() / 500) * 20 + 30, 20,150,25)
         self.btraining.setGeometry((self.width() / 500) * 20 + 30, 50,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20),25 )
         self.letrainingpath.setGeometry((self.width() / 500) * 20 + 30, 80, self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65), 25)
+     def btraindir1clicked(self):
 
+
+        # start filepicker at '/home' place
+        fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
+        self.letraingdir1.setText(fname)
+        self.trainingdir1 = fname
+    def btraindir2clicked(self):
+
+
+        # start filepicker at '/home' place
+        fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
+        self.letraingdir2.setText(fname)
+        self.trainingdir2 = fname
+
+    def btrainfile1clicked(self):
+        name = QFileDialog.getOpenFileNames(self, 'Select Files')
+        nameString = ''
+        for i in name[0]:
+            nameString += i + ';'
+        self.letrainfile1.setText(nameString)
+        self.trainfile1 = name[0]
+
+    def btrainfile2clicked(self):
+        name = QFileDialog.getOpenFileNames(self, 'Select Files')
+        nameString = ''
+        for i in name[0]:
+            nameString += i + ';'
+        self.letrainfile2.setText(nameString)
+        self.trainfile2 = name[0]
+
+    def btrainfile3clicked(self):
+        name = QFileDialog.getOpenFileNames(self, 'Select Files')
+        nameString = ''
+        for i in name[0]:
+            nameString += i + ';'
+        self.letrainfile3.setText(nameString)
+        self.trainfile3 = name[0]
+
+    def btrainfile4clicked(self):
+        name = QFileDialog.getOpenFileNames(self, 'Select Files')
+        nameString = ''
+        for i in name[0]:
+            nameString += i + ';'
+        self.letrainfile4.setText(nameString)
+        self.trainfile4 = name[0]
 
 
 if __name__ == '__main__':
