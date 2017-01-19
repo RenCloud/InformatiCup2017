@@ -2,6 +2,9 @@ import json
 import sys
 import server
 
+from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QCheckBox
@@ -14,7 +17,7 @@ from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QWidget
 from requests_oauthlib import OAuth2Session
 
-from getJsonWithoAuth import getJson2
+from getJsonWithoAuth import getJson
 
 # Credentials you get from registering a new application
 client_id = 'a97b3ff30ea37904a570'
@@ -32,6 +35,8 @@ class Example(QMainWindow):
         """
         super().__init__()
 
+        # create a Tab Layout
+        self.tabs = QTabWidget(self)
         self.initui()
 
     def initui(self):
@@ -41,19 +46,23 @@ class Example(QMainWindow):
 
         # create a Status bar at the bottom of the window
         self.statusBar()
-        self.tabs = QTabWidget(self)
-        self.tabs.setGeometry(0, 0, 500, 280)
-        tab1 = QWidget()
-        self.tabs.addTab(tab1, 'Classify')
-        tab1.setStatusTip('Set Classify Option and start it')
-        tab2 = QWidget()
-        self.tabs.addTab(tab2, 'Solution')
-        tab2.setStatusTip('Solution of Classify')
-        tab3 = QWidget()
-        self.tabs.addTab(tab3, 'Training')
-        tab3.setStatusTip('Training option and start training')
 
-        # create a button
+        # set tab size and position
+        self.tabs.setGeometry(0, 0, 500, 280)
+        # add 3 tabs to the tab layout
+        tab1 = QWidget()
+        tab1.setStatusTip('Set Classify Option and start it')
+        self.tabs.addTab(tab1, 'Classify')
+
+        tab2 = QWidget()
+        tab2.setStatusTip('Solution of Classify')
+        self.tabs.addTab(tab2, 'Solution')
+
+        tab3 = QWidget()
+        tab3.setStatusTip('Training option and start training')
+        self.tabs.addTab(tab3, 'Training')
+
+        # create a button on tab3
         btraining = QPushButton('Training', tab3)
         # when the cursor is move above the button show this text on the status bar
         btraining.setStatusTip('Start Training Mode')
@@ -76,29 +85,39 @@ class Example(QMainWindow):
         self.lepath.setGeometry(50, 50, 300, 25)
         self.lepath.setStatusTip('Path to Repository Link List File')
 
-        btag = QPushButton('Tag Repositorys', tab1)
-        btag.setStatusTip('Tag Repositorys from File')
+        # create another button to classify repositorys
+        btag = QPushButton('Classify Repositorys', tab1)
+        btag.setStatusTip('Classify Repositorys from File')
         btag.resize(btag.sizeHint())
         btag.setGeometry(50, 90, 395, 25)
         btag.clicked.connect(self.btagclicked)
 
+        # add an TextField for Trainings Data
         self.letrainingpath = QLineEdit(tab3)
         self.letrainingpath.setGeometry(50, 80, 300, 25)
-        self.letrainingpath.setStatusTip('Set Trainings Path')
+        self.letrainingpath.setStatusTip('Set Trainings Data')
 
+        # another button to set Oath
         bshowTrain = QPushButton('Set path', tab3)
         bshowTrain.setGeometry(360, 80, 75, 25)
-        bshowTrain.setStatusTip('Set Trainings Path')
+        bshowTrain.setStatusTip('Set Trainings Data')
         bshowTrain.clicked.connect(self.bshowtrainclicked)
 
+        # create an table view
         self.view = QTableView(tab2)  # declare table view
-        self.view.setGeometry(0, 0, 500, 300)
+        self.view.setGeometry(0, 0, 495, 250)
         self.model = QStandardItemModel()  # declare model
         self.view.setModel(self.model)  # assign model to table view
+
+        # create the header of the table
         item = QStandardItem('SolutionTable')
         self.model.setHorizontalHeaderLabels(['Link', 'Classsifiy'])
+        # auto scroll
+        self.view.setAutoScroll(True)
+        # and a scroll bar when it has to mutch data
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
-        # create buttons
+        # create buttons to login in github
         blogging = QPushButton('Login to Github', tab1)
         blogging.setStatusTip('Login to Github for more features and private repository acces')
         blogging.resize(blogging.sizeHint())
@@ -134,6 +153,7 @@ class Example(QMainWindow):
         # Create two Check boxes for training
         self.cbt = QCheckBox('with Validation Set', tab3)
         self.cbt.setGeometry(50, 20, 150, 25)
+
         self.cb = QCheckBox('new Read of Dataset', tab3)
         self.cb.setGeometry(50, 5, 150, 25)
 
@@ -208,16 +228,15 @@ class Example(QMainWindow):
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
-            nameString += i+';'
+            nameString += i + ';'
         self.letrainingpath.setText(nameString)
         self.files = name[0]
-
-
 
     def btagclicked(self):
         """
             User wants to tag repositorys so the wish will done by the neural network recently
         """
+        # load when he is login and want his repositorys added his repository and added them
         self.tabs.setCurrentIndex(1)
         app.processEvents()
         with open(self.lepath.text(), "r") as myfile:
@@ -258,7 +277,7 @@ class Example(QMainWindow):
         # Redirect user to GitHub for authorization
         authorization_url, state = self.github.authorization_url(authorization_base_url)
 
-        # QDesktopServices.openUrl((QUrl(authorization_url)))
+        QDesktopServices.openUrl((QUrl(authorization_url)))
         print(authorization_url)
 
     def bpasteclicked(self):
