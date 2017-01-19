@@ -179,7 +179,7 @@ class DBN(object):
         if build_dbn:
             self._build_dbn_from_rbms()
 
-        self._build_deterministic_model()
+        self._classification_model()
 
         with tf.Session() as self._tf_session:
             self._tf_session.run(tf.global_variables_initializer())
@@ -350,6 +350,17 @@ class DBN(object):
                 tf.summary.scalar("weights_max_" + repr(i), tf.reduce_max(self._tf_w[i]))
                 tf.summary.scalar("weights_min_" + repr(i), tf.reduce_min(self._tf_w[i]))
         tf.summary.scalar("accuracy", self._tf_accuracy)
+
+    def _classification_model(self):
+        self._create_variables()
+        self._create_placeholder()
+
+        output = self._tf_input_data
+
+        for i in range(len(self._layer_size)):
+            output = tf.nn.relu(tf.matmul(output, self._tf_w[i] + self._tf_bh[i]))
+
+        self._tf_output = tf.nn.softmax(output)
 
     def _create_variables(self):
 

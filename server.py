@@ -38,7 +38,7 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
 
 def classify(json_str):
     print(json.dumps(dataprep.prep(json_str,2)))
-    return learning.frontend.Main.classify_rbm(json.dumps(dataprep.prep(json_str, 2)), main_dir="third_try")
+    return learning.frontend.Main.classify_dbn(json.dumps(dataprep.prep(json_str, 2)), main_dir="third_try")
 
 """inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
 if(inp == "t"):
