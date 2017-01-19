@@ -48,6 +48,7 @@ class Example(QMainWindow):
 
         # set tab size and position
         self.tabs.setGeometry(0, 0, 500, 280)
+
         # add 3 tabs to the tab layout
         tab1 = QWidget()
         tab1.setStatusTip('Set Classify Option and start it')
@@ -62,22 +63,22 @@ class Example(QMainWindow):
         self.tabs.addTab(tab3, 'Training')
 
         # create a button on tab3
-        btraining = QPushButton('Training', tab3)
+        self.btraining = QPushButton('Training', tab3)
         # when the cursor is move above the button show this text on the status bar
-        btraining.setStatusTip('Start Training Mode')
+        self.btraining.setStatusTip('Start Training Mode')
         # resize button
-        btraining.resize(btraining.sizeHint())
+        self.btraining.resize(self.btraining.sizeHint())
         # set his geometry ( xposition,yposition,xsize,ysize)
-        btraining.setGeometry(50, 50, 75, 25)
+        self.btraining.setGeometry(50, 50, 75, 25)
         # what happens when the button is clicked
-        btraining.clicked.connect(self.btrainingclicked)
+        self.btraining.clicked.connect(self.btrainingclicked)
 
         # same like above
-        bfiledialog = QPushButton('Pick File', tab1)
-        bfiledialog.setStatusTip('Pick File with Repositorys Links')
-        bfiledialog.resize(bfiledialog.sizeHint())
-        bfiledialog.setGeometry(370, 50, 75, 25)
-        bfiledialog.clicked.connect(self.showdialog)
+        self.bfiledialog = QPushButton('Pick File', tab1)
+        self.bfiledialog.setStatusTip('Pick File with Repositorys Links')
+        self.bfiledialog.resize(self.bfiledialog.sizeHint())
+        self.bfiledialog.setGeometry(370, 50, 80, 25)
+        self.bfiledialog.clicked.connect(self.showdialog)
 
         # create a 'textField'
         self.lepath = QLineEdit(tab1)
@@ -85,22 +86,22 @@ class Example(QMainWindow):
         self.lepath.setStatusTip('Path to Repository Link List File')
 
         # create another button to classify repositorys
-        btag = QPushButton('Classify Repositorys', tab1)
-        btag.setStatusTip('Classify Repositorys from File')
-        btag.resize(btag.sizeHint())
-        btag.setGeometry(50, 90, 395, 25)
-        btag.clicked.connect(self.btagclicked)
+        self.btag = QPushButton('Classify Repositorys', tab1)
+        self.btag.setStatusTip('Classify Repositorys from File')
+        self.btag.resize(self.btag.sizeHint())
+        self.btag.setGeometry(50, 90, 400, 25)
+        self.btag.clicked.connect(self.btagclicked)
 
         # add an TextField for Trainings Data
         self.letrainingpath = QLineEdit(tab3)
         self.letrainingpath.setGeometry(50, 80, 300, 25)
         self.letrainingpath.setStatusTip('Set Trainings Data')
 
-        # another button to set Oath
-        bshowTrain = QPushButton('Set path', tab3)
-        bshowTrain.setGeometry(360, 80, 75, 25)
-        bshowTrain.setStatusTip('Set Trainings Data')
-        bshowTrain.clicked.connect(self.bshowtrainclicked)
+        # another button to set Path
+        self.bshowTrain = QPushButton('Select Files', tab3)
+        self.bshowTrain.setGeometry(360, 80, 75, 25)
+        self.bshowTrain.setStatusTip('Set Trainings Data')
+        self.bshowTrain.clicked.connect(self.bshowtrainclicked)
 
         # create an table view
         self.view = QTableView(tab2)  # declare table view
@@ -117,35 +118,35 @@ class Example(QMainWindow):
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
         # create buttons to login in github
-        blogging = QPushButton('Login to Github', tab1)
-        blogging.setStatusTip('Login to Github for more features and private repository acces')
-        blogging.resize(blogging.sizeHint())
-        blogging.setGeometry(50, 130, 395, 25)
-        blogging.clicked.connect(self.bloggingclicked)
+        self.blogging = QPushButton('Login to Github', tab1)
+        self.blogging.setStatusTip('Login to Github for more features and private repository acces')
+        self.blogging.resize(self.blogging.sizeHint())
+        self.blogging.setGeometry(50, 130, 400, 25)
+        self.blogging.clicked.connect(self.bloggingclicked)
 
         # create label
         self.lurl = QLabel(tab1)
-        self.lurl.setGeometry(50, 150, 395, 25)
+        self.lurl.setGeometry(50, 150, 400, 25)
 
         # create githuboAuthSession
         self.github = OAuth2Session(client_id)
 
         # create label
         self.lback = QLabel(tab1)
-        self.lback.setGeometry(50, 170, 395, 25)
+        self.lback.setGeometry(50, 170, 400, 25)
         # hide label
         self.lback.hide()
 
         # create TextField
         self.leback = QLineEdit(tab1)
-        self.leback.setGeometry(50, 190, 395, 25)
+        self.leback.setGeometry(50, 190, 400, 25)
         self.leback.hide()
 
         # hiden button
         self.bpaste = QPushButton('Login', tab1)
         self.bpaste.setStatusTip('Get Login Token')
         self.bpaste.resize(self.bpaste.sizeHint())
-        self.bpaste.setGeometry(50, 220, 395, 25)
+        self.bpaste.setGeometry(50, 220, 400, 25)
         self.bpaste.clicked.connect(self.bpasteclicked)
         self.bpaste.hide()
 
@@ -164,10 +165,15 @@ class Example(QMainWindow):
 
         # set geometry of main window
         self.setGeometry(300, 300, 500, 300)
+        self.setMinimumSize(500, 300)
+        self.show()
+        self.setMaximumSize(9680,300)
+
         # set title of main window
         self.setWindowTitle('Repository Tagger')
+        # self.setFixedSize(500,300)
         # show the main window
-        self.show()
+
 
     def closeEvent(self, event):
 
@@ -270,7 +276,7 @@ class Example(QMainWindow):
         # Redirect user to GitHub for authorization
         authorization_url, state = self.github.authorization_url(authorization_base_url)
 
-        QDesktopServices.openUrl((QUrl(authorization_url)))
+        #QDesktopServices.openUrl((QUrl(authorization_url)))
         print(authorization_url)
 
     def bpasteclicked(self):
@@ -288,6 +294,31 @@ class Example(QMainWindow):
         # hide login button so user not try to relogin and an exception is create
         self.bpaste.hide()
         self.cbown.show()
+
+    def resizeEvent(self, resizeEvent):
+        # tab 1
+        temp = self.width() - 2 * ((self.width() / 500) * 20 + 30)
+        self.tabs.resize(self.width(), self.height() - 20)
+        self.lepath.setGeometry((self.width() / 500) * 20 + 30, 50, self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65), 25)
+        self.bfiledialog.setGeometry(self.width() -((self.width()/500)*95+65)+20, 50,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20) , 25)
+        self.btag.setGeometry((self.width() / 500) * 20 + 30, 90, temp, 25)
+        self.blogging.setGeometry(((self.width() / 500)) * 20 + 30, 130, temp, 25)
+        self.lurl.setGeometry((self.width() / 500) * 20 + 30, 150,temp, 25 )
+        self.lback.setGeometry((self.width() / 500) * 20 + 30, 170,temp, 25 )
+        self.leback.setGeometry((self.width() / 500) * 20 + 30, 190,temp, 25 )
+        self.bpaste.setGeometry((self.width() / 500) * 20 + 30, 220,temp, 25 )
+        self.cbown.setGeometry((self.width() / 500) * 20 + 30, 220,temp, 25 )
+
+        # tab 2
+        self.view.setGeometry(0,0,self.width()-5, self.height()-50)
+
+        # tab 3
+        self.bshowTrain.setGeometry(self.width() -((self.width()/500)*95+65)+20, 80,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20) , 25)
+        self.cb.setGeometry((self.width() / 500) * 20 + 30, 5,150,25)
+        self.cbt.setGeometry((self.width() / 500) * 20 + 30, 20,150,25)
+        self.btraining.setGeometry((self.width() / 500) * 20 + 30, 50,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20),25 )
+        self.letrainingpath.setGeometry((self.width() / 500) * 20 + 30, 80, self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65), 25)
+
 
 
 if __name__ == '__main__':
