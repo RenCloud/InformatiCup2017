@@ -3,7 +3,7 @@ import os
 import learning.frontend.Main
 import json
 
-
+"""
 def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
     if(newDataset):
         print("new DataSet")
@@ -33,7 +33,7 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
         vs = []
         vs.append(json.dumps(dataprep.prep(vsD)))
         vs.append(open(vsR).read())
-        learning.frontend.Main.supervised_fit_dbn(main_dir="data_normalized_3", supervised_train_set=svt, validation_set=vs)
+        learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_3", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
     else:
         learning.frontend.Main.fit_dbn(vec, main_dir="test")
 
@@ -80,11 +80,11 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.supervised_fit_dbn(main_dir="data_normalized_3", supervised_train_set=svt, validation_set=svt)
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_4", supervised_train_set=svt, validation_set=svt, do_pretraining=True)
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):
         tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
     cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
-    """
+    
