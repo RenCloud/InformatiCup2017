@@ -140,7 +140,7 @@ def classify_dbn(data_set, main_dir="dbn/", sub_dir="dbn/"):
     input_np = np.asarray(input_list)
     input = DataSet(input_np, input_np)
 
-    dbn = DBN([input.input_dim, 500, 500, 1500, 7], main_dir=main_dir)
+    dbn = DBN([input.input_dim, 50, 100, 200, 400, 7], main_dir=main_dir)
 
     output = dbn.classify(input.images, build_dbn=False, finetune_sub_dir=sub_dir)
 
@@ -186,3 +186,45 @@ def _load_and_normalize(data, load=True):
 
     else:
         return input_np
+
+
+def supervised_fit_dbn(supervised_train_set, validation_set, main_dir="data_normalized/"):
+
+    dbn = DBN([6, 50, 100, 200, 400, 7], main_dir=main_dir)
+
+    data_np = _load_and_normalize(supervised_train_set[0])
+    labels_np = _load_and_normalize(supervised_train_set[1], False)
+
+    train_set = DataSet(data_np, labels_np)
+
+    vdata_np = _load_and_normalize(validation_set[0])
+    vlabels_np = _load_and_normalize(validation_set[1], False)
+
+    validation_set = DataSet(vdata_np, vlabels_np)
+
+    dir = "Decent_high_lr_functioning/"
+
+    dbn.supervised_training(batch_size=1, train_set=train_set, epochs=1,
+                            validation_set=validation_set, sub_dir=dir)
+    print("[INFO] First pretraining ended succefully")
+
+    accuracy = 0
+    old_a = 0
+    counter = 0
+
+    for i in range(100):
+        accuracy = dbn.supervised_training(batch_size=1, train_set=train_set, epochs=1,
+                                           validation_set=validation_set, global_epoch=i + 1, sub_dir=dir)
+
+        print("[INFO] accuracy ", accuracy)
+        # examples = input.next_batch(100 + 50 * i)
+
+        # prediction = dbn.classify(examples[0], finetune_sub_dir=dir)
+
+        # train_set.append(examples[0], prediction)
+
+        # free the unused memory
+        examples = None
+        prediction = None
+
+    print("[Info] supervised training set extended it's size to ", train_set.num_examples, " examples")
