@@ -201,6 +201,8 @@ class DBN(object):
                             sub_dir="dbn/", global_epoch=0, restore_previouse_model=True):
         self._build_deterministic_model()
 
+        self._create_finetune_dir(sub_dir)
+
         accuracy = 0
 
         with tf.Session() as self._tf_session:
@@ -240,7 +242,7 @@ class DBN(object):
 
         if not create_from_rbms and restore_previouse_model:
             self._tf_finetune_saver.restore(self._tf_session, self._model_dir + finetune_load_dir + self._model_name)
-        else:
+        elif create_from_rbms:
             self._tf_saver.restore(self._tf_session, self._model_dir + "dbn/" + self._model_name)
 
         self._tf_summary_writer = tf.summary.FileWriter(self._summary_dir + finetune_save_dir, self._tf_session.graph)
@@ -362,7 +364,9 @@ class DBN(object):
 
             with tf.name_scope("backpropagation"):
 
-                cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
+                # cross_entropy = tf.nn.softmax_cross_entropy_with_logits(self._tf_output, self._tf_desired_output)
+
+                cross_entropy = tf.reduce_mean(-tf.reduce_sum(self._tf_desired_output * tf.nn.sigmoid(self._tf_output), reduction_indices=[1]))
 
                 self.learningrate = 0.5
                 learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 100, 0.99,
