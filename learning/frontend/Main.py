@@ -136,8 +136,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
 
 def classify_dbn(data_set, main_dir="dbn/", sub_dir="dbn/"):
-    input_list = json.loads(data_set)
-    input_np = np.asarray(input_list)
+    input_np = _load_and_normalize(data_set)
     input = DataSet(input_np, input_np)
 
     dbn = DBN([input.input_dim, 50, 100, 200, 400, 7], main_dir=main_dir)
@@ -155,7 +154,7 @@ def _load_and_normalize(data, load=True):
 
     print("old")
     print(input_np[0])
-    print(input_np[1])
+    #print(input_np[1])
 
     if load:
         with tf.Session() as sess:
@@ -164,7 +163,7 @@ def _load_and_normalize(data, load=True):
 
             input_np = tf.cast(input_np, tf.float32)
 
-            normalized = tf.nn.l2_normalize(input_np, 0)
+            normalized = tf.nn.l2_normalize(input_np, 1)
 
             """
             batch_mean2, batch_var2 = tf.nn.moments(input_np, [0])
@@ -180,8 +179,8 @@ def _load_and_normalize(data, load=True):
 
             print("new")
             print(output[0])
-            print(output[1])
-            print(output.shape[0], " ", output.shape[1])
+    #        print(output[1])
+    #        print(output.shape[0], " ", output.shape[1])
 
         tf.reset_default_graph()
         return output

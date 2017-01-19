@@ -72,7 +72,7 @@ def prep(file, training=0):
 
         if training == 1:
             dictionaryEndings.merge_with(gensim.corpora.Dictionary(endingstmp))
-        if training == 0:
+        if training == 0 or training == 2:
 
             files = 1
             vec = []

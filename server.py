@@ -2,7 +2,7 @@ import data.dataprepNumeric as dataprep
 import os
 import learning.frontend.Main
 import json
-"""
+
 
 def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
     if(newDataset):
@@ -38,7 +38,8 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
         learning.frontend.Main.fit_dbn(vec, main_dir="test")
 
 def classify(json_str):
-    return learning.frontend.Main.classify_dbn(json.dumps(dataprep.prep(json_str, 2)), main_dir="data_normalized_2", sub_dir="proximalAdagrad_high_lr_functioning/")
+    print(json.dumps(dataprep.prep(json_str,2)))
+    return learning.frontend.Main.classify_dbn(json.dumps(dataprep.prep(json_str, 2)), main_dir="data_normalized_3", sub_dir="ProximalAdagrad_not_softmax_2/")
 
 """
 inp = input("Select mode:\n t - training\n d - filter_extremes\n v - training with validation set \n other key - normal mode\n$")
@@ -86,3 +87,4 @@ else:
         tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
     cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
+    """
