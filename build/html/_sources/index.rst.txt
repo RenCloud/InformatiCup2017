@@ -16,9 +16,7 @@ Welcome to Gi-Projekt's documentation!
    :caption: Contents:
 
    introduction
-   explanation
-   code
-   results
+   Code
 
 
 

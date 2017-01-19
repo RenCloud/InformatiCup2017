@@ -378,7 +378,7 @@ class DBN(object):
                     minimize(cross_entropy, global_step=self._tf_global_step)
 
         with tf.name_scope("accuracy"):
-            prediction = tf.nn.softmax(self._tf_output)
+            prediction = tf.nn.softmax(output)
             correct_prediction = tf.equal(tf.argmax(prediction, 1), tf.argmax(self._tf_desired_output, 1))
 
             # correct_prediction = tf.nn.in_top_k(prediction, tf.argmax(self._tf_desired_output, 1), 2)
