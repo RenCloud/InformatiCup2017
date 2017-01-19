@@ -34,8 +34,11 @@ def prep(file, training = 0):
                 files+=1
         #all values are normalized with a logistic function
         vec.append(logisFile(files)) #number of files normalized
+
         vec.append(logis(len(repo['commits'])/files)) #commits per file ratio normalized
+
         vec.append(logis(len(repo['comments'])/len(repo['commits']))) #average comments per commit normalized
+
         openI = 0
         closedI = 1
         for i in range(len(repo['issue'])):
@@ -44,11 +47,13 @@ def prep(file, training = 0):
             elif(repo['issue'][i]['state'] == 'closed'):
                 closedI += 1
         vec.append(logis(openI/closedI)) #open-closed issue ratio normalized
+
         author = []
         for commit in repo['commits']:
             if(commit['author_login'] not in author):
                 author.append(commit['author_login'])
         vec.append(logis(len(author))) #number of unique authors normalized
+
         committer = []
         for commit in repo['commits']:
             if((commit['committer_login'] not in committer)):

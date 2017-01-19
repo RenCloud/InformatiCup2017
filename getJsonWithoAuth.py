@@ -71,7 +71,7 @@ def getJson(url, github):
                 for i in repoItemCommits:
                     author = i['author']['login']
                     commiter = i['committer']['login']
-                    stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                    stringcommiter += '{"author_login": "' + author + '","committer_login": "' + commiter + '"},'
 
                 for i in range(2, int(end) + 1):
                     r = github.get(
@@ -81,7 +81,7 @@ def getJson(url, github):
                     for singleCommit in repoItemCommits:
                         author = singleCommit['author']['login']
                         commiter = singleCommit['committer']['login']
-                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                        stringcommiter += '{"author_login": "' + author + '","committer_login": "' + commiter + '"},'
 
             else:
                 # if end is 10 or up we us a fix range [2 -11) to get 10 pages
@@ -90,7 +90,7 @@ def getJson(url, github):
                 for i in repoItemCommits:
                     author = i['author']['login']
                     commiter = i['committer']['login']
-                    stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                    stringcommiter += '{"author_login": "' + author + '","committer_login": "' + commiter + '"},'
 
                 for i in range(2, 11):
                     r = github.get(
@@ -99,7 +99,7 @@ def getJson(url, github):
                     for singleCommit in repoItemCommits:
                         author = singleCommit['author']['login']
                         commiter = singleCommit['committer']['login']
-                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                        stringcommiter += '{"author_login": "' + author + '","committer_login": "' + commiter + '"},'
 
             # to have an valide json string/file we need to cut the last ',' up, becouse every new item have a ',
             # ' at the end of the string but the last have none so this must cut
@@ -118,9 +118,9 @@ def getJson(url, github):
                     author = i['author']['login']
                     commiter = i['committer']['login']
                     if j < (len(repoItemCommits) - 1):
-                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"},'
+                        stringcommiter += '{"author_login": "' + author + '","committer_login": "' + commiter + '"},'
                     else:
-                        stringcommiter += '{"author_login": "' + author + '","commiter_login": "' + commiter + '"}'
+                        stringcommiter += '{"author_login": "' + author + '","committer_login": "' + commiter + '"}'
                     j += 1
                 except:
                     # count also when a problem is there so we have no other problems ;D
@@ -208,9 +208,9 @@ def getJson(url, github):
     languageJson = '"languages":' + json.dumps(repoItemLanguage)
     commitsJson = '"commits":[' + stringcommiter + ']'
     commentsJson = '"comments":' + json.dumps(repoItemsComment)
-    issueJson = '"issues":' + json.dumps(repoItemIssue)
+    issueJson = '"issue":' + json.dumps(repoItemIssue)
     # Create one Big JSON File
     # add '{' '}' at the and and beginn to creaet a valid json file and ',' between parts
-    finalReposItem = '{' + infoJson + ',' + treeJson + ',' + readmeJson + ',' + languageJson + ',' + commitsJson + ',' + commentsJson + ',' + issueJson + '}'
+    finalReposItem = '[{' + infoJson + ',' + treeJson + ',' + readmeJson + ',' + languageJson + ',' + commitsJson + ',' + commentsJson + ',' + issueJson + '}]'
     # return the Big JSON File
     return finalReposItem

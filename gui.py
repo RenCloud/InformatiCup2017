@@ -258,7 +258,7 @@ class Example(QMainWindow):
             app.processEvents()
 
             if len(repositorys) != 0:
-                keineahnung = getJson2(repositorys, self.github)
+                keineahnung = getJson(repositorys, self.github)
                 cat = server.classify(keineahnung)
                 print(cat)
         self.view.resizeColumnsToContents()
