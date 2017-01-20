@@ -90,7 +90,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
         dbn.pretraining(input, gibbs_sampling_steps=[1, 1, 3, 4], learning_rate=[0.1, 0.01, 0.001, 0.0001],
                         weight_decay=[0.1, 0.01, 0.01, 0.01, 0.001],
                         momentum=[0.5, 0.9, 0.9, 0.9], continue_training=[False, True, True, True],
-                        epoch_steps=[10, 10, 10, 10], batch_size=[10, 10, 10, 10])
+                        epoch_steps=[10, 50, 10, 100], batch_size=[10, 10, 10, 10])
 
     if supervised_train_set and validation_set:
 
