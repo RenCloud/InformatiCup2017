@@ -7,6 +7,7 @@ def getJson(url, github):
     :param url: Github URL of given Repository from which the data is interested
     :param github: github request with oAuth (this is not a must)
     :return: Json Object of Repository Data
+
     """
     # Get Owner of the repository
     owner = url.split('/')[3]

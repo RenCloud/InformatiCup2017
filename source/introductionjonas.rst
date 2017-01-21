@@ -1,55 +1,75 @@
-Get Started Request and PyQt5
-=============================
+Get Started: Request and PyQt5
+==============================
 
 Installation
 ------------
-The Gui and the Data Fetch (the python part, we also have a ASP.Net C# version of it) use `Requests: HTTP for Humans <http://docs.python-requests.org/en/master/>`_ for fetching the Gihub API data with requests_oAuthlib, `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/intro>`_
+
+The userinterface is build with `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/intro>`_.
+We use `Requests: HTTP for Humans <http://docs.python-requests.org/en/master/>`_ and requests_oAuthlib to fetch the required data
+from GitHub.
+The requirements for this part of the project are easiely installed via pip:
+::
+
+    pip install requests
+::
+
+    pip install requests_oauthlib
+::
+
+    pip install PyQt5
+
+The Gui and the Data Fetch (the python part, we also have a ASP.Net C# version of it) use `Requests: HTTP for Humans <http://docs.python-requests.org/en/master/>`_
+for fetching the GitHub API data with requests_oAuthlib, `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/intro>`_
 for the Graphical Interface and python 3.5 as language.
 
-Both can installed via pip: pip install requests/requests_oauthlib/PyQt5.
+Both can installed via pip:
+                            #. pip install requests
+                            #. pip install requests_oauthlib
+                            #. pip install PyQt5
 
 
-Basic usage of Requests/Requests_oAtuhLib
------------------------------------------
+Basic: Requests and Requests_oAtuhLib
+-------------------------------------
 
-Both libarys are very easy to use and make with small kind of code manny tasks.
+Both libarys are very easy to use. We will should you some examples on how to use them so you have a better time understanding our code.
 
-To import Requests and make HTTP Request (which we need to do GitHub API request to fetch data) we need first ::
+First we import the needed modules as followed: ::
 
     import requests  # for the Standart HTTP Requests
-    from requests_oauthlib import OAuth2Session # for the OAuth lib which we need later for OAuth 2 support 
+    from requests_oauthlib import OAuth2Session # for the OAuth lib which we need later for OAuth 2 support
+    import json
 
-To create a basic request ex. to get a webpage ::
+To send a basic webpage request we use the :meth:`get` function.::
     
     r = requests.get('https://api.github.com/events')
 
-The server response, the whole like headers, content and more, is within the r object.
+The severresponds is now in our r variable.
 
-To view the content this line is all what you need ::
+To view it's content we use the python :meth:`print` functionality::
 
     print(r.text)
 
-For the githubapi we get a JSON string back we can easily make an python object from it with the standart json lib within python ::
+From the GitHub API we get a JSON string back. We can easily convert the responds into a JSON string. ::
 
-    # don't forget to import json
     jsonobject = json.loads(r.text or r.content)
 
-To run in less problems while doing github requests a simple if construction helps ;;
+To run in fewer problems while handling github requests a simple if construction helps. ::
 
     if r.ok: # is ok when request is ok -> when you hit ratelimit it's not ok
         print(r.text)
 
-The Requests Lib can make mutch more like Post requests, working with Vert Verification and more which you can read `here <http://docs.python-requests.org/en/master/user/quickstart/>`_ and `here <http://docs.python-requests.org/en/master/user/advanced/>`_.
+The :mod:`request` can be used for more advanced tasks. The links for more information are
+`here <http://docs.python-requests.org/en/master/user/quickstart/>`_ and `here <http://docs.python-requests.org/en/master/user/advanced/>`_.
 
-For the OAuth know we use the Requests_oAtuhLib we import at the begin.
-For Github we have a client_id and a client_secret ::
+The next step is to use the :mod:`OAuth2Session`.
+First we create two variables which hold our userinformation. ::
 
     # Credentials you get from registering a new application
     client_id = 'Your Client ID'
     client_secret = 'Your Client Secret'
 
-You get this `here <https://github.com/settings/applications/new>`_.
-Also we need the URL, 2 of them ::
+If you want to register your own application follow this link `here <https://github.com/settings/applications/new>`_.
+Let's create some more variables with needed information::
 
     # OAuth endpoints given in the GitHub API documentation
     authorization_base_url = 'https://github.com/login/oauth/authorize'
@@ -66,30 +86,28 @@ Now we have nearly all what we need ::
      # Fetch the access token
      github.fetch_token(token_url, client_secret=client_secret, authorization_response=redirect_response)
 
-With the github object you can make request with oauth.
-Simple make the same like above only with github and not with requests ::
+With the github object you can do request with oauth.
+Simple do the same as you did before only this time with the github object instead of :meth:`requests` ::
 
     r = github.get('https://api.github.com/user')
 
 For more look `here <http://requests-oauthlib.readthedocs.io/en/latest/index.html>`_.
 
 
-Basic use of PyQt5
-------------------
+Basics: PyQt5
+-------------
 
-So for PyQt it's not so easy to make a basic view.
 Within the project we need 13 Imports from PyQt for different objects like Buttons, TextFields and more.
+In this section we give you nice inside about the methods we used in our code.
 Here we only show a basic window with a button and a tooltip.
 
-For this we need as import ::
+Our imports are: ::
 
     import sys
-    from PyQt5.QtWidgets import (QWidget, QToolTip, 
-         QPushButton, QApplication)
+    from PyQt5.QtWidgets import (QWidget, QToolTip, QPushButton, QApplication)
     from PyQt5.QtGui import QFont  
 
-That's alot for such a bit but we need all of them. 
-Next we create a main for our window ::
+Next we create a main for our window: ::
 
     if __name__ == '__main__':
     
@@ -97,7 +115,8 @@ Next we create a main for our window ::
     ex = Example()
     sys.exit(app.exec_())
 
-Like you see we start an Example() wich we write now ::
+The variable is our class which we use to create our window.
+That's what the class will look like::
 
     class Example(QWidget):
         
@@ -107,31 +126,35 @@ Like you see we start an Example() wich we write now ::
             self.initUI()
 
 This is the basic init structure for a QWidget.
-The only part which is missing 'initUI' ::           
-            
-   def initUI(self):
-        
+The only part which is missing 'initUI'.
+Lets's implement it:
+::
+
+    def initUI(self):
+        # set the font for buttons, texts and the window
         QToolTip.setFont(QFont('SansSerif', 10))
-        
+
+        # Creates the tooltip for our window
         self.setToolTip('This is a <b>QWidget</b> widget')
-        
+
+        # creates a button
         btn = QPushButton('Button', self)
+
+        # Creates the tooltip for our button
         btn.setToolTip('This is a <b>QPushButton</b> widget')
+
         btn.resize(btn.sizeHint())
-        btn.move(50, 50)       
-        
+        btn.move(50, 50)
+
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Tooltips')    
+        self.setWindowTitle('Tooltips')
+
+        # this call is needed otherwise the window won't show up
         self.show()
 
-May the line are self desciptive i say one two words to them.
 
-At the beginn QToolTip.setFont is easy -> it sets the font of the Window and of the parts of the window, buttons and so on.
-self.setToolTip creats a small box under the cursur when it's over the window.
-Same with btn.setToolTip.
 
-The last line is important -> self.show() without this line you want see the window and wait and nothing happen.
-When all of the code is correct and you make all things correct you see something like that 
+Our Program now looks like this:
 
 .. image ::tooltips.png
 

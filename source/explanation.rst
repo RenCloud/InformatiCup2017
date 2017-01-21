@@ -61,7 +61,7 @@ It also limits the amount of labeled training date which is needed to train the 
 
 The supervised training is visualized by this Tensorboard graph:
 
-.. image::
+.. image:: finetuning_decent_forward_graph.png
 
 
 For the supervised training we only had 300 labeled data touples. That's why after the network generates it's own training data after

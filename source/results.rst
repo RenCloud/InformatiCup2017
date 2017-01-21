@@ -136,6 +136,14 @@ The new vector we tested uses almost the same input values but this time we were
 As in this post (insert post here) isn't the scale of the input that important. We will just normalize the vector to prevent the values in
 the vector from getting to big.
 
+Inputvalues:
+#. Number of comments
+#. Number of commits
+#. Number of open issues
+#. Number of closed issues
+#. Number of users who commented
+#. Number of users who commited
+
 We tried a new method of normalizing the values between 1 and 0.
 We used the :meth:`tensorflow.nn.l2_normalize` function. The trainingresults with a [6, 50, 100, 200, 400, 7] net
 were slightly over our previously tested ones. we got up to 33% accuracy.

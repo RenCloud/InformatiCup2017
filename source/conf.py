@@ -19,11 +19,11 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../InformatiCup2017/learning/utils'))
-sys.path.insert(0, os.path.abspath('../../InformatiCup2017/learning/frontend'))
-sys.path.insert(0, os.path.abspath('../../InformatiCup2017/learning/networks'))
-sys.path.insert(0, os.path.abspath('../../InformatiCup2017/data'))
-sys.path.insert(0, os.path.abspath('../../InformatiCup2017/'))
+sys.path.insert(0, os.path.abspath('../../Gi-Projekt/learning/utils'))
+sys.path.insert(0, os.path.abspath('../../Gi-Projekt/learning/frontend'))
+sys.path.insert(0, os.path.abspath('../../Gi-Projekt/learning/networks'))
+sys.path.insert(0, os.path.abspath('../../Gi-Projekt/data'))
+sys.path.insert(0, os.path.abspath('../../Gi-Projekt/'))
 
 print(os.path.abspath('../learning'))
 

@@ -5,5 +5,6 @@ Project Code
    :members:
    :private-members:
    :member-order: bysource
+
 .. automodule:: getJsonWithoAuth
    :members:
