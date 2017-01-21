@@ -17,10 +17,10 @@ Jonas
    :maxdepth: 2
    :caption: Contents:
 
-   introduction
-   explanation
-   code
-   results
+   introductionjonas
+   explanationjonas
+   codeJonas
+   resultsjonas
 
 Jan
 ---
