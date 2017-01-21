@@ -369,7 +369,7 @@ class DBN(object):
                 # cross_entropy = tf.reduce_mean(-tf.reduce_sum(self._tf_desired_output * tf.nn.sigmoid(self._tf_output), reduction_indices=[1]))
 
                 self.learningrate = 0.5
-                learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 100, 0.99,
+                learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 300, 0.99,
                                                            staircase=True)
 
                 self._tf_train_step = tf.train.ProximalAdagradOptimizer(learning_rate=learning_rate,

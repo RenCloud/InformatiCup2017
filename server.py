@@ -80,7 +80,7 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_4", supervised_train_set=svt, validation_set=svt, do_pretraining=True)
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_7", supervised_train_set=svt, validation_set=svt, do_pretraining=False)
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):

@@ -274,7 +274,6 @@ Kurze zusammenfassung der Ergebnisse des aufbaus und so weiter
 
 danach was hat functioniert was nicht
 
-
 Warum
 
 Gründe beim Netzwerk
