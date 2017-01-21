@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Experiment Results &#8212; Gi-Project 1.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Project Code" href="code.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Project Code"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="experiment-results">
+<h1>Experiment Results<a class="headerlink" href="#experiment-results" title="Permalink to this headline">¶</a></h1>
+<p>The task was to write a automated classifier for GitHub repositorys.</p>
+<p>Our idea was it to use a unsupevised network. We found out that you can stack multiple restricted Boltzmann machines to form a
+Deep Belief network which has much better problem solving abilities. But we needed a discriminativ model. That&#8217;s why we classified
+some repositorys by hand. With this data set we could finetune the DBN and then use the DBN to generate new training data and contiune the training.</p>
+<p>For your network we used Tensorflow with numpy to build the network. The introduction on how to use them can be found on the
+<a class="reference internal" href="introduction.html"><span class="doc">Get Started with Tensorflow</span></a> page. All testresults are visualized with Tensorboard.</p>
+<div class="section" id="first-experiment">
+<h2>First Experiment<a class="headerlink" href="#first-experiment" title="Permalink to this headline">¶</a></h2>
+<p>Our first run with only 4700 unlabeled datasets wasn&#8217;t really succefull. The hyperparameters were as followed:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Hyperparameter</th>
+<th class="head">Values 1</th>
+<th class="head">Values 2</th>
+<th class="head">Values 3</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Epochs</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr class="row-odd"><td>Batchsize</td>
+<td>10</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr class="row-even"><td>learningrate</td>
+<td>0.1</td>
+<td>0.01</td>
+<td>0.005</td>
+</tr>
+<tr class="row-odd"><td>Gibbssamplingsteps</td>
+<td>1</td>
+<td>3</td>
+<td>5</td>
+</tr>
+<tr class="row-even"><td>Momentumterm</td>
+<td>0.5</td>
+<td>0.9</td>
+<td>0.9</td>
+</tr>
+<tr class="row-odd"><td>Weightdecay</td>
+<td>0.0001</td>
+<td>0.0001</td>
+<td>0.0001</td>
+</tr>
+</tbody>
+</table>
+<p>Each layer is trained with the same 3 values.</p>
+<p>Network structure: [1370, 500, 500, 1500, 7]</p>
+<p>Accuracy got never over 16%. Sometimes way worse. But the weights stay small which was a win for us.
+The choice of Opitmizer and learning rate for the finetuning part didn&#8217;t had any effect on the testresults.</p>
+<p>Next try with almost the same parameters but this time with 31700 unlabeled data sets. The initialization was long and the
+input vector got up to 7300. The program took just 3GB but after the first epoch the memory usage doubled. We expect that
+the <code class="xref py py-meth docutils literal"><span class="pre">np.random.shuffle()</span></code> and the ne permutated image and label array are the reason why the memeory usage exploded. In previouse tests
+wasn&#8217;t this in issue. We expect that there had to be some kind of an bug.</p>
+<p>Because of this we had to constrain the input vector. Every word which happens to occure to few or too much is cut out of the vector.</p>
+<p>After this we ended up with 1636 in input vector size. The hyperparameters for the third test were as followed:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Hyperparameter</th>
+<th class="head">Values 1</th>
+<th class="head">Values 2</th>
+<th class="head">Values 3</th>
+<th class="head">Values 4</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Epochs</td>
+<td>10</td>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+</tr>
+<tr class="row-odd"><td>Batchsize</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>learningrate</td>
+<td>0.1</td>
+<td>0.01</td>
+<td>0.005</td>
+<td>0.001</td>
+</tr>
+<tr class="row-odd"><td>Gibbssamplingsteps</td>
+<td>1</td>
+<td>1</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr class="row-even"><td>Momentumterm</td>
+<td>0.5</td>
+<td>0.9</td>
+<td>0.9</td>
+<td>0.9</td>
+</tr>
+<tr class="row-odd"><td>Weightdecay</td>
+<td>0.0001</td>
+<td>0.0001</td>
+<td>0.0002</td>
+<td>0.0002</td>
+</tr>
+</tbody>
+</table>
+<p>Network structure: [1636, 500, 500, 1500, 7]</p>
+<p>We tested all possible optimizers netstructures and hyperparameters and came to the conclusion that single words aren&#8217;t
+usefull for a classification problem if they are used without a context.</p>
+<p>So we tried a new short input vector. Which encoded the following things:
+#. Number of files in the repository
+#. Number of commits
+#. Number of open issues
+#. Number of closed issues
+#. Number of closed issues
+#. Number of Users how left a comment
+#. Number of Users how commited something</p>
+<p>Every of these parameters was normalized relativly to the number of ... in the whole data set.
+But we observed that the network couldn&#8217;t even learn a small dataset. To prove this we let the network train with our
+supervised dataset and test every epoch how many of them it could classify correctly.
+We never did crack the 21% accuracy rate. That&#8217;s why we reconstructed the vector again this time we made the value relative
+to the other values in the repository. Because we expected that all of the given parameters are also kind of dependent how
+big the repository is.
+New vector:
+#. Number of Files / the number of maximal possible files
+#. Number of comments / Number of commits
+#. Number of open issues / number of closed issues
+#. Number of authors / number of files
+#. Number of users who commited / number of files</p>
+<p>But still the network couldn&#8217;t even find a relatively good solution for all our 300 trainsets.</p>
+<p>New kind of Weight decay in rbms to controll the jumping weight growth</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Experiment Results</a><ul>
+<li><a class="reference internal" href="#first-experiment">First Experiment</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="code.html"
+                        title="previous chapter">Project Code</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/results.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code.html" title="Project Code"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Gruppe Hannover.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

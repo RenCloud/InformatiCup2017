@@ -1,0 +1,565 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DBN &#8212; Gi-Project 1.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Gi-Project 1.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for DBN</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">learning.networks.RBM_CDK</span> <span class="k">import</span> <span class="n">RBM</span>
+
+<span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="k">import</span> <span class="n">input_data</span>
+<span class="kn">from</span> <span class="nn">learning.utils.input_format</span> <span class="k">import</span> <span class="n">DataSet</span>
+
+<span class="c1"># TODO</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd"> 1. neuer ordner zum speichern und laden von finegetuneten models</span>
+<span class="sd"> 2. die möglichkeit das finetuning fortzusetzen</span>
+<span class="sd"> 3. für das finetunig die variable global step einführen</span>
+<span class="sd"> 4. refracturing des codes</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="DBN"><a class="viewcode-back" href="../code.html#DBN.DBN">[docs]</a><span class="k">class</span> <span class="nc">DBN</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">layer_size</span><span class="p">,</span>
+                 <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;dbn&quot;</span><span class="p">,</span>
+                 <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;dbn_model&quot;</span>
+                 <span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Constructor for Deep Belief Network. Sets up all Variables used by the network. In the Constructor is also</span>
+<span class="sd">            the size of the network specified.</span>
+
+<span class="sd">        :param layer_size: The parameter holds the size and the number of layers used for the network as a list:</span>
+<span class="sd">                                e.g.[10, 20, 10], this network has 3 layers of the size 10, 20, 10.</span>
+<span class="sd">        :param main_dir: Is used as save location for checkpoints and logdata.</span>
+<span class="sd">        :param model_name: Is used for the checkpoint filename.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span> <span class="o">=</span> <span class="n">layer_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">=</span> <span class="n">main_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_data_directories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_global_step</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_keep_prob</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_train_step</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_accuracy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_output</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learningrate</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_finetune_saver</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="DBN.pretraining"><a class="viewcode-back" href="../code.html#DBN.DBN.pretraining">[docs]</a>    <span class="k">def</span> <span class="nf">pretraining</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">train_set</span><span class="p">,</span>
+                    <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">learning_rate</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">],</span>
+                    <span class="n">weight_decay</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0001</span><span class="p">],</span>
+                    <span class="n">momentum</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">],</span>
+                    <span class="n">epoch_steps</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">],</span>
+                    <span class="n">first_layer_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">layer_output_binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">continue_training</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">]):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The pretrainfunction is used to find good initial weights for the finetuning part. The arguments of the function</span>
+<span class="sd">                contain lists which all have to have the same size to specify the training parameters.</span>
+<span class="sd">                All layers but the top one specified in the constructor are then train with the rbm.fit() function.</span>
+<span class="sd">                All networkparameters have default values but the should be overriden.</span>
+
+<span class="sd">        :param train_set: The input data formatted as input_format.</span>
+<span class="sd">        :param gibbs_sampling_steps: The number of Gibbs sampling steps.</span>
+<span class="sd">        :param learning_rate: The learningrate.</span>
+<span class="sd">        :param weight_decay: The weight decay term to punish high weight values.</span>
+<span class="sd">        :param momentum: The momentum term to speed up or slow down learning.</span>
+<span class="sd">        :param epoch_steps: The number of epochs that should be performed for the hyperparameters at the time .</span>
+<span class="sd">        :param first_layer_binary: When set true the first RBM will convert the input into a dta vector with values</span>
+<span class="sd">                                between 0 and 1.</span>
+<span class="sd">        :param layer_output_binary: When set true all networks will return a data vector with values between 0 and 1.</span>
+<span class="sd">        :param continue_training: Is a list with the same size as epoch_steps. If at a given index set to true the</span>
+<span class="sd">                                RBM will restore the previously learned weights and continues training with them.</span>
+<span class="sd">        :param batch_size:  Is a list with the same size as epoch_steps. The value at an index of the list is the size</span>
+<span class="sd">                                of the batches.</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+
+            <span class="n">input_to_binary</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">first_layer_binary</span><span class="p">:</span>
+                <span class="n">input_to_binary</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="n">rbm</span> <span class="o">=</span> <span class="n">RBM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">main_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="s2">&quot;/rbm_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                      <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;rbm_model_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="n">input_to_binary</span><span class="p">)</span>
+
+            <span class="c1"># print(train_set._images.shape[0], train_set._images.shape[1])</span>
+            <span class="n">start_epoch</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">epoch_steps</span><span class="p">)):</span>
+
+                <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">start_epoch</span> <span class="o">+=</span> <span class="n">epoch_steps</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] started training periode &quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot; of &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch_steps</span><span class="p">))</span>
+
+                <span class="n">rbm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="n">continue_training</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">start_epoche</span><span class="o">=</span><span class="n">start_epoch</span><span class="p">,</span>
+                        <span class="n">validation_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">[</span><span class="n">n</span><span class="p">],</span>
+                        <span class="n">momentum_factor</span><span class="o">=</span><span class="n">momentum</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epoch_steps</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                        <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="n">gibbs_sampling_steps</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] pretraining </span><span class="si">%d</span><span class="s2"> ended&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">rbm</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_hstates</span><span class="o">=</span><span class="n">layer_output_binary</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">results</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">train_set</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] new dataset generated&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBN.supervised_finetuning"><a class="viewcode-back" href="../code.html#DBN.DBN.supervised_finetuning">[docs]</a>    <span class="k">def</span> <span class="nf">supervised_finetuning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_set</span><span class="p">,</span> <span class="n">make_dbn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">validation_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">global_epoch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">finetune_load_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">,</span> <span class="n">finetune_save_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The finetuning function uses a data_set to train a pretrained network. It uses the backpropagation algorithm.</span>
+<span class="sd">                Before the training can start the DBN has to be build. Build_dbn_from_rbms combines the weights of the</span>
+<span class="sd">                pretrained RBMs and creates the DBN weights with it. The DBN has one more softmax layer</span>
+
+<span class="sd">        :param data_set: The data to train the network with. This dataset has to have the desired output.</span>
+<span class="sd">        :param make_dbn: A boolean variable. If true the dbn will be build from the pretrained RBMs</span>
+<span class="sd">        :param batch_size: Specifies the size of batches the data_set is slices into.</span>
+<span class="sd">        :param epochs: Number of epochs the network should train.</span>
+<span class="sd">        :param validation_set: If a validation_set is given the network will calculate it&#39;s accuracy after every epoch.</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">make_dbn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_dbn_from_rbms</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_deterministic_model</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_finetune_dir</span><span class="p">(</span><span class="n">finetune_save_dir</span><span class="p">)</span>
+
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_tf_utilities_and_ops</span><span class="p">(</span><span class="n">create_from_rbms</span><span class="o">=</span><span class="n">make_dbn</span><span class="p">,</span> <span class="n">finetune_load_dir</span><span class="o">=</span><span class="n">finetune_load_dir</span><span class="p">,</span>
+                                                  <span class="n">finetune_save_dir</span><span class="o">=</span><span class="n">finetune_save_dir</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_train_step</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">validation_set</span><span class="p">:</span>
+                    <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_validation_results</span><span class="p">(</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">global_epoch</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_finetune_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="n">finetune_save_dir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">accuracy</span></div>
+
+<div class="viewcode-block" id="DBN.classify"><a class="viewcode-back" href="../code.html#DBN.DBN.classify">[docs]</a>    <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">build_dbn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">finetune_sub_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function is used to get predictions for a given input. The network has to be build and should be trained.</span>
+
+<span class="sd">        :param input: The data used to make the prediction.</span>
+<span class="sd">        :param build_dbn: If the prediction has to be made before the finetuning the network can be build from</span>
+<span class="sd">                            pretrained RBMs.</span>
+<span class="sd">        :return: The prediction</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">build_dbn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_dbn_from_rbms</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_classification_model</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="n">finetune_sub_dir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_output</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+    <span class="k">def</span> <span class="nf">supervised_training</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">validation_set</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">sub_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">,</span> <span class="n">global_epoch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">restore_previouse_model</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_deterministic_model</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_finetune_dir</span><span class="p">(</span><span class="n">sub_dir</span><span class="p">)</span>
+
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_tf_utilities_and_ops</span><span class="p">(</span><span class="n">create_from_rbms</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">finetune_load_dir</span><span class="o">=</span><span class="n">sub_dir</span><span class="p">,</span>
+                                                  <span class="n">finetune_save_dir</span><span class="o">=</span><span class="n">sub_dir</span><span class="p">,</span>
+                                                  <span class="n">restore_previouse_model</span><span class="o">=</span><span class="n">restore_previouse_model</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_train_step</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">validation_set</span><span class="p">:</span>
+                    <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_validation_results</span><span class="p">(</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">global_epoch</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_finetune_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="n">sub_dir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">accuracy</span>
+
+<div class="viewcode-block" id="DBN._initialize_tf_utilities_and_ops"><a class="viewcode-back" href="../code.html#DBN.DBN._initialize_tf_utilities_and_ops">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_tf_utilities_and_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">create_from_rbms</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">restore_previouse_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                         <span class="n">finetune_load_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">,</span>
+                                         <span class="n">finetune_save_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Helper function which initializes all tensorflow variables.</span>
+<span class="sd">                If the network is first created from multiple RBMs only the tf_saver is used to restore only the</span>
+<span class="sd">                pretrained variables. Otherwise an error will occure. If the network was already build the weights</span>
+<span class="sd">                will be load completely and from a different directory.</span>
+
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">merge_all</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_restore_dict</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_finetune_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">create_from_rbms</span> <span class="ow">and</span> <span class="n">restore_previouse_model</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_finetune_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="n">finetune_load_dir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">create_from_rbms</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="s2">&quot;dbn/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_summary_dir</span> <span class="o">+</span> <span class="n">finetune_save_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBN._run_train_step"><a class="viewcode-back" href="../code.html#DBN.DBN._run_train_step">[docs]</a>    <span class="k">def</span> <span class="nf">_run_train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_set</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Helper function to run the training for one epoch</span>
+
+<span class="sd">        :param data_set: The data_set formatted as input_format</span>
+<span class="sd">        :param batch_size: The size for the batches</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">iterations</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">data_set</span><span class="o">.</span><span class="n">num_examples</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data_set</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_train_step</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+                                                                 <span class="bp">self</span><span class="o">.</span><span class="n">_tf_keep_prob</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="DBN._run_validation_results"><a class="viewcode-back" href="../code.html#DBN.DBN._run_validation_results">[docs]</a>    <span class="k">def</span> <span class="nf">_run_validation_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_set</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function is called every epoch to calculate the accuracy.</span>
+
+<span class="sd">        :param validation_set: The data set to validate formatted as input_format</span>
+<span class="sd">        :param epoch: Am integer to pin the result to an epoch</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">sum</span><span class="p">,</span> <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_accuracy</span><span class="p">],</span>
+                                             <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">:</span> <span class="n">validation_set</span><span class="o">.</span><span class="n">images</span><span class="p">,</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span><span class="p">:</span> <span class="n">validation_set</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_keep_prob</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">accuracy</span></div>
+
+<div class="viewcode-block" id="DBN._create_restore_dict"><a class="viewcode-back" href="../code.html#DBN.DBN._create_restore_dict">[docs]</a>    <span class="k">def</span> <span class="nf">_create_restore_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Helper function to dynamically get all names and tensorflow variables in one dictionary. This is used to load</span>
+<span class="sd">                only these pretrained variables.</span>
+
+<span class="sd">        :return: dict with the variable names as keys and the variables as values</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="nb">dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:0&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="nb">dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:0&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">dict</span></div>
+
+<div class="viewcode-block" id="DBN._build_dbn_from_rbms"><a class="viewcode-back" href="../code.html#DBN.DBN._build_dbn_from_rbms">[docs]</a>    <span class="k">def</span> <span class="nf">_build_dbn_from_rbms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function takes all pretrained layers weights and temporarily saves them as numpy arrays.</span>
+<span class="sd">                With the values the tensorflow variables are initialized.</span>
+
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">rbms</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rbms</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] recreate rbm models&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">rbms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">RBM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">main_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="s2">&quot;/rbm_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                              <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;rbm_model_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] get weights from network &quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">temp_w</span><span class="p">,</span> <span class="n">temp_bh</span> <span class="o">=</span> <span class="n">rbms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_w</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_bh</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dbn_weight_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dbn_bias_hidden_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="s2">&quot;dbn/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DBN._build_deterministic_model"><a class="viewcode-back" href="../code.html#DBN.DBN._build_deterministic_model">[docs]</a>    <span class="k">def</span> <span class="nf">_build_deterministic_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function builds the computation graph for the supervised finetuning and the classification function.</span>
+
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_variables</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_placeholder</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s2">&quot;learning&quot;</span><span class="p">):</span>
+
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span>
+
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s2">&quot;forward-pass&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="c1"># dropout to prevent overfitting</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">keep_prob</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_keep_prob</span><span class="p">)</span>
+
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+                <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+
+                <span class="c1"># dropout to prevent overfitting</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">keep_prob</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_keep_prob</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s2">&quot;backpropagation&quot;</span><span class="p">):</span>
+                <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span><span class="p">)</span>
+
+                <span class="c1"># cross_entropy = tf.reduce_mean(-tf.reduce_sum(self._tf_desired_output * tf.nn.sigmoid(self._tf_output), reduction_indices=[1]))</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">learningrate</span> <span class="o">=</span> <span class="mf">0.5</span>
+                <span class="n">learning_rate</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">exponential_decay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learningrate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_global_step</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span>
+                                                           <span class="n">staircase</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tf_train_step</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">ProximalAdagradOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
+                                                                        <span class="n">l1_regularization_strength</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>
+                                                                        <span class="n">l2_regularization_strength</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span><span class="o">.</span> \
+                    <span class="n">minimize</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_global_step</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s2">&quot;accuracy&quot;</span><span class="p">):</span>
+            <span class="n">prediction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="n">correct_prediction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+            <span class="c1"># correct_prediction = tf.nn.in_top_k(prediction, tf.argmax(self._tf_desired_output, 1), 2)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_accuracy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">correct_prediction</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s2">&quot;weight_development&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;weights_max_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;weights_min_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_accuracy</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">))</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;effective_learningrate&quot;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_classification_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_variables</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_placeholder</span><span class="p">()</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DBN._create_variables"><a class="viewcode-back" href="../code.html#DBN.DBN._create_variables">[docs]</a>    <span class="k">def</span> <span class="nf">_create_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A Helper function which creates the weights and bias variables.</span>
+
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_global_step</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;global_step&#39;</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                                                         <span class="n">stddev</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dbn_weight_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dbn_bias_hidden_&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">i</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DBN._create_placeholder"><a class="viewcode-back" href="../code.html#DBN.DBN._create_placeholder">[docs]</a>    <span class="k">def</span> <span class="nf">_create_placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A Helper function wich creates the placesholders for the inputdata and the desired output.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;input-data&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_size</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;desired-output&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_keep_prob</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBN._create_data_directories"><a class="viewcode-back" href="../code.html#DBN.DBN._create_data_directories">[docs]</a>    <span class="k">def</span> <span class="nf">_create_data_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A Helper function to create the directories to save the logs and the model weights.</span>
+
+<span class="sd">        :return: Returns the path to the logs and model directories</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+
+        <span class="n">models_dir</span> <span class="o">=</span> <span class="s2">&quot;models/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="s2">&quot;data/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+        <span class="n">summary_dir</span> <span class="o">=</span> <span class="s2">&quot;logs/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="n">models_dir</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">summary_dir</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">models_dir</span> <span class="o">+</span> <span class="s2">&quot;dbn/&quot;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">models_dir</span> <span class="o">+</span> <span class="s2">&quot;dbn/&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">models_dir</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">summary_dir</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_finetune_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finetune_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s2">&quot;models/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="n">finetune_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;models/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="n">finetune_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s2">&quot;logs/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="n">finetune_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;logs/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="n">finetune_dir</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">mnist</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">read_data_sets</span><span class="p">(</span><span class="s2">&quot;MNIST_data/&quot;</span><span class="p">,</span> <span class="n">one_hot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">dbn</span> <span class="o">=</span> <span class="n">DBN</span><span class="p">([</span><span class="mi">784</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1500</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;mnist_test&quot;</span><span class="p">)</span>
+
+    <span class="n">dbn</span><span class="o">.</span><span class="n">pretraining</span><span class="p">(</span><span class="n">mnist</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">learning_rate</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">],</span>
+                    <span class="n">weight_decay</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.0002</span><span class="p">],</span>
+                    <span class="n">momentum</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="n">continue_training</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span> <span class="n">epoch_steps</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Gi-Project 1.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Gruppe Hannover.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

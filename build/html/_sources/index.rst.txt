@@ -17,10 +17,6 @@ Jonas
    :maxdepth: 2
    :caption: Contents:
 
-   introduction
-   explanation
-   code
-   results
 
 Jan
 ---
@@ -29,10 +25,10 @@ Jan
    :maxdepth: 2
    :caption: Contents:
 
-   introduction
-   explanation
-   code
-   results
+   why
+   textMining
+   efficency
+   thoughts
 
 
 Niels
