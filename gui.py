@@ -474,7 +474,7 @@ class Gui(QMainWindow):
         self.trainfile2 = name[0]
 
 
-        def btrainfile3clicked(self):
+    def btrainfile3clicked(self):
             """
            Select multiple files
            """
