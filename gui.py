@@ -26,7 +26,8 @@ client_secret = 'aaf90eb8b87de2ca40c995f6ac55eec85f4c1170'
 # OAuth endpoints given in the GitHub API documentation
 authorization_base_url = 'https://github.com/login/oauth/authorize'
 token_url = 'https://github.com/login/oauth/access_token'
-objectwidth = objectwidth
+objectwidth = 25
+
 
 class Gui(QMainWindow):
     def __init__(self):
@@ -165,7 +166,8 @@ class Gui(QMainWindow):
         self.cbown.setStatusTip('Add Own Repositorys automaticly to the list')
 
         # training create 6 textfield and 6 buttons 
-         self.letraingdir1 = QLineEdit(tab3)
+        self.letraingdir1 = QLineEdit(tab3)
+
         self.letraingdir1.setGeometry(50, 110, 300, objectwidth)
 
         self.btraindir1 = QPushButton('Set Dir', tab3)
@@ -219,8 +221,7 @@ class Gui(QMainWindow):
         self.btrainfile4.setGeometry(370, 260, 80, objectwidth)
         self.btrainfile4.clicked.connect(self.btrainfile4clicked)
 
-
-         # set geometry of main window
+        # set geometry of main window
         self.setGeometry(300, 300, 500, 400)
         self.setMinimumSize(500, 400)
         self.show()
@@ -233,7 +234,6 @@ class Gui(QMainWindow):
 
 
     def closeEvent(self, event):
-
         """
             What happens when the user hits the close button
         :param event: close button click
@@ -250,15 +250,15 @@ class Gui(QMainWindow):
         else:
             event.ignore()
 
-    def btrainingclicked(self):
 
+    def btrainingclicked(self):
         """
             training button was clicked and training will start recently
         """
         # start different modes when checkboxes are checked
         if self.cb.isChecked():
             print("New DataSet")
-            #server.training([], True, False)
+            # server.training([], True, False)
             return
 
         if self.cbt.isChecked():
@@ -267,6 +267,7 @@ class Gui(QMainWindow):
         else:
             print('Standard')
             server.training(self.files, False, False)
+
 
     def showdialog(self):
         """
@@ -278,6 +279,7 @@ class Gui(QMainWindow):
 
         # set textfiel text with filepath
         self.lepath.setText(fname[0])
+
 
     def bshowtrainclicked(self):
         """
@@ -294,6 +296,7 @@ class Gui(QMainWindow):
         self.letrainingpath.setText(nameString)
         self.files = name[0]
 
+
     def btagclicked(self):
         """
             User wants to tag repositorys so the wish will done by the neural network recently
@@ -309,7 +312,6 @@ class Gui(QMainWindow):
                     jsonstring = json.loads(r.text or r.content)
                     for ownrepos in jsonstring:
                         data.append(ownrepos['html_url'])
-                        
 
         for repositorys in data:
             repositorys = repositorys.replace('\n', '')
@@ -317,7 +319,6 @@ class Gui(QMainWindow):
             self.model.appendRow(item)
             itemRow = item.row()
             indexOfColumn1 = self.model.index(itemRow, 1)
-            
 
             if len(repositorys) != 0:
                 keineahnung = getJson(repositorys, self.github)
@@ -327,10 +328,9 @@ class Gui(QMainWindow):
             self.model.setData(indexOfColumn1, cat, 0)
             app.processEvents()
 
-
-        
         self.view.resizeColumnsToContents()
         self.data = data
+
 
     def bloggingclicked(self):
         """
@@ -348,6 +348,7 @@ class Gui(QMainWindow):
         QDesktopServices.openUrl((QUrl(authorization_url)))
         print(authorization_url)
 
+
     def bpasteclicked(self):
         """
             user has paste the callbacklink(or not) in the field so we hopefully have a functional oAuth token
@@ -364,16 +365,19 @@ class Gui(QMainWindow):
         self.bpaste.hide()
         self.cbown.show()
 
+
     def resizeEvent(self, resizeEvent):
         """
          window size has change change the size of the objects too
         """
 
-         width = self.width()
-        scale = width/ 500
-       
+        width = self.width()
+
+
+        scale = width / 500
+
         # tab 1
-        startx = scale *20+30
+        startx = scale * 20 + 30
         temp = width - 2 * startx
         size = temp - (width - startx - (scale * 95 + 65) + 20)
         size2 = width - startx - (scale * 95 + 65)
@@ -412,31 +416,42 @@ class Gui(QMainWindow):
         self.btrainfile2.setGeometry(size3, 200, size, objectwidth)
         self.btrainfile3.setGeometry(size3, 230, size, objectwidth)
         self.btrainfile4.setGeometry(size3, 260, size, objectwidth)
-     def btraindir1clicked(self):
-         """
-         Select an dir
-         """
+
+
+    def btraindir1clicked(self):
+        """
+        Select an dir
+        """
 
 
         # start filepicker at '/home' place
+
+
         fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
         self.letraingdir1.setText(fname)
         self.trainingdir1 = fname
-    def btraindir2clicked(self):
-          """
-         Select an dir
-         """
 
 
-        # start filepicker at '/home' place
+        def btraindir2clicked(self):
+            """
+           Select an dir
+           """
+
+
+            # start filepicker at '/home' place
+
+
         fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
         self.letraingdir2.setText(fname)
         self.trainingdir2 = fname
 
+
     def btrainfile1clicked(self):
-          """
-         Select multiple files
-         """
+        """
+       Select multiple files
+       """
+
+
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -444,10 +459,13 @@ class Gui(QMainWindow):
         self.letrainfile1.setText(nameString)
         self.trainfile1 = name[0]
 
+
     def btrainfile2clicked(self):
-          """
-         Select multiple files
-         """
+        """
+       Select multiple files
+       """
+
+
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -455,10 +473,13 @@ class Gui(QMainWindow):
         self.letrainfile2.setText(nameString)
         self.trainfile2 = name[0]
 
-    def btrainfile3clicked(self):
-          """
-         Select multiple files
-         """
+
+        def btrainfile3clicked(self):
+            """
+           Select multiple files
+           """
+
+
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -466,17 +487,19 @@ class Gui(QMainWindow):
         self.letrainfile3.setText(nameString)
         self.trainfile3 = name[0]
 
+
     def btrainfile4clicked(self):
-          """
-         Select multiple files
-         """
+        """
+       Select multiple files
+       """
+
+
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
             nameString += i + ';'
         self.letrainfile4.setText(nameString)
         self.trainfile4 = name[0]
-
 
 if __name__ == '__main__':
     """
