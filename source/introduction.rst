@@ -78,6 +78,11 @@ Tensorboard
 Tensorboard is a tool which is included in Tensorflow. With Tensorboard you can visualize your training data. In your project we
 used Tensorboard to keep track of our accuracy, loss and weight development. Additionally it visualized our computation graph.
 
+To use Tensorboard, especially to visualize some of our test runs go to the logs directory in our project and open a Terminal in one
+of the containing folders. Then type the command.::
+
+    tensorboad --logdir .
+
 In the following image you can see the progress of 3 restricted Boltzmann machines during pretraining from a MNIST dataset:
 
 .. image:: RBM_pretraining_MNIST.png
@@ -152,3 +157,10 @@ The information of the summary nodes is evaluated by the call of merge_all_summa
     self._tf_summary_writer.add_summary(summary_str, epoch)
 
 If we specify the Tensorflow graph, the computationgraph is visualized in Tensorboard as seen above.
+
+
+Topic
+-----
+
+How does Tensorflow save and load models.
+My implementation of the saving and looading mechanisms in RBM and DBM

@@ -26,12 +26,12 @@ client_secret = 'aaf90eb8b87de2ca40c995f6ac55eec85f4c1170'
 # OAuth endpoints given in the GitHub API documentation
 authorization_base_url = 'https://github.com/login/oauth/authorize'
 token_url = 'https://github.com/login/oauth/access_token'
+objectwidth = objectwidth
 
-
-class Example(QMainWindow):
+class Gui(QMainWindow):
     def __init__(self):
         """
-            init ui
+            init ui 
         """
         super().__init__()
 
@@ -48,7 +48,7 @@ class Example(QMainWindow):
         self.statusBar()
 
         # set tab size and position
-        self.tabs.setGeometry(0, 0, 500, 280)
+        self.tabs.setGeometry(0, 0, 500, 380)
 
         # add 3 tabs to the tab layout
         tab1 = QWidget()
@@ -70,7 +70,7 @@ class Example(QMainWindow):
         # resize button
         self.btraining.resize(self.btraining.sizeHint())
         # set his geometry ( xposition,yposition,xsize,ysize)
-        self.btraining.setGeometry(50, 50, 75, 25)
+        self.btraining.setGeometry(50, 50, 75, objectwidth)
         # what happens when the button is clicked
         self.btraining.clicked.connect(self.btrainingclicked)
 
@@ -78,29 +78,29 @@ class Example(QMainWindow):
         self.bfiledialog = QPushButton('Pick File', tab1)
         self.bfiledialog.setStatusTip('Pick File with Repositorys Links')
         self.bfiledialog.resize(self.bfiledialog.sizeHint())
-        self.bfiledialog.setGeometry(370, 50, 80, 25)
+        self.bfiledialog.setGeometry(370, 50, 80, objectwidth)
         self.bfiledialog.clicked.connect(self.showdialog)
 
         # create a 'textField'
         self.lepath = QLineEdit(tab1)
-        self.lepath.setGeometry(50, 50, 300, 25)
+        self.lepath.setGeometry(50, 50, 300, objectwidth)
         self.lepath.setStatusTip('Path to Repository Link List File')
 
         # create another button to classify repositorys
         self.btag = QPushButton('Classify Repositorys', tab1)
         self.btag.setStatusTip('Classify Repositorys from File')
         self.btag.resize(self.btag.sizeHint())
-        self.btag.setGeometry(50, 90, 400, 25)
+        self.btag.setGeometry(50, 90, 400, objectwidth)
         self.btag.clicked.connect(self.btagclicked)
 
         # add an TextField for Trainings Data
         self.letrainingpath = QLineEdit(tab3)
-        self.letrainingpath.setGeometry(50, 80, 300, 25)
+        self.letrainingpath.setGeometry(50, 80, 300, objectwidth)
         self.letrainingpath.setStatusTip('Set Trainings Data')
 
         # another button to set Path
         self.bshowTrain = QPushButton('Select Files', tab3)
-        self.bshowTrain.setGeometry(360, 80, 75, 25)
+        self.bshowTrain.setGeometry(360, 80, 75, objectwidth)
         self.bshowTrain.setStatusTip('Set Trainings Data')
         self.bshowTrain.clicked.connect(self.bshowtrainclicked)
 
@@ -122,110 +122,109 @@ class Example(QMainWindow):
         self.blogging = QPushButton('Login to Github', tab1)
         self.blogging.setStatusTip('Login to Github for more features and private repository acces')
         self.blogging.resize(self.blogging.sizeHint())
-        self.blogging.setGeometry(50, 130, 400, 25)
+        self.blogging.setGeometry(50, 130, 400, objectwidth)
         self.blogging.clicked.connect(self.bloggingclicked)
 
         # create label
         self.lurl = QLabel(tab1)
-        self.lurl.setGeometry(50, 150, 400, 25)
+        self.lurl.setGeometry(50, 150, 400, objectwidth)
 
         # create githuboAuthSession
         self.github = OAuth2Session(client_id)
 
         # create label
         self.lback = QLabel(tab1)
-        self.lback.setGeometry(50, 170, 400, 25)
+        self.lback.setGeometry(50, 170, 400, objectwidth)
         # hide label
         self.lback.hide()
 
         # create TextField
         self.leback = QLineEdit(tab1)
-        self.leback.setGeometry(50, 190, 400, 25)
+        self.leback.setGeometry(50, 190, 400, objectwidth)
         self.leback.hide()
 
         # hiden button
         self.bpaste = QPushButton('Login', tab1)
         self.bpaste.setStatusTip('Get Login Token')
         self.bpaste.resize(self.bpaste.sizeHint())
-        self.bpaste.setGeometry(50, 220, 400, 25)
+        self.bpaste.setGeometry(50, 220, 400, objectwidth)
         self.bpaste.clicked.connect(self.bpasteclicked)
         self.bpaste.hide()
 
         # Create two Check boxes for training
         self.cbt = QCheckBox('with Validation Set', tab3)
-        self.cbt.setGeometry(50, 20, 150, 25)
+        self.cbt.setGeometry(50, 20, 150, objectwidth)
 
         self.cb = QCheckBox('new Read of Dataset', tab3)
-        self.cb.setGeometry(50, 5, 150, 25)
+        self.cb.setGeometry(50, 5, 150, objectwidth)
 
         # own repositorys?
         self.cbown = QCheckBox('Add own repositorys', tab1)
-        self.cbown.setGeometry(50, 220, 150, 25)
+        self.cbown.setGeometry(50, 220, 150, objectwidth)
         self.cbown.hide()
         self.cbown.setStatusTip('Add Own Repositorys automaticly to the list')
 
-        # training
-        self.letraingdir1 = QLineEdit(tab3)
-        self.letraingdir1.setGeometry(50, 110, 300, 25)
+        # training create 6 textfield and 6 buttons 
+         self.letraingdir1 = QLineEdit(tab3)
+        self.letraingdir1.setGeometry(50, 110, 300, objectwidth)
 
         self.btraindir1 = QPushButton('Set Dir', tab3)
         self.btraindir1.setStatusTip('Set Dir')
         self.btraindir1.resize(self.btraindir1.sizeHint())
-        self.btraindir1.setGeometry(370, 110, 80, 25)
+        self.btraindir1.setGeometry(370, 110, 80, objectwidth)
         self.btraindir1.clicked.connect(self.btraindir1clicked)
 
         self.letraingdir2 = QLineEdit(tab3)
-        self.letraingdir2.setGeometry(50, 140, 300, 25)
+        self.letraingdir2.setGeometry(50, 140, 300, objectwidth)
 
         self.btraindir2 = QPushButton('Set Dir', tab3)
         self.btraindir2.setStatusTip('Set Dir')
         self.btraindir2.resize(self.btraindir2.sizeHint())
-        self.btraindir2.setGeometry(370, 140, 80, 25)
+        self.btraindir2.setGeometry(370, 140, 80, objectwidth)
         self.btraindir2.clicked.connect(self.btraindir2clicked)
 
         self.letrainfile1 = QLineEdit(tab3)
-        self.letrainfile1.setGeometry(50, 170, 140, 25)
+        self.letrainfile1.setGeometry(50, 170, 300, objectwidth)
 
         self.btrainfile1 = QPushButton('Set Files', tab3)
         self.btrainfile1.setStatusTip('Set Files')
         self.btrainfile1.resize(self.btrainfile1.sizeHint())
-        self.btrainfile1.setGeometry(210, 170, 40, 25)
+        self.btrainfile1.setGeometry(370, 170, 80, objectwidth)
         self.btrainfile1.clicked.connect(self.btrainfile1clicked)
 
         self.letrainfile2 = QLineEdit(tab3)
-        self.letrainfile2.setGeometry(250, 170, 150, 25)
+        self.letrainfile2.setGeometry(50, 200, 300, objectwidth)
 
         self.btrainfile2 = QPushButton('Set Files', tab3)
         self.btrainfile2.setStatusTip('Set Files')
         self.btrainfile2.resize(self.btrainfile2.sizeHint())
-        self.btrainfile2.setGeometry(410, 170, 40, 25)
+        self.btrainfile2.setGeometry(370, 200, 80, objectwidth)
         self.btrainfile2.clicked.connect(self.btrainfile2clicked)
 
         self.letrainfile3 = QLineEdit(tab3)
-        self.letrainfile3.setGeometry(50, 200, 140, 25)
+        self.letrainfile3.setGeometry(50, 230, 300, objectwidth)
 
         self.btrainfile3 = QPushButton('Set Files', tab3)
         self.btrainfile3.setStatusTip('Set Files')
         self.btrainfile3.resize(self.btrainfile3.sizeHint())
-        self.btrainfile3.setGeometry(210, 200, 40, 25)
+        self.btrainfile3.setGeometry(370, 230, 80, objectwidth)
         self.btrainfile3.clicked.connect(self.btrainfile3clicked)
 
         self.letrainfile4 = QLineEdit(tab3)
-        self.letrainfile4.setGeometry(250, 200, 150, 25)
+        self.letrainfile4.setGeometry(50, 260, 300, objectwidth)
 
         self.btrainfile4 = QPushButton('Set Files', tab3)
         self.btrainfile4.setStatusTip('Set Files')
         self.btrainfile4.resize(self.btrainfile4.sizeHint())
-        self.btrainfile4.setGeometry(410, 200, 40, 25)
+        self.btrainfile4.setGeometry(370, 260, 80, objectwidth)
         self.btrainfile4.clicked.connect(self.btrainfile4clicked)
 
 
-
-        # set geometry of main window
-        self.setGeometry(300, 300, 500, 300)
-        self.setMinimumSize(500, 300)
+         # set geometry of main window
+        self.setGeometry(300, 300, 500, 400)
+        self.setMinimumSize(500, 400)
         self.show()
-        self.setMaximumSize(9680,300)
+        self.setMaximumSize(9680, 400)
 
         # set title of main window
         self.setWindowTitle('Repository Tagger')
@@ -351,7 +350,7 @@ class Example(QMainWindow):
 
     def bpasteclicked(self):
         """
-            user has pastethe callbacklink(or not) in the field so we hopefully have a functional oAuth token
+            user has paste the callbacklink(or not) in the field so we hopefully have a functional oAuth token
         :return: self
         """
         url = self.leback.text()
@@ -366,29 +365,57 @@ class Example(QMainWindow):
         self.cbown.show()
 
     def resizeEvent(self, resizeEvent):
+        """
+         window size has change change the size of the objects too
+        """
+
+         width = self.width()
+        scale = width/ 500
+       
         # tab 1
-        temp = self.width() - 2 * ((self.width() / 500) * 20 + 30)
-        self.tabs.resize(self.width(), self.height() - 20)
-        self.lepath.setGeometry((self.width() / 500) * 20 + 30, 50, self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65), 25)
-        self.bfiledialog.setGeometry(self.width() -((self.width()/500)*95+65)+20, 50,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20) , 25)
-        self.btag.setGeometry((self.width() / 500) * 20 + 30, 90, temp, 25)
-        self.blogging.setGeometry(((self.width() / 500)) * 20 + 30, 130, temp, 25)
-        self.lurl.setGeometry((self.width() / 500) * 20 + 30, 150,temp, 25 )
-        self.lback.setGeometry((self.width() / 500) * 20 + 30, 170,temp, 25 )
-        self.leback.setGeometry((self.width() / 500) * 20 + 30, 190,temp, 25 )
-        self.bpaste.setGeometry((self.width() / 500) * 20 + 30, 220,temp, 25 )
-        self.cbown.setGeometry((self.width() / 500) * 20 + 30, 220,temp, 25 )
+        startx = scale *20+30
+        temp = width - 2 * startx
+        size = temp - (width - startx - (scale * 95 + 65) + 20)
+        size2 = width - startx - (scale * 95 + 65)
+        size3 = width - (scale * 95 + 65) + 20
+        self.tabs.resize(width, self.height() - 20)
+        self.lepath.setGeometry(startx, 50, size2, objectwidth)
+        self.bfiledialog.setGeometry(size3, 50, size, objectwidth)
+        self.btag.setGeometry(startx, 90, temp, objectwidth)
+        self.blogging.setGeometry(startx, 130, temp, objectwidth)
+        self.lurl.setGeometry(startx, 150, temp, objectwidth)
+        self.lback.setGeometry(startx, 170, temp, objectwidth)
+        self.leback.setGeometry(startx, 190, temp, objectwidth)
+        self.bpaste.setGeometry(startx, 220, temp, objectwidth)
+        self.cbown.setGeometry(startx, 220, temp, objectwidth)
 
         # tab 2
-        self.view.setGeometry(0,0,self.width()-5, self.height()-50)
+        self.view.setGeometry(0, 0, width - 5, self.height() - 50)
 
         # tab 3
-        self.bshowTrain.setGeometry(self.width() -((self.width()/500)*95+65)+20, 80,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20) , 25)
-        self.cb.setGeometry((self.width() / 500) * 20 + 30, 5,150,25)
-        self.cbt.setGeometry((self.width() / 500) * 20 + 30, 20,150,25)
-        self.btraining.setGeometry((self.width() / 500) * 20 + 30, 50,temp-(self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65)+20),25 )
-        self.letrainingpath.setGeometry((self.width() / 500) * 20 + 30, 80, self.width() - ((self.width() / 500) * 20 + 30)-((self.width()/500)*95+65), 25)
+        self.bshowTrain.setGeometry(size3, 80, size, objectwidth)
+        self.cb.setGeometry(startx, 5, 150, objectwidth)
+        self.cbt.setGeometry(startx, 20, 150, objectwidth)
+        self.btraining.setGeometry(startx, 50, size, objectwidth)
+        self.letrainingpath.setGeometry(startx, 80, size2, objectwidth)
+
+        self.letraingdir1.setGeometry(startx, 110, size2, objectwidth)
+        self.letraingdir2.setGeometry(startx, 140, size2, objectwidth)
+        self.btraindir1.setGeometry(size3, 110, size, objectwidth)
+        self.btraindir2.setGeometry(size3, 140, size, objectwidth)
+
+        self.letrainfile1.setGeometry(startx, 170, size2, objectwidth)
+        self.letrainfile2.setGeometry(startx, 200, size2, objectwidth)
+        self.letrainfile3.setGeometry(startx, 230, size2, objectwidth)
+        self.letrainfile4.setGeometry(startx, 260, size2, objectwidth)
+        self.btrainfile1.setGeometry(size3, 170, size, objectwidth)
+        self.btrainfile2.setGeometry(size3, 200, size, objectwidth)
+        self.btrainfile3.setGeometry(size3, 230, size, objectwidth)
+        self.btrainfile4.setGeometry(size3, 260, size, objectwidth)
      def btraindir1clicked(self):
+         """
+         Select an dir
+         """
 
 
         # start filepicker at '/home' place
@@ -396,6 +423,9 @@ class Example(QMainWindow):
         self.letraingdir1.setText(fname)
         self.trainingdir1 = fname
     def btraindir2clicked(self):
+          """
+         Select an dir
+         """
 
 
         # start filepicker at '/home' place
@@ -404,6 +434,9 @@ class Example(QMainWindow):
         self.trainingdir2 = fname
 
     def btrainfile1clicked(self):
+          """
+         Select multiple files
+         """
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -412,6 +445,9 @@ class Example(QMainWindow):
         self.trainfile1 = name[0]
 
     def btrainfile2clicked(self):
+          """
+         Select multiple files
+         """
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -420,6 +456,9 @@ class Example(QMainWindow):
         self.trainfile2 = name[0]
 
     def btrainfile3clicked(self):
+          """
+         Select multiple files
+         """
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -428,6 +467,9 @@ class Example(QMainWindow):
         self.trainfile3 = name[0]
 
     def btrainfile4clicked(self):
+          """
+         Select multiple files
+         """
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
         nameString = ''
         for i in name[0]:
@@ -437,6 +479,10 @@ class Example(QMainWindow):
 
 
 if __name__ == '__main__':
+    """
+    Entry point of the application create the gui
+    """
+
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = Gui()
     sys.exit(app.exec_())

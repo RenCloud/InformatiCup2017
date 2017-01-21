@@ -262,3 +262,4 @@ learning/networks/MNIST_data
 dic*
 cor*
 vecfile.txt
+build/

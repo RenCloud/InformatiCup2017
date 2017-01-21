@@ -16,7 +16,11 @@ Jonas
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+   
+   introductionjonas
+   explanationjonas
+   codeJonas
+   resultsjonas
 
 Jan
 ---

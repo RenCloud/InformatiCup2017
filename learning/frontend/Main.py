@@ -88,9 +88,9 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
     if do_pretraining:
         dbn.pretraining(input, gibbs_sampling_steps=[1, 1, 3, 4], learning_rate=[0.1, 0.01, 0.001, 0.0001],
-                        weight_decay=[0.1, 0.01, 0.01, 0.01, 0.001],
+                        weight_decay=[0.01, 0.01, 0.01, 0.01, 0.001],
                         momentum=[0.5, 0.9, 0.9, 0.9], continue_training=[False, True, True, True],
-                        epoch_steps=[10, 10, 10, 10], batch_size=[10, 10, 10, 10])
+                        epoch_steps=[10, 50, 50, 100], batch_size=[10, 10, 10, 10])
 
     if supervised_train_set and validation_set:
 
@@ -104,7 +104,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
         validation_set = DataSet(vdata_np, vlabels_np)
 
-        dir = "Decent_high_lr_functioning/"
+        dir = "ProximalAdagrad_1/"
 
         dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=True,
                                   validation_set=validation_set, finetune_save_dir=dir,
@@ -117,7 +117,7 @@ def fit_dbn(data_set, main_dir="dbn/", supervised_train_set=None, validation_set
 
         for i in range(300):
             accuracy = dbn.supervised_finetuning(batch_size=1, data_set=train_set, epochs=1, make_dbn=False,
-                                                 validation_set=validation_set, global_epoch=i + 1,
+                                                 validation_set=validation_set, global_epoch=i,
                                                  finetune_load_dir=dir,
                                                  finetune_save_dir=dir)
 
