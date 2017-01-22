@@ -158,6 +158,6 @@ Lets's implement it:
 
 Our Program now looks like this:
 
-.. image ::tooltips.png
+.. image:: tooltips.png
 
 For more details you may look `here <http://zetcode.com/gui/pyqt5/>`_ for a good basic tutorial about PyQt5.
