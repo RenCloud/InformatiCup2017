@@ -4,134 +4,85 @@ Results
 In this section we will describe the development of our GUI and the changes we made to the datafetching process.
 
 
-
-
 Userinterface
 -------------
 
-**********************************
+In this section we will describe step by step the development of our userinterface.
 
-Was möchtest du in dieser Sektion genau machen.
-Ist das eine Beschreibung des Fensters oder willst du die Fortschritt bei der Entwicklung des Fensters beschreiben?
+At the begin the interface should have basic functionality.
+This means you can just start a training without any additional features.
 
-Ich wäre dafür du gehts einmal über die Änderungen drüber die du mit der Zeit gemach hast und warum
-
-***********************************
-
-
-
-The graphical interface changes with the development and rise to a good looking basic interface.
-At the begin the interface should have basic control. This means you can start a training without option, select a file with Github repository links and start the classifing process.
-Because of the smaller size of the button and to show the user more information 2 option were possible: tooltip and statusbar. 
-For our application we decided statusbar is the better option.
-Also to get more control over the training, 2 checkboxes were added.
+To hide additional information we used a status bar which presents additional information as seen in this picture:
 
 .. image :: firstgui.png
 
-The login button came with the OAuth2 feature. This was a must to get enough request for more than one or two repositorys.
-Problem here, after the classify there was no more place to show the solution.
-To get more place and make a separation between Classify, Solution and Training tabs was the choosen thing.
-This also create the possibility to add the function that the user can add his own repositorys after login and make a table for the solution.
-At this time the login function get the feature to open the loginlink direct within the browser so the user must not copy and open it on his own.
+Also to get more control over the training, 2 checkboxes were added.
+
+
+If you want to classify more then two repositories you need to be logged in. That's why we added an additional input
+for the callback URL. The login button opens the brower with the login link. The user just has to copy it into the input field.
+With the different tabs we could provide more information and give a better overview about the different tasks our network can perform.
 
 .. image :: secondgui.png
 
-This interface look mutch times better than the first, has more function, but get not mutch complexity.
-Now a bit optimation and better looking is the task.
-At the moment the Solution tab must open by the user and this is only after the full classify task possible.
-To make this better the tab is automcaticly choosen at the begin of the classify process.
-Thats is a bit better, but because of singlethread application the interface/table is only refresht after the process.
-Only the explicity call to refresh the window, after a new item is added, was here a help to make a responable application.
-
-
+Some problems are still remaining. The solution tab has to be opened by the user. Additionally this is only possible
+when the task has finished because the application has only a single thread.
+So the window is also only refreshing after an explicit call from the PyQt API.
 
 .. image :: thirdgui.png
 
-The most user wants an interface which is resize able. 
-Our is have this possibility not at the moment.
-To get at least a resize able interface when the user is change the width, every position and size of an control object(button, textfield,...) is calculated every time new when the size change.
-At the and the training tab get more features. Now you can/you have to choose 2 directorys and 5 file/s so the output path and trainings data and more can specified.
+Another problem was that resizing the window would cause the items in it to destroy the layout.
+We added the functionality to resize the window without destroying the layout, but it is still only possible to resize the width.
+There are now way more options to specify the directories and files you want to use.
 
 Fetch data
 ----------
 
-The Fetch part is also run throw different steps.
-Started had it with the c# application which use Octokit.Net as API wrapper to do the calls and create Json trainingfiles.
-This project is within the 'GetData' directory.
-At the beginning, this means after the point a workable example with the wrapper was found and a basic ASP.Net/c# server application is written,
-the application has one task.
-The task was:
+At the begging of our project the data was fetched by a C# application which used Octokit.Net. The whole unlabeled dataset
+was fetched by this application. The program can be found in the GetData directory.
+The application did the following tasks:
 
-1. Check state -> this means which is the id of the last fetched data ? or do we start new ? 1 - xxxx...
-2. Have we an id list of public repositorys after this id ? 
-2.1 When not make an HTTP Request ( without the Wrapper, because this function was a bug... so it fetch all data and make uncount able requests) to the API and get an list of public repositorys id's
+1. Check state -> either uses the last fetched id or starts from the beginning.
+2. Check if the next id can be used to fetch data.
+2.1 If not send a HTTP Request
 3. Load the data we need from different parts of the API -> 6 different API endpoints were called to get all data some of them multiple to get more data
 4. create a json document from the data
 
-One run throw these steps mean we have 100 id's and data to these.
-A neural network need alot more of them.
-And to get this amount of data it need hours of time.
-5000 api calls is possible when your application is connected with OAuth2.
-A set of 100 id's need around 600-700 requests.
-This means 700 id's and ~4200-4900 request within an hour it can fire.
+With every run of the program we get 100 repositories. To get the critical amount of data needed for a neural network we
+needed a lot of time. Because the GitHub API only allows 5000 requests per hour. We need up to 7 requests for every repository.
 
-At the end we fetch 31.7k id's( from 1 up to ~110.000 so nearly every 3 is an public and not deleted repository).
-To get this amount it need a minimum of 46 hours.
+At the end we fetch 31.7k id's. We tested every id from 1 to 110.000. Every third was
+a public and not deleted repository. To get this amount of data it needs a minimum of 46 hours.
+
+********************************************
+
+Jan soll das hier noch neu schreiben.
+
 Also around 15 clicks per run(700id's) -> 690 clicks within the server application.
 Why this? Because it is a local server it has to start nearly every hour new, login in Github and than fetch 700 id's.
 For this it needs around 20 minutes and every few minutes a new click was need to start a new fetch process(100 id's).
 
-Later it gains a new feature. At the moment it only can take this list with 100 id's to fetch data.
-The new added feature makes the possibility to create a list with id's by hand and fetch data from them.
-This feature is used to get the trainingsdata with given solution.
-
-Then the C# project become deprecaded, becouse the wrapper has no net.core support at the moment.
-So the application is only useable on windows, but we want an cross-platform applcation.
-
-To get this part more to the rest of the rest of the project and the cross-platform feature 
-it was rewritten in python.
-For python at the moment is there no given officel api wrapper.
-Only unofficel wrapper. Problem of these? There are not very nice to use and very short described.
-When you have less knowings about python and read a 2 line sample of an libary you don't know how this will work.
-Than a more easyer and with the possibility of OAuth2 solution with 'Requests' was found.
-
-With this libary it is easy and understandable to get data from the Request API.
-So know it was possible to rewrite the fetch part into pure python.
-The Fetch Results first was a valid, but failure json file which was not usable for us. 
-Because the pregenerated json from the c# project was a bit different.
-To make not big changes on the dataprepered part with lot of work the json create routine was changed.
-Befour it use the standart json.dumps function within python and create with smaller peaces of json a big one.
-This is a valid json, but not one we want.
-So a part is created by hand with for loop and string building.
-At the end a part json ist sill created over python json and must modify after that or is create befour by hand.
-
-Then small errors like 403 response or other and 404 files have killed the script.
-These errors create not initialized varibles or wrong initialized.
-With if and try functionality and preinitializion tis problem was going.
-
-What on least? It's only fetch up to 100 commits, issue, comments, because of the api request only send 100 in one message back.
-The traindata wich was generated befour has the possibility of 1000 of them.
-With a wrapper like the Octokit.net it is easy to get the 1000, because of implemented Pagination feature.
-The normal requests return header contains an 'next' filed ('link' is the field, but it contains next and last page links).
-These field is used for Pagination.
-To get more as 100 commits a basic Pagination up to 10 sites are implemented.
-
-
 ******************************************
 
-But before we have the python part to fetch data and to get the train data the code in C# within GetData directory is used.
-With the help of the offical Octokit.net Api wrapper and an basic ASP.Net Local Server we fetch data of 31.700 id's from github (from 1 up to ~110.000).
-Why only 31k in this big range? Only public repositorys are within the 31k.
-Also a second nearly the same code is used as a new page to fetch the trainingsdata with given solution.
+Later we added a new feature: It is possible to give the program a list of id's and the application fetches the data and
+returns the found repositories.
 
-Then the C# project is deprecaded, becouse the wrapper has to net.core support at the moment.
-So the application is only useable on windows but we want an cross-platform applcation.
+As our project we decided that our program should work platform independently. But net.core hasn't any support for linux.
+Additionally most of the project code was already written in python. It was easier to integrate another python module then
+a C# application.
 
+For python doesn't exist any official GitHub API wrapper only unofficial ones.
+That is problematic because they are more difficult to use and often badly commented.
+A nice solution was to use OAuth2 with 'Requests'.
 
-Vill kannst du diesen Block da noch einbauen und noch mit hinschreiben das man ja mehrere Anfragen brauchte um alle benötigten Daten zu bekommen.
-Vill kannst du noch was zur automatisierung des datafetch Prozesses sagen, denn du hast das ja alles per hand gemacht also das programm regelmäßig gestartet
-und durchlaufen lassen?!
+The first fetch results weren't useable because they were different from the one the C# application has created.
+To guaranty compatibility with our previously fetched data we implemented a extra function which fixes this problem.
+This process uses just the stringbuilder and the unprocessed JSON. At the end the JSON could be used with json.dump without
+any problem.
 
+Another problem that we had to handle without any API support were the 403 and 404 http responses. These would lead to
+uninitialized or wrong variable values.
 
-*********************************************
-
+Additionally we could only fetch 100 repositories in one call. With the old program we could get up to 1000.
+But because we had already the majority of our data these disadvantages weren't a problem. Instead we it was easier to
+implement it into our already existing program.
