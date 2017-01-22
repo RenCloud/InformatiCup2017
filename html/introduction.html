@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Get Started with Tensorflow &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introducing the learning mechanism" href="explanation.html" />
+    <link rel="prev" title="What could be used furthermore?" href="thoughts.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="explanation.html" title="Introducing the learning mechanism"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="thoughts.html" title="What could be used furthermore?"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="get-started-with-tensorflow">
+<h1>Get Started with Tensorflow<a class="headerlink" href="#get-started-with-tensorflow" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>This part of the program mainly uses <a class="reference external" href="https://www.tensorflow.org/">Tensorflow</a> and <a class="reference external" href="http://www.numpy.org/">numpy</a> with python 3.5.
+Tensoflow can be installed via pip install. Additional installation methods can be found at
+<a class="reference external" href="https://www.tensorflow.org/get_started/os_setup">Tensorflow.org</a>. Tensorflow offers additional support for NVIDIA GPUs.
+If you want to run this program on
+<a class="reference external" href="https://www.tensorflow.org/how_tos/using_gpu/">NVIDIA GPUs</a> it should be working
+but this code is only programed and tested for CPUs.</p>
+</div>
+<div class="section" id="basic-usage-of-tensorflow">
+<h2>Basic usage of Tensorflow<a class="headerlink" href="#basic-usage-of-tensorflow" title="Permalink to this headline">¶</a></h2>
+<p>To get a better understanding of Tensorflow we take a look at program example from <a class="reference external" href="https://www.tensorflow.org/get_started/">Tesorflow.org</a>.</p>
+<p>First Tensorflow and numpy have to be imported.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>Then we create our input data and the desired output. These are saved as numpy arrays. Numpy arrays can be easily converted
+into Tensorflow variables.</p>
+<p>Next we specify the Tensorflow variables we want to use. In this case we create one weight and one bias variable. For the
+initial values of W and b we use helper functions, which create a numpy array for us.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># helperfunction creates a numpy array with random initial values</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+<span class="c1"># helperfunction creates numpy array with zero values</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>Next we specify the computation Tensorflow should perform. But this listing of commands isn&#8217;t executed yet. We are only
+building a computation graph. Later Tensorflow optimizes the graph and compiles it in a C language for maximum efficiency.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">W</span> <span class="o">*</span> <span class="n">x_data</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<p>The variable y defines the prediction of the network. To correct the prediction we use a built in optimizer, which minimizes our
+error.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_data</span><span class="p">))</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now that our computation graph is complete we let Tensorflow run it. But first we initialize our variables.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+<span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The session is an abstract object which helps us managing our computations. With sess.run(init) the init node is run.
+Within this session our variables are initialized.</p>
+<p>In a simple for loop we now can run our training-graph.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">201</span><span class="p">):</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">W</span><span class="p">),</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Like the sess.run(train) the sess.run(W) evaluates the W variable and returns a numpy array which represents the values saved in
+W.
+During the training the variables learn to fit the values W: [0.1], b: [0.3].</p>
+</div>
+<div class="section" id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<p>For a more in depth tutorial about Tensorflow you can check out the MNIST tutorial for <a class="reference external" href="https://www.tensorflow.org/tutorials/mnist/beginners/">beginner</a>
+and for <a class="reference external" href="https://www.tensorflow.org/tutorials/mnist/pros/">experts</a>.</p>
+<p><a class="reference external" href="https://www.tensorflow.org/tutorials/mnist/tf/">Tensorflow Mechanics 101</a> presents you additional features of Tensorflow.</p>
+</div>
+<div class="section" id="tensorboard">
+<h2>Tensorboard<a class="headerlink" href="#tensorboard" title="Permalink to this headline">¶</a></h2>
+<p>Tensorboard is a tool which is included in Tensorflow. With Tensorboard you can visualize your training data. In our project we
+used Tensorboard to keep track of our accuracy, loss and weight development. Additionally it visualized our computation graph.</p>
+<p>To use Tensorboard, especially to visualize some of our test runs go to the logs directory in our project and open a Terminal in one
+of the contained folders. Then type the command.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">tensorboad</span> <span class="o">--</span><span class="n">logdir</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>In the following image you can see the progress of 3 restricted Boltzmann machines during pretraining with a MNIST dataset:</p>
+<img alt="_images/RBM_pretraining_MNIST.png" src="_images/RBM_pretraining_MNIST.png" />
+<img alt="_images/RBM_pretraining_MNIST_legend.png" src="_images/RBM_pretraining_MNIST_legend.png" />
+<p>We added also some of the hyperparameters to the observed variables. So we could directly link the loss to the corresponding
+hyperparameters.
+As we can see when the training starts the loss is jumping up and down but the trend is a decreasing loss. After some time the
+loss is stabilized. Even an increasing Gibbs sampling rate can&#8217;t change that.
+Two other important graphs are the maximal and minimal weights. As the training progresses the absolute value of the maximal and the minimal weight
+are getting higher. That isn&#8217;t a development we want. Optimally the weights should always stay between -1 and 1.
+One explanation could be that we are overtraining because our loss is stuck but we keep training. That forces some weights
+to become extremely big or small. Even the weight decay regulation can&#8217;t stop that.</p>
+<p>In the next image is one of the RMB&#8217;s computationgraphs visualized by Tensorboard:</p>
+<img alt="_images/RBM_pretraining_learning_MNIST.png" src="_images/RBM_pretraining_learning_MNIST.png" />
+<p>This is the main part of the learning procedure of our RBM. As you can see the x-input and the weights and biases perform a Gibbs sampling step.
+The information on how the function works is currently hidden to make the presentation easier to understand. With the first sampling step
+the positive association can be calculated. And the value is later used to calculate delta. The thicker the line the more data
+is flowing between the nodes.</p>
+<p>To create our own visualizations in Tensorflow we need to tell Tensorflow which information are important.
+In the following code block are the summary_nodes we used to create these graphs.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;summaries&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;learning_progress&#39;</span><span class="p">):</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_loss_function</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;weight_development&#39;</span><span class="p">):</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;max_Weight&quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">))</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;min_weight&quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">))</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="s2">&quot;delta_weights&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_w</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="s2">&quot;weights&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;hyperparameter&#39;</span><span class="p">):</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;_learning_rate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;Gibbs_sampling_steps&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>I used Tensorflows namespace to section them. The same namespaces are used in the computation graph to abstract information
+from the user.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;learning_process&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;gibbs_sapmling_step&#39;</span><span class="p">):</span>
+        <span class="c1">#first Gibbs sampling step</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;_compute_positive_association&#39;</span><span class="p">):</span>
+        <span class="c1"># positiv association</span>
+
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;gibbs_sampling_steps&#39;</span><span class="p">):</span>
+        <span class="c1"># n-1 additional Gibbs sampling steps</span>
+
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;compute_negative_association&#39;</span><span class="p">):</span>
+        <span class="c1"># negative association</span>
+
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;calculate_delta_weights&#39;</span><span class="p">):</span>
+       <span class="c1"># delta weights</span>
+
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;update_weights&#39;</span><span class="p">):</span>
+        <span class="c1"># weight updates</span>
+</pre></div>
+</div>
+<p>The information of the summary nodes is evaluated by the call of merge_all_summarys and written to a file by <code class="xref py py-class docutils literal"><span class="pre">Tensorflow.FileWriter</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">merge_all</span><span class="p">()</span>
+
+<span class="c1"># later the node is run</span>
+<span class="n">loss</span><span class="p">,</span> <span class="n">summary_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_loss_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span><span class="p">],</span>
+                                         <span class="n">feed_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_feed_dict</span><span class="p">(</span><span class="n">train_set</span><span class="p">))</span>
+
+<span class="c1"># and saved in a directory by tf.train.Summary_writer</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">SummaryWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">summary_str</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we specify the Tensorflow graph, the computationgraph is visualized in Tensorboard as seen above.</p>
+</div>
+<div class="section" id="loading-and-saving-a-model">
+<h2>Loading and Saving a model<a class="headerlink" href="#loading-and-saving-a-model" title="Permalink to this headline">¶</a></h2>
+<p>Another feature Tensorflow is providing, is that it let us save our training progress and we can reload them at any time.</p>
+<p>To use this handy feature we first initialise a <code class="xref py py-class docutils literal"><span class="pre">Tensorflow.Saver</span></code> object within our session.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># create the variables beforehand</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then we can save every variable in our session to the specified path.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="s2">&quot;path/to/save_dir/model_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can have as many <code class="xref py py-class docutils literal"><span class="pre">Saver</span></code> objects as we want and also specify which variables should be saved.</p>
+<p>But here we stick to the basics and just load all variables we saved.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># the viriables have to be created but not yet initialised</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">save_dir</span><span class="o">/</span><span class="n">model_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This loading and saving is used in every of our networks. They save their model only if they completed the task. If an
+error occurred before they finished all training progress is lost. Our networks can only load the newest changes in the network.
+All previous states are lost.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Get Started with Tensorflow</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#basic-usage-of-tensorflow">Basic usage of Tensorflow</a></li>
+<li><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li><a class="reference internal" href="#tensorboard">Tensorboard</a></li>
+<li><a class="reference internal" href="#loading-and-saving-a-model">Loading and Saving a model</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="thoughts.html"
+                        title="previous chapter">What could be used furthermore?</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="explanation.html"
+                        title="next chapter">Introducing the learning mechanism</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/introduction.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="explanation.html" title="Introducing the learning mechanism"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="thoughts.html" title="What could be used furthermore?"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

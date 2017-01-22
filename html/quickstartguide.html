@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quickstart Guide &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart-guide">
+<h1>Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permalink to this headline">¶</a></h1>
+<p>In our quickstart guide we briefly describe how our program can be used.
+For further information read our <a class="reference internal" href="index.html"><span class="doc">documentation</span></a>.</p>
+<p>Table of content:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#req"><span class="std std-ref">Requirements</span></a></li>
+<li><a class="reference internal" href="#start"><span class="std std-ref">Start the program</span></a></li>
+<li><a class="reference internal" href="#train"><span class="std std-ref">Train a network</span></a></li>
+<li><a class="reference internal" href="#classify"><span class="std std-ref">Classify a repository</span></a></li>
+</ol>
+<div class="section" id="requirements">
+<span id="req"></span><h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>numpy</li>
+<li>tensorflow</li>
+<li>gensim</li>
+<li>PyQt5</li>
+<li>requests_oauthlib</li>
+<li>requests</li>
+</ol>
+</div>
+<div class="section" id="start-the-program">
+<span id="start"></span><h2>Start the program<a class="headerlink" href="#start-the-program" title="Permalink to this headline">¶</a></h2>
+<p>With our console navigate into our project directory.
+Then start the userinterface with the following command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">gui</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-the-program-to-train-a-neural-network">
+<span id="train"></span><h2>Use the program to train a neural network<a class="headerlink" href="#use-the-program-to-train-a-neural-network" title="Permalink to this headline">¶</a></h2>
+<p>When you started the program a GUI will show.
+Click on the tab training. Then select the appropriate files and directories to run the training.</p>
+<p>Pick the listed files and directories in the same order as shown here:</p>
+<ol class="arabic simple">
+<li>Unclassified training data: (Choose multiple file) Every File in the data/json directory.</li>
+<li>Main directory of the network: Take a directory of your choice.</li>
+<li>Sub directory of the network: Take a directory of your choice.</li>
+<li>Validationset data: Select the file validationData.json.</li>
+<li>Validation data labels: Select the file validationDataLabels.json.</li>
+<li>Supervised trainset data: Select every file in tagged/data.</li>
+<li>Supervised trainset labels: Select every file in tagged/labels.</li>
+</ol>
+</div>
+<div class="section" id="use-the-program-to-classify-a-repository-of-your-choice">
+<span id="classify"></span><h2>Use the program to classify a repository of your choice<a class="headerlink" href="#use-the-program-to-classify-a-repository-of-your-choice" title="Permalink to this headline">¶</a></h2>
+<p>If you want to classify a repository start the program follow these steps.</p>
+<ol class="arabic simple">
+<li>Create a file with all repository URLs you want to classify. For each repository use just one line.</li>
+<li>Click the button &#8216;login to GitHub&#8217;.</li>
+<li>The browser will open GitHub automatically. Log in.</li>
+<li>The URL in your browser will change. Copy the new URL.</li>
+<li>Click the &#8216;login&#8217; button of our GUI.</li>
+<li>Then click the button &#8216;classify repositories&#8217;</li>
+<li>Wait till the program finishes working then see the results in the results tab.</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quickstart Guide</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#start-the-program">Start the program</a></li>
+<li><a class="reference internal" href="#use-the-program-to-train-a-neural-network">Use the program to train a neural network</a></li>
+<li><a class="reference internal" href="#use-the-program-to-classify-a-repository-of-your-choice">Use the program to classify a repository of your choice</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/quickstartguide.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

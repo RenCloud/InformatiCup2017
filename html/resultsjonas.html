@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Results &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Project Code" href="CodeJonas.html" />
+    <link rel="prev" title="Fetch data and GUI mechanism" href="explanationjonas.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="CodeJonas.html" title="Project Code"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="explanationjonas.html" title="Fetch data and GUI mechanism"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="results">
+<h1>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h1>
+<p>In this section we will describe the development of our GUI and the changes we made to the datafetching process.</p>
+<div class="section" id="userinterface">
+<h2>Userinterface<a class="headerlink" href="#userinterface" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will describe step by step the development of our userinterface.</p>
+<p>At the begin the interface should have basic functionality.
+This means you can just start a training without any additional features.</p>
+<p>To hide additional information we used a status bar which presents additional information as seen in this picture:</p>
+<img alt="_images/firstgui.png" src="_images/firstgui.png" />
+<p>Also to get more control over the training, 2 checkboxes were added.</p>
+<p>If you want to classify more then two repositories you need to be logged in. That&#8217;s why we added an additional input
+for the callback URL. The login button opens the brower with the login link. The user just has to copy it into the input field.
+With the different tabs we could provide more information and give a better overview about the different tasks our network can perform.</p>
+<img alt="_images/secondgui.png" src="_images/secondgui.png" />
+<p>Some problems are still remaining. The solution tab has to be opened by the user. Additionally this is only possible
+when the task has finished because the application has only a single thread.
+So the window is also only refreshing after an explicit call from the PyQt API.</p>
+<img alt="_images/thirdgui.png" src="_images/thirdgui.png" />
+<p>Another problem was that resizing the window would cause the items in it to destroy the layout.
+We added the functionality to resize the window without destroying the layout, but it is still only possible to resize the width.
+There are now way more options to specify the directories and files you want to use.</p>
+</div>
+<div class="section" id="fetch-data">
+<h2>Fetch data<a class="headerlink" href="#fetch-data" title="Permalink to this headline">¶</a></h2>
+<p>At the begging of our project the data was fetched by a C# application which used Octokit.Net. The whole unlabeled dataset
+was fetched by this application. The program can be found in the GetData directory.
+The application did the following tasks:</p>
+<ol class="arabic simple">
+<li>Check state -&gt; either uses the last fetched id or starts from the beginning.</li>
+</ol>
+<p>2. Check if the next id can be used to fetch data.
+2.1 If not send a HTTP Request
+3. Load the data we need from different parts of the API -&gt; 6 different API endpoints were called to get all data some of them multiple to get more data
+4. create a json document from the data</p>
+<p>With every run of the program we get 100 repositories. To get the critical amount of data needed for a neural network we
+needed a lot of time. Because the GitHub API only allows 5000 requests per hour. We need up to 7 requests for every repository.</p>
+<p>At the end we fetch 31.7k id&#8217;s. We tested every id from 1 to 110.000. Every third was
+a public and not deleted repository. To get this amount of data it needs a minimum of 46 hours.</p>
+<p>Later we added a new feature: It is possible to give the program a list of id&#8217;s and the application fetches the data and
+returns the found repositories.</p>
+<p>As our project we decided that our program should work platform independently. But net.core hasn&#8217;t any support for linux.
+Additionally most of the project code was already written in python. It was easier to integrate another python module then
+a C# application.</p>
+<p>For python doesn&#8217;t exist any official GitHub API wrapper only unofficial ones.
+That is problematic because they are more difficult to use and often badly commented.
+A nice solution was to use OAuth2 with &#8216;Requests&#8217;.</p>
+<p>The first fetch results weren&#8217;t useable because they were different from the one the C# application has created.
+To guaranty compatibility with our previously fetched data we implemented a extra function which fixes this problem.
+This process uses just the stringbuilder and the unprocessed JSON. At the end the JSON could be used with json.dump without
+any problem.</p>
+<p>Another problem that we had to handle without any API support were the 403 and 404 http responses. These would lead to
+uninitialized or wrong variable values.</p>
+<p>Additionally we could only fetch 100 repositories in one call. With the old program we could get up to 1000.
+But because we had already the majority of our data these disadvantages weren&#8217;t a problem. Instead we it was easier to
+implement it into our already existing program.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Results</a><ul>
+<li><a class="reference internal" href="#userinterface">Userinterface</a></li>
+<li><a class="reference internal" href="#fetch-data">Fetch data</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="explanationjonas.html"
+                        title="previous chapter">Fetch data and GUI mechanism</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CodeJonas.html"
+                        title="next chapter">Project Code</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/resultsjonas.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="CodeJonas.html" title="Project Code"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="explanationjonas.html" title="Fetch data and GUI mechanism"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

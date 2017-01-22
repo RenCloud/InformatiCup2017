@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Main &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Gi-Project 1.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Main</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">learning.networks.RBM_CDK</span> <span class="k">import</span> <span class="n">RBM</span>
+<span class="kn">from</span> <span class="nn">learning.networks.DBN</span> <span class="k">import</span> <span class="n">DBN</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">learning.utils.input_format</span> <span class="k">import</span> <span class="n">DataSet</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+
+<div class="viewcode-block" id="fit_rbm"><a class="viewcode-back" href="../code.html#Main.fit_rbm">[docs]</a><span class="k">def</span> <span class="nf">fit_rbm</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;rbm_test&quot;</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This is an old fragment of a network learning algorithm. It demonstrates how a RBM is learning. This algorithm is</span>
+<span class="sd">    unsupervised and only consists of two layers. The learned RBM&#39;s output is only a permutation of the right</span>
+<span class="sd">    prediction. The shallow structure makes it also pretty unlikely that it makes the right predictions for the given</span>
+<span class="sd">    data.</span>
+
+<span class="sd">    :param data_set: A set of vectors with the data to learn.</span>
+<span class="sd">    :param main_dir: The name for the network. This specifies where the logs and model data is saved. It is also used to</span>
+<span class="sd">                    reload a halfway trained model. Only with the correct main_dir is this possible.</span>
+<span class="sd">    :return: self</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">input_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data_set</span><span class="p">)</span>
+    <span class="n">input_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">input_np</span><span class="p">,</span> <span class="n">input_np</span><span class="p">)</span>
+
+    <span class="n">rbm</span> <span class="o">=</span> <span class="n">RBM</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="n">main_dir</span><span class="p">,</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">rbm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">start_epoche</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">rbm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">start_epoche</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">rbm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">start_epoche</span><span class="o">=</span><span class="mi">350</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">rbm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">start_epoche</span><span class="o">=</span><span class="mi">650</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">rbm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">start_epoche</span><span class="o">=</span><span class="mi">950</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="classify_rbm"><a class="viewcode-back" href="../code.html#Main.classify_rbm">[docs]</a><span class="k">def</span> <span class="nf">classify_rbm</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;rbm_test&quot;</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function shows how a RBM can make a prediction for a given input</span>
+
+<span class="sd">    :param data_set: The dataset to make the predictions.</span>
+<span class="sd">    :param main_dir: This argument is used to load the right model.</span>
+<span class="sd">    :return: The prediction the network made</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">input_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data_set</span><span class="p">)</span>
+    <span class="n">input_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">input_np</span><span class="p">,</span> <span class="n">input_np</span><span class="p">)</span>
+
+    <span class="n">rbm</span> <span class="o">=</span> <span class="n">RBM</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;main_dir&quot;</span><span class="p">,</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">rbm</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">return_hstates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="fit_dbn"><a class="viewcode-back" href="../code.html#Main.fit_dbn">[docs]</a><span class="k">def</span> <span class="nf">fit_dbn</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="s2">&quot;sub_dir/&quot;</span><span class="p">,</span><span class="n">supervised_train_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validation_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">do_pretraining</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Wrapper function we used to call from our server module. The function gives easy access to the learning ability of</span>
+<span class="sd">            network. But the details of the training are already configured and hidden from the server. The server just</span>
+<span class="sd">            provides the data_set, supervised_train_set and validation_set as json string.</span>
+<span class="sd">            Depending on which of the 3 sets are provided the training is performed differently.</span>
+<span class="sd">            If only a data_set is provided then the function will only perform pretraining.</span>
+<span class="sd">    :param data_set: The training data to perform the pretraining. Has to be a JSON string with lists int a list.</span>
+<span class="sd">    :param main_dir: The directory, where the network is saved and loaded from.</span>
+<span class="sd">    :param dir: The newly trained network is saved into this subdirectory. The directory has to end with a slash. But</span>
+<span class="sd">                    doesn&#39;t have to exist. It will be created automatically.</span>
+<span class="sd">    :param supervised_train_set: A json string with two lists for the input data and the desired output.</span>
+<span class="sd">    :param validation_set: A json string with two lists consisting of input data and desired output to validate the</span>
+<span class="sd">                    training progress.</span>
+<span class="sd">    :param do_pretraining: This boolean value indicates if a pretraining should be performed before the finetuning.</span>
+<span class="sd">            Finetuning can only be performed if enough pretrained RBM&#39;s already exists in the specified main_dir. Then the</span>
+<span class="sd">            network uses these to build the model.</span>
+<span class="sd">    :return:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">data_set</span><span class="p">)</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="c1"># here you can change the size of the network. But keep in mind to load a already trained network the</span>
+    <span class="c1"># loading network has to have the same layer sizes and number of layers as the saved ones</span>
+    <span class="n">dbn</span> <span class="o">=</span> <span class="n">DBN</span><span class="p">([</span><span class="nb">input</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="n">main_dir</span><span class="o">=</span><span class="n">main_dir</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] Dataset input size &quot;</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="s2">&quot; num examples: &quot;</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">num_examples</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">do_pretraining</span><span class="p">:</span>
+        <span class="n">dbn</span><span class="o">.</span><span class="n">pretraining</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">learning_rate</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">],</span>
+                        <span class="n">weight_decay</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">],</span>
+                        <span class="n">momentum</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="n">continue_training</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+                        <span class="n">epoch_steps</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">supervised_train_set</span> <span class="ow">and</span> <span class="n">validation_set</span><span class="p">:</span>
+
+        <span class="n">data_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">supervised_train_set</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">labels_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">supervised_train_set</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">train_set</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">data_np</span><span class="p">,</span> <span class="n">labels_np</span><span class="p">)</span>
+
+        <span class="n">vdata_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">validation_set</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">vlabels_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">validation_set</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">validation_set</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">vdata_np</span><span class="p">,</span> <span class="n">vlabels_np</span><span class="p">)</span>
+
+        <span class="c1"># the learning rate for the finetuning has to be changed in the DBN class</span>
+        <span class="n">dbn</span><span class="o">.</span><span class="n">supervised_finetuning</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_set</span><span class="o">=</span><span class="n">train_set</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">make_dbn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">validation_set</span><span class="o">=</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">finetune_save_dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">,</span>
+                                  <span class="n">finetune_load_dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] First supervised training ended succefully&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">300</span><span class="p">):</span>
+            <span class="n">accuracy</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">supervised_finetuning</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_set</span><span class="o">=</span><span class="n">train_set</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">make_dbn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                 <span class="n">validation_set</span><span class="o">=</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">global_epoch</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                                 <span class="n">finetune_load_dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">,</span>
+                                                 <span class="n">finetune_save_dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] accuracy &quot;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">)</span>
+
+            <span class="c1"># if you uncomment these the network will classify unlabeled data</span>
+            <span class="c1"># and appends it to the supervised:training_set</span>
+
+            <span class="c1"># examples = input.next_batch(100 + 50 * i)</span>
+
+            <span class="c1"># prediction = dbn.classify(examples[0], finetune_sub_dir=dir)</span>
+
+            <span class="c1"># train_set.append(examples[0], prediction)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[Info] supervised training set extended it&#39;s size to &quot;</span><span class="p">,</span> <span class="n">train_set</span><span class="o">.</span><span class="n">num_examples</span><span class="p">,</span> <span class="s2">&quot; examples&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="classify_dbn"><a class="viewcode-back" href="../code.html#Main.classify_dbn">[docs]</a><span class="k">def</span> <span class="nf">classify_dbn</span><span class="p">(</span><span class="n">data_set</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">,</span> <span class="n">sub_dir</span><span class="o">=</span><span class="s2">&quot;dbn/&quot;</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function is used to load a previously trained model and returns a prediction for the given data_set.</span>
+
+<span class="sd">    :param data_set: The data that you want to classify as a JSON string. The string has to be a list of lists.</span>
+<span class="sd">    :param main_dir: A subdirectory of the models directory where the network is saved.</span>
+<span class="sd">    :param sub_dir: The subdirectory in main_dir where the finetuned model is saved. The directory has to end with a slash.</span>
+<span class="sd">    :return: Returns a prediction for the given dataset.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">input_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">data_set</span><span class="p">)</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">input_np</span><span class="p">,</span> <span class="n">input_np</span><span class="p">)</span>
+
+    <span class="c1"># this network has to have the same layer size and number of layers then the trained one</span>
+    <span class="n">dbn</span> <span class="o">=</span> <span class="n">DBN</span><span class="p">([</span><span class="nb">input</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="n">main_dir</span><span class="o">=</span><span class="n">main_dir</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">images</span><span class="p">,</span> <span class="n">build_dbn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">finetune_sub_dir</span><span class="o">=</span><span class="n">sub_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="_load_and_normalize"><a class="viewcode-back" href="../code.html#Main._load_and_normalize">[docs]</a><span class="k">def</span> <span class="nf">_load_and_normalize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is a helper function which takes the JSON string and converts it into a numpy array then it normalizes</span>
+<span class="sd">        the vector and returns it. The disired into doesn&#39;t has to be normalized so the normalize flag should be set to False</span>
+
+<span class="sd">    :param data: The data as JSON string.</span>
+<span class="sd">    :param normalize: A boolean which tells the function if the given data should be normalized or not.</span>
+<span class="sd">    :return:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+
+    <span class="n">input_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">input_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">input_list</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">input_np</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+
+            <span class="n">input_np</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">input_np</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+            <span class="n">normalized</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">l2_normalize</span><span class="p">(</span><span class="n">input_np</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">normalized</span><span class="p">)</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">input_np</span></div>
+
+
+<div class="viewcode-block" id="supervised_fit_dbn"><a class="viewcode-back" href="../code.html#Main.supervised_fit_dbn">[docs]</a><span class="k">def</span> <span class="nf">supervised_fit_dbn</span><span class="p">(</span><span class="n">supervised_train_set</span><span class="p">,</span> <span class="n">validation_set</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;data_normalized/&quot;</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        We created this function to wrap the supervised_training method. This function performs a supervised training</span>
+<span class="sd">        without pretraining.</span>
+
+<span class="sd">    :param supervised_train_set: The training set as JSON string. A list with two list in it. Each of these list as</span>
+<span class="sd">                        multiple lists which represent the input and output vectors. Both input and ouput vector lists</span>
+<span class="sd">                        should have the same size.</span>
+<span class="sd">    :param validation_set: The validation set. Has the same constraints as supervised_train_set. This list is only used</span>
+<span class="sd">                        to test the accuracy of the network.</span>
+<span class="sd">    :param main_dir: The directory where the model and log data is saved.</span>
+<span class="sd">    :return:</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">dbn</span> <span class="o">=</span> <span class="n">DBN</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="n">main_dir</span><span class="o">=</span><span class="n">main_dir</span><span class="p">)</span>
+
+    <span class="n">data_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">supervised_train_set</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">labels_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">supervised_train_set</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">train_set</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">data_np</span><span class="p">,</span> <span class="n">labels_np</span><span class="p">)</span>
+
+    <span class="n">vdata_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">validation_set</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">vlabels_np</span> <span class="o">=</span> <span class="n">_load_and_normalize</span><span class="p">(</span><span class="n">validation_set</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">validation_set</span> <span class="o">=</span> <span class="n">DataSet</span><span class="p">(</span><span class="n">vdata_np</span><span class="p">,</span> <span class="n">vlabels_np</span><span class="p">)</span>
+
+    <span class="nb">dir</span> <span class="o">=</span> <span class="s2">&quot;supervised_training/&quot;</span>
+
+    <span class="n">dbn</span><span class="o">.</span><span class="n">supervised_training</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">train_set</span><span class="o">=</span><span class="n">train_set</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">validation_set</span><span class="o">=</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">sub_dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">,</span> <span class="n">restore_previouse_model</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">supervised_training</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">train_set</span><span class="o">=</span><span class="n">train_set</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                           <span class="n">validation_set</span><span class="o">=</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">global_epoch</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sub_dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">,</span> <span class="n">restore_previouse_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] accuracy &quot;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">)</span>
+        <span class="c1"># examples = input.next_batch(100 + 50 * i)</span>
+
+        <span class="c1"># prediction = dbn.classify(examples[0], finetune_sub_dir=dir)</span>
+
+        <span class="c1"># train_set.append(examples[0], prediction)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[Info] supervised training set extended it&#39;s size to &quot;</span><span class="p">,</span> <span class="n">train_set</span><span class="o">.</span><span class="n">num_examples</span><span class="p">,</span> <span class="s2">&quot; examples&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Gi-Project 1.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

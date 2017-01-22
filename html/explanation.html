@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introducing the learning mechanism &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Experiment Results" href="results.html" />
+    <link rel="prev" title="Get Started with Tensorflow" href="introduction.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="results.html" title="Experiment Results"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Get Started with Tensorflow"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introducing-the-learning-mechanism">
+<h1>Introducing the learning mechanism<a class="headerlink" href="#introducing-the-learning-mechanism" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-structure">
+<h2>Basic Structure<a class="headerlink" href="#basic-structure" title="Permalink to this headline">¶</a></h2>
+<p>The learning part of our Project contains three directories: <code class="file docutils literal"><span class="pre">frontend</span></code>, <code class="file docutils literal"><span class="pre">networks</span></code> and <code class="file docutils literal"><span class="pre">utils</span></code>.</p>
+<p>The networks are in <code class="file docutils literal"><span class="pre">networks</span></code>. The package <code class="file docutils literal"><span class="pre">frontend</span></code> is a wrapper for the learning process.
+The <code class="file docutils literal"><span class="pre">utils</span></code> is a package containing all helper modules. The helper functions and the structure of <code class="xref py py-class docutils literal"><span class="pre">RBM_CDK</span></code> is
+taken from <a class="reference external" href="https://gist.github.com/blackecho/db85fab069bd2d6fb3e7">GitHub</a>.</p>
+<p><code class="file docutils literal"><span class="pre">Main</span></code> has five functions for training and classifying a given dataset. The <a class="reference internal" href="code.html#Main.fit_rbm" title="Main.fit_rbm"><code class="xref py py-meth docutils literal"><span class="pre">Main.fit_rbm()</span></code></a> and <a class="reference internal" href="code.html#Main.classify_rbm" title="Main.classify_rbm"><code class="xref py py-meth docutils literal"><span class="pre">Main.classify_rbm()</span></code></a>
+are functions to demonstrate how the training of an RBM would look like. But we only used <a class="reference internal" href="code.html#Main.fit_dbn" title="Main.fit_dbn"><code class="xref py py-meth docutils literal"><span class="pre">Main.fit_dbn()</span></code></a> and <a class="reference internal" href="code.html#Main.classify_dbn" title="Main.classify_dbn"><code class="xref py py-meth docutils literal"><span class="pre">Main.classify_dbn()</span></code></a>
+<a class="reference internal" href="code.html#Main.fit_dbn" title="Main.fit_dbn"><code class="xref py py-meth docutils literal"><span class="pre">Main.fit_dbn()</span></code></a> performs a complete pretraining with the given dataset. Then it calls <code class="xref py py-meth docutils literal"><span class="pre">DBN.supervised_finetuning()</span></code>.
+With <code class="xref py py-meth docutils literal"><span class="pre">Main.supervised_training()</span></code> we tried to see if pretraining had an effect on our training.</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">DBN</span></code> has three public functions which hide most of the implementation from the user. But additionally they should give
+the user full control over the learning process. That&#8217;s why the <code class="xref py py-meth docutils literal"><span class="pre">DBN.pretraining()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">DBN.supervised_finetuning()</span></code>
+give the user access to all hyperparameters and the loading and saving directories. But the training process itself is hidden from
+the user.</p>
+<p>The class <code class="xref py py-class docutils literal"><span class="pre">DBN</span></code> uses the class <code class="xref py py-class docutils literal"><span class="pre">RBM</span></code> to pretrain the layers. Then it extracts them, adds an additional output
+layer and trains them with a supervised finetune method.</p>
+</div>
+<div class="section" id="network-rbm">
+<h2>Network: RBM<a class="headerlink" href="#network-rbm" title="Permalink to this headline">¶</a></h2>
+<p>The restricted <a class="reference external" href="https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine">Boltzmann machine</a>
+is a unsupervised neural network. The network consists of two layers, the visible and the hidden layer.
+The visible layer has the size of the input data vector. The hidden layer has the size of the number off features it should extract.</p>
+<p>The network is learning stochastically and unsupervised with the CD-k algorithm (constrative divergence).</p>
+<p>The visualization of this learning algorithm was already used in the <a class="reference internal" href="introduction.html"><span class="doc">Get Started with Tensorflow</span></a>.</p>
+<img alt="_images/RBM_pretraining_learning_MNIST.png" src="_images/RBM_pretraining_learning_MNIST.png" />
+<p>The input from the visible layer is passed up to the hidden layer and then back down to the visible layer. This process is called
+Gibbs sampling step. After a specified number of Gibbs sampling steps the original input and the sampled input are compared.
+The error between the two values is used to adapt the weights of the network.</p>
+<p>For a more in depth description of this network see the <a class="reference external" href="http://image.diku.dk/igel/paper/AItRBM-proof.pdf">introductionto restricted Boltmann machines</a>
+or the <a class="reference external" href="http://ai2-s2-pdfs.s3.amazonaws.com/77c3/cf0e846a8485acf82beed186c086d9d9e68b.pdf">practical guide on how to train them</a></p>
+</div>
+<div class="section" id="network-dbn">
+<h2>Network: DBN<a class="headerlink" href="#network-dbn" title="Permalink to this headline">¶</a></h2>
+<p>In the paper <a class="reference external" href="https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf">A fast learning algorithm for deep belief nets</a> the author
+describes a procedure to stack multiple RBMs on top of each other. Each one is trained unsupervised and then the next network takes
+the output of the previsous one to train itself. This can be done multiple time and every time more features are learned.
+This is a way to pretrain a <a class="reference external" href="https://en.wikipedia.org/wiki/Deep_belief_network">Deep Belief Network</a> effectively.[HintonPretraining]_</p>
+<p>After the pretraining supervised backpropagation can be used to train an effective discriminative model.[HintonDiscrim]_</p>
+<p>The pretraining helps to kind of initialize the weights for the supervised training. So the networks learning progress is better.
+It also limits the amount of labeled training data which is needed to train the model.</p>
+<p>The supervised training is visualized by this Tensorboard graph:</p>
+<img alt="_images/finetuning_decent_forward_graph.png" src="_images/finetuning_decent_forward_graph.png" />
+<p>For the supervised training we only had 300 labeled data touples. That&#8217;s why after the network generates its own training data after
+the first two epochs.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dbn</span><span class="o">.</span><span class="n">supervised_finetuning</span><span class="p">()</span>
+
+<span class="n">examples</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="mi">100</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">train_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">prediction</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this technique we are trying to prevent the network from overfitting.</p>
+<table class="docutils citation" frame="void" id="wikiboltz" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WikiBoltz]</td><td><a class="reference external" href="https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine">https://en.wikipedia.org/wiki/Restricted_Boltzmann_machine</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="wikidbn" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WikiDBN]</td><td><a class="reference external" href="https://en.wikipedia.org/wiki/Deep_belief_network">https://en.wikipedia.org/wiki/Deep_belief_network</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="hintondiscrim" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[HintonDiscrim]</td><td><a class="reference external" href="https://www.youtube.com/watch?v=43hJRLhRidg">https://www.youtube.com/watch?v=43hJRLhRidg</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="hintonpretraining" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[HintonPretraining]</td><td><a class="reference external" href="https://www.youtube.com/watch?v=8fHpaKm9x4w">https://www.youtube.com/watch?v=8fHpaKm9x4w</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introducing the learning mechanism</a><ul>
+<li><a class="reference internal" href="#basic-structure">Basic Structure</a></li>
+<li><a class="reference internal" href="#network-rbm">Network: RBM</a></li>
+<li><a class="reference internal" href="#network-dbn">Network: DBN</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="previous chapter">Get Started with Tensorflow</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="results.html"
+                        title="next chapter">Experiment Results</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/explanation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="results.html" title="Experiment Results"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Get Started with Tensorflow"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

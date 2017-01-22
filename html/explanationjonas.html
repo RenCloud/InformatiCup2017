@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Fetch data and GUI mechanism &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Results" href="resultsjonas.html" />
+    <link rel="prev" title="Get Started: Request and PyQt5" href="introductionjonas.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="resultsjonas.html" title="Results"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introductionjonas.html" title="Get Started: Request and PyQt5"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="fetch-data-and-gui-mechanism">
+<h1>Fetch data and GUI mechanism<a class="headerlink" href="#fetch-data-and-gui-mechanism" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-structure">
+<h2>Basic Structure<a class="headerlink" href="#basic-structure" title="Permalink to this headline">¶</a></h2>
+<p>The GUI and the data fetching are divided into two file: <code class="file docutils literal"><span class="pre">getJsonwithoauth</span></code> and <code class="file docutils literal"><span class="pre">Gui</span></code>.</p>
+</div>
+<div class="section" id="fetch-data">
+<h2>Fetch Data<a class="headerlink" href="#fetch-data" title="Permalink to this headline">¶</a></h2>
+<p>To fetch the data we have decided in a first step what we need: readme, file typ, issues, comments, commits, author login and a few more.
+For almost every information an extra request was necessary. So the requested directories look as followed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>/repos/:owner/:repo/git/trees/:sha?recursive=1       # to get file data
+/repos/:owner/:repo/issues                           # to get issue data
+/repositories                                        # to get ID of public repositorys
+/repos/:owner/:repo/languages                        # to get the main language of an repository
+/repos/:owner/:repo/comments                         # to get the commit comments
+/repos/:owner/:repo/commits                          # to get the commits
+</pre></div>
+</div>
+<p>A call to the GitHub API can be seen as a standard HTML request. The API handles the input and responds to the user with a JSON string.
+The API has some advanced features, because it is possible to use PUT, POST and Delete.</p>
+<p>When you aren&#8217;t registered you can only request 60 times per hour. If you are above this limit you don&#8217;t get any responds back
+from the GitHub API. To get more you have to use Basic Authentication or use oAtuh which we would recommend.</p>
+<p>To call the the api nearly every time the same routine is done only some changes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># request the api here we call the tree api to get the git data</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">github</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/&#39;</span> <span class="o">+</span> <span class="n">owner</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">repos</span> <span class="o">+</span> <span class="s1">&#39;/git/trees/master?recursive=1&#39;</span><span class="p">)</span>
+<span class="c1"># if request ok</span>
+<span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+    <span class="c1"># create object from JSON response this part is different in some points</span>
+    <span class="c1"># because not overall we use the given json structure</span>
+    <span class="n">repoItemTree</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="c1"># is there a problem than only get data from repository ( it&#39;s may an empty one)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">github</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/&#39;</span> <span class="o">+</span> <span class="n">owner</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">repos</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+    <span class="c1"># see here is an empty one</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">context</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+    <span class="c1"># somethins is wrong</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>The routine for commits, issue and comments is a big greater. It needs to add Pagination or something that do the same task.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+   <span class="c1"># CommitJson -&gt; Object</span>
+   <span class="c1"># get up to 1000 commits with the header that comes back from github api</span>
+   <span class="n">stringcommiter</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+   <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># get header / try to get him ( when it&#39;s only 1 page this header wont exist</span>
+       <span class="n">headers</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;link&#39;</span><span class="p">]</span>
+       <span class="c1"># split header data in smaller parts</span>
+       <span class="n">test</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+       <span class="c1"># get page part of an smaller part ( smaler part is nearly a link and from the end of the link i want the</span>
+       <span class="c1">#  number)</span>
+       <span class="n">startIndex</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;&amp;page=&#39;</span><span class="p">)</span>
+       <span class="c1"># get the last to chars -&gt; if we have 2-9 whe cut it</span>
+       <span class="c1"># if we have 10-99 -&gt; 10-99</span>
+       <span class="c1"># if the number bigger we have 130 or something -&gt; 13 so 13x the last number is not interestet</span>
+       <span class="c1"># we can do this becouse we want only 10 and very number bigger 99 will give us 10 or an bigger number than</span>
+       <span class="n">end</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">startIndex</span> <span class="o">+</span> <span class="mi">6</span><span class="p">:</span><span class="n">startIndex</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+       <span class="k">if</span> <span class="n">end</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">:</span>
+           <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+       <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+           <span class="c1"># do the standart routine with changing link &#39;end&#39; times</span>
+           <span class="n">repoItemCommits</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+               <span class="n">r</span> <span class="o">=</span> <span class="n">github</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                   <span class="s1">&#39;https://api.github.com/repos/&#39;</span> <span class="o">+</span> <span class="n">owner</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">repos</span> <span class="o">+</span> <span class="s1">&#39;/commits?per_page=100&amp;page=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+               <span class="n">repoItemCommits</span> <span class="o">+=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+       <span class="k">else</span><span class="p">:</span>
+           <span class="c1"># when the size is bigger than 10 do it 10 times</span>
+           <span class="c1"># ... standart routine like above</span>
+   <span class="k">except</span><span class="p">:</span>
+       <span class="c1"># when the header &#39;link&#39; is not there it&#39;s only one page so we need no</span>
+       <span class="c1"># pagination and we can run standart routine without loop</span>
+       <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>Commit it there a extra special case. At this point the json is create complete by hand.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">repoItemCommits</span><span class="p">:</span>
+               <span class="n">author</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;author&#39;</span><span class="p">][</span><span class="s1">&#39;login&#39;</span><span class="p">]</span>
+               <span class="n">commiter</span> <span class="o">=</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;committer&#39;</span><span class="p">][</span><span class="s1">&#39;login&#39;</span><span class="p">]</span>
+               <span class="n">stringcommiter</span> <span class="o">+=</span> <span class="s1">&#39;{&quot;author_login&quot;: &quot;&#39;</span> <span class="o">+</span> <span class="n">author</span> <span class="o">+</span> <span class="s1">&#39;&quot;,&quot;committer_login&quot;: &quot;&#39;</span> <span class="o">+</span> <span class="n">commiter</span> <span class="o">+</span> <span class="s1">&#39;&quot;},&#39;</span>
+</pre></div>
+</div>
+<p>The other parts use</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">infoJson</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">repoInfo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But they need little changes.
+Treedata was cut a part of the json and change the word tree to repository.
+The other get her type presentation in front of the json like</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">commit</span> <span class="o">-&gt;</span> <span class="s1">&#39;&quot;commits&quot;:[&#39;</span><span class="o">+</span> <span class="n">stringcommits</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
+</pre></div>
+</div>
+<p>At the end all json strings are combined in one big string</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">finalReposItem</span> <span class="o">=</span> <span class="s1">&#39;[{&#39;</span> <span class="o">+</span> <span class="n">infoJson</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">treeJson</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">readmeJson</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">languageJson</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">commitsJson</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">commentsJson</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="n">issueJson</span> <span class="o">+</span> <span class="s1">&#39;}]&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="gui">
+<h2>GUI<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h2>
+<p>The GUI is build with PyQt5. PyQt5 is based on Qt which is a cross-plattform libary in C++.
+It is accessible with many high-level APIs for modern desktop and mobile system development.
+PyQt5 is a comprehensive set of Python bindings for Qt v5. Not all parts are completely implemented but 35 are. Enough to build our functioning GUI.
+Qt has powerful features to make nice graphical interfaces which can run on different platforms.
+More Information about <a class="reference external" href="https://www.riverbankcomputing.com/software/pyqt/download5">PyQt5</a>.</p>
+<p>Within our code we need not mutch of them, but often the same parts.
+The interface is build with buttons, textfield(LineEdits), filepicker and a tableview.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># objectwidth = 25</span>
+<span class="c1"># create a button on tab3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btraining</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Training&#39;</span><span class="p">,</span> <span class="n">tab3</span><span class="p">)</span>
+        <span class="c1"># when the cursor is move above the button show this text on the status bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btraining</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Start Training Mode&#39;</span><span class="p">)</span>
+        <span class="c1"># resize button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btraining</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btraining</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">())</span>
+        <span class="c1"># set his geometry ( xposition,yposition,xsize,ysize)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btraining</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="n">objectwidth</span><span class="p">)</span>
+        <span class="c1"># what happens when the button is clicked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btraining</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btrainingclicked</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Like this button every button is create.
+The Code for a LineEdit is a bit shorter.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># create a &#39;textField&#39;</span>
+ <span class="bp">self</span><span class="o">.</span><span class="n">lepath</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">(</span><span class="n">tab1</span><span class="p">)</span>
+ <span class="c1"># set his position and size</span>
+ <span class="bp">self</span><span class="o">.</span><span class="n">lepath</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="n">objectwidth</span><span class="p">)</span>
+ <span class="c1"># Whats happen when the cursur is moved over the LineEdit</span>
+ <span class="bp">self</span><span class="o">.</span><span class="n">lepath</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s1">&#39;Path to Repository Link List File&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The TableView is a bit complicated, but have not so mutch lines.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># create an table view on tab2</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">QTableView</span><span class="p">(</span><span class="n">tab2</span><span class="p">)</span>  <span class="c1"># declare table view</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">495</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span> <span class="c1"># set his position and size</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">QStandardItemModel</span><span class="p">()</span>  <span class="c1"># declare model</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># assign model to table view</span>
+    <span class="c1"># create the header of the table</span>
+   <span class="n">item</span> <span class="o">=</span> <span class="n">QStandardItem</span><span class="p">(</span><span class="s1">&#39;SolutionTable&#39;</span><span class="p">)</span>
+   <span class="c1"># set header to the view</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setHorizontalHeaderLabels</span><span class="p">([</span><span class="s1">&#39;Link&#39;</span><span class="p">,</span> <span class="s1">&#39;Classsifiy&#39;</span><span class="p">])</span>
+   <span class="c1"># auto scroll</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">setAutoScroll</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+   <span class="c1"># and a scroll bar when it has to mutch data</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOn</span><span class="p">)</span>
+
+   <span class="c1"># to set new data know we need</span>
+   <span class="c1"># create new data</span>
+   <span class="n">item</span> <span class="o">=</span> <span class="n">QStandardItem</span><span class="p">(</span><span class="n">repositorys</span><span class="p">)</span>
+   <span class="c1"># new row</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+   <span class="n">itemRow</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+   <span class="n">indexOfColumn1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">itemRow</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+   <span class="c1"># add new data</span>
+   <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">indexOfColumn1</span><span class="p">,</span> <span class="n">cat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To create the filepicker after a button is clicked a simple class can used.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">showdialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      user wants to pick a file so we open the file picker for him</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="c1"># start filepicker at &#39;/home&#39; place</span>
+  <span class="n">fname</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Open file&#39;</span><span class="p">,</span> <span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the directory picker or the selected file picker only a small change is made.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># for the directory</span>
+<span class="n">fname</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Select Directory&#39;</span><span class="p">,</span> <span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+
+<span class="c1"># for slected files ( multiple files)</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Select Files&#39;</span><span class="p">)</span>
+    <span class="n">nameString</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Fetch data and GUI mechanism</a><ul>
+<li><a class="reference internal" href="#basic-structure">Basic Structure</a></li>
+<li><a class="reference internal" href="#fetch-data">Fetch Data</a></li>
+<li><a class="reference internal" href="#gui">GUI</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introductionjonas.html"
+                        title="previous chapter">Get Started: Request and PyQt5</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="resultsjonas.html"
+                        title="next chapter">Results</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/explanationjonas.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="resultsjonas.html" title="Results"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introductionjonas.html" title="Get Started: Request and PyQt5"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

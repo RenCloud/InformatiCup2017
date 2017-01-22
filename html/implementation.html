@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Interfaces &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="What could be used furthermore?" href="thoughts.html" />
+    <link rel="prev" title="First approach: Text Mining" href="textMining.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="thoughts.html" title="What could be used furthermore?"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="textMining.html" title="First approach: Text Mining"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="interfaces">
+<h1>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-preparation">
+<h2>Data preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
+<p>Besides gensim, we only used one python script for all kind of tasks. This was possible, because of all of them have huge similarities.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prep</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">training</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="k">return</span> <span class="n">json_out_raw_arr</span>
+</pre></div>
+</div>
+<p>This script gets two parameters. A file containing an json representation of the repository data. And an mode which seperates the different usages of this script. There are four differnet modes:
+- 0: Produces vectors to train or learning network by given files
+- 1: Adds the current file to all Text Mining dictionaries
+- 2: Prepares an vector for classifiying
+- 3: Tries to remove as many unnecessary values in the dictionaries as possible</p>
+<p>In mode 0 and 2 the script returns a vector, which will be used in our vector.
+In mode 1 and 3 the script do not have to return anything.</p>
+<p>To control all of this modes and retrieve or send values to adjacent modules, we had to write a short script handling everything.</p>
+</div>
+<div class="section" id="server">
+<h2>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
+<p>Our server script provides two different methods, that can be run using the gui.
+At first: The training:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">training</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">newDataset</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">svtD</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">svtR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">vsD</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">vsR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The parameters are</p>
+<dl class="docutils">
+<dt>data</dt>
+<dd>training data without prior classification</dd>
+<dt>valid</dt>
+<dd>Are control values given?</dd>
+<dt>svtD</dt>
+<dd>json files of training data with prior classification</dd>
+<dt>svtR</dt>
+<dd>classification of svtD</dd>
+<dt>vsD</dt>
+<dd>json files of an control set</dd>
+<dt>vsR</dt>
+<dd>clasification of control set</dd>
+</dl>
+<p>The gui only takes (multiple) files as input and dynamically generates the parameter values</p>
+<dl class="docutils">
+<dt>As second: Classification::</dt>
+<dd>def classify(json_str)</dd>
+</dl>
+<p>This method only gets the data of the chosen url as json, forms it into an vector and classifys it. The classification is being return as an 7-tuple to the gui.</p>
+<p>The server also provides an console edition of the gui for manual testing. For using it, just uncomment the bottom section of the server file.
+Not all functions might be supported.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Interfaces</a><ul>
+<li><a class="reference internal" href="#data-preparation">Data preparation</a></li>
+<li><a class="reference internal" href="#server">Server</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="textMining.html"
+                        title="previous chapter">First approach: Text Mining</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="thoughts.html"
+                        title="next chapter">What could be used furthermore?</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/implementation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="thoughts.html" title="What could be used furthermore?"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="textMining.html" title="First approach: Text Mining"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

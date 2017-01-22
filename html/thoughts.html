@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>What could be used furthermore? &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Get Started with Tensorflow" href="introduction.html" />
+    <link rel="prev" title="Interfaces" href="implementation.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Get Started with Tensorflow"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="implementation.html" title="Interfaces"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="what-could-be-used-furthermore">
+<h1>What could be used furthermore?<a class="headerlink" href="#what-could-be-used-furthermore" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="length-of-arrays">
+<h2>Length of arrays<a class="headerlink" href="#length-of-arrays" title="Permalink to this headline">¶</a></h2>
+<p>Because of text mining alone not working properly, we wanted to filter some values which can be converted much easier into numerical
+representations. While searching for such values, the length of some array-based values seemed to be useful in order to analyze
+the repository. In our repository data the commits, comments, files/folders and issues consist of arrays, which length we
+can extract and easily convert to the needed input vector for the learning network. We only had to normalize (number between 0 and 1)
+them by the length dividing the maximum length(which is 1000 per array, larger arrays would be truncated).</p>
+</div>
+<div class="section" id="directory-names">
+<h2>Directory names<a class="headerlink" href="#directory-names" title="Permalink to this headline">¶</a></h2>
+<p>In addition to using file extensions, we tried to extract directory names as well. We were not sure, whether these would help us, so we decided to print a list of all directory names, which were not only used rarely.</p>
+<p>The list contains all values in the format &#8220;InternalID[TAB]value[TAB]frequency&#8221; and is sorted by frequency.</p>
+<img alt="_images/dirNames.png" src="_images/dirNames.png" />
+<p>Seeing the result, we decided to not use this names, because most of the common ones are used in programming and development. There wasnt a wide range of names over our categories, so they wouldnt help much in classifying.</p>
+</div>
+<div class="section" id="additionaly-values-from-github">
+<h2>Additionaly values from GitHub<a class="headerlink" href="#additionaly-values-from-github" title="Permalink to this headline">¶</a></h2>
+<p>Maybe the data we got from GitHub was not enough? Would it be better to know more about the repositories?
+We think, that this was not our main problem. Yes, more data nearly always is better for analyzing, but the existing values should be enough for classification.</p>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>With this approach we increased our accuracy up to 30%, which is 150% of the text-mining accuracy.
+Increasing the accuracy any further won&#8217;t be possible without using much more computing power.
+With enough performance you can store and analyze the textual values better, which should be the
+main part in this analyzation. Only storing single words isn&#8217;t enough, you will have to analyze the context too.
+Companies, who are working on Text Mining, surely have algorithms, which will work perfectly on this szenario. However, we tried a few different approaches and didnt concentrate on Text Mining, while Text Mining being the key for classification.
+Having some side values(here the length of arrays)is being helpful too, but they cannot classify repositories with enough precision.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">What could be used furthermore?</a><ul>
+<li><a class="reference internal" href="#length-of-arrays">Length of arrays</a></li>
+<li><a class="reference internal" href="#directory-names">Directory names</a></li>
+<li><a class="reference internal" href="#additionaly-values-from-github">Additionaly values from GitHub</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="implementation.html"
+                        title="previous chapter">Interfaces</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="introduction.html"
+                        title="next chapter">Get Started with Tensorflow</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/thoughts.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Get Started with Tensorflow"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="implementation.html" title="Interfaces"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

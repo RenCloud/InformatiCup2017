@@ -1,0 +1,597 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>RBM_CDK &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Gi-Project 1.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for RBM_CDK</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">learning.utils</span>
+<span class="kn">from</span> <span class="nn">learning.utils</span> <span class="k">import</span> <span class="n">utilities</span>
+
+<span class="kn">from</span> <span class="nn">tensorflow.examples.tutorials.mnist</span> <span class="k">import</span> <span class="n">input_data</span>
+<span class="kn">from</span> <span class="nn">learning.utils.input_format</span> <span class="k">import</span> <span class="n">DataSet</span>
+
+
+<div class="viewcode-block" id="RBM"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM">[docs]</a><span class="k">class</span> <span class="nc">RBM</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">main_dir</span><span class="o">=</span><span class="s2">&quot;rbm&quot;</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;rbm_model&quot;</span><span class="p">,</span>
+                 <span class="n">standard_derivation</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param input_size: Number of features used in the input vector.</span>
+<span class="sd">        :param hidden_size: Number of classes the output should be devided in.</span>
+<span class="sd">        :param main_dir: Directory where trainingdata, modeldata and imagedata should be saved to.</span>
+<span class="sd">        :param model_name: Name of the model.</span>
+<span class="sd">        :param standard_derivation: Standard-derivation for the random initialised weights.</span>
+<span class="sd">        :param input_to_binary: Determines if the network converts input into binary digits.</span>
+<span class="sd">        :param verbose: If true it will print the result of loss_function.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Sets network-size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span> <span class="o">=</span> <span class="n">input_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span> <span class="o">=</span> <span class="n">hidden_size</span>
+
+        <span class="c1"># parameters to influence the learning process</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentum_factor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_decay_factor</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_to_binary</span> <span class="o">=</span> <span class="n">input_to_binary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_standard_derivation</span> <span class="o">=</span> <span class="n">standard_derivation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epochs</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Tensorflow: variabales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_w</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_bh</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_bv</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w_upd8</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh_upd8</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv_upd8</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Tesorflow: Placeholders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_momentum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_weight_decay</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_gibbs_steps</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_hrand</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_vrand</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Varaibles to profile the training progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_loss_function</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_accuracy</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Tensoflow: Manage tensoflow interactions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Profiling and Saving of Modellparameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">=</span> <span class="n">main_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_data_directories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_dir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+<div class="viewcode-block" id="RBM.fit"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_epoche</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+            <span class="n">gibbs_sampling_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">momentum_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">weight_decay_factor</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        :param train_set: Trainset formatted as input_format.</span>
+<span class="sd">        :param restore_previous_model: If true restores learned model weights.</span>
+<span class="sd">        :param start_epoche: Already passed epochs to keep the Tensorboard graph well formatted.</span>
+<span class="sd">        :param epochs: Number of epochs the learning should last.</span>
+<span class="sd">        :param gibbs_sampling_steps: Number of gibbs sampling steps the net should performs.</span>
+<span class="sd">        :param learning_rate: Hyperparameter Learning rate parameter; will be devided by batch_size.</span>
+<span class="sd">        :param momentum_factor: Specifies the momentumterm.</span>
+<span class="sd">        :param weight_decay_factor:Specifies how strong the high weights are penetalized.</span>
+<span class="sd">        :param batch_size: The trainingset is sliced in mini batches. One batch has the size of batch_size.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epochs</span> <span class="o">=</span> <span class="n">epochs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span> <span class="o">/</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentum_factor</span> <span class="o">=</span> <span class="n">momentum_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_decay_factor</span> <span class="o">=</span> <span class="n">weight_decay_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span> <span class="o">=</span> <span class="n">gibbs_sampling_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_summary_nodes</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_tf_utilities_and_ops</span><span class="p">(</span><span class="n">restore_previous_model</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_train_model</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">start_epoche</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">)</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RBM.classify"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM.classify">[docs]</a>    <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">input_to_binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_hstates</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        :param input: the input vectors to classify as input_format.</span>
+<span class="sd">        :param input_to_binary: if true input is normalized to 0 or 1.</span>
+<span class="sd">        :param return_hstates: if true returns only the values of 0 or 1.</span>
+<span class="sd">        :return: binary vector or probabilty which indicates the corresponding class of the inputdata.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_placeholders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_variables</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">input_to_binary</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_prob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_vrand</span><span class="p">)</span>
+
+        <span class="n">classification</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_hidden_from_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="n">init_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_op</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">)</span>
+
+            <span class="n">hprobs</span><span class="p">,</span> <span class="n">hstates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">classification</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_complete_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">))</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">return_hstates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hstates</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">hprobs</span></div>
+
+<div class="viewcode-block" id="RBM._initialize_tf_utilities_and_ops"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._initialize_tf_utilities_and_ops">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_tf_utilities_and_ops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">restore_previous_model</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        :param restore_previous_model: if set to true the lastest learned weights are loaded to continue training.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">init_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_op</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">merge_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">restore_previous_model</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">FileWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._train_model"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._train_model">[docs]</a>    <span class="k">def</span> <span class="nf">_train_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">start_epoche</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Devides the training process into the number of epochs. Every epoch run_train_step is called to iterate</span>
+<span class="sd">            over the whole train_set.</span>
+
+<span class="sd">        :param train_set: The input data formatted as input_format.</span>
+<span class="sd">        :param start_epoche: If the training is performed in multiple steps then the start_epoch should be specified.</span>
+<span class="sd">                    The start_epoch is the number of already performed trainingsteps.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_epochs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_train_step</span><span class="p">(</span><span class="n">train_set</span><span class="p">)</span>
+            <span class="c1"># print(&quot;finished train-step &quot;, i)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_summary</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">start_epoche</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._run_train_step"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._run_train_step">[docs]</a>    <span class="k">def</span> <span class="nf">_run_train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Iterates over the whole training set.</span>
+
+<span class="sd">        :param train_set: The input data formatted as input_format.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">updates</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w_upd8</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh_upd8</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv_upd8</span><span class="p">]</span>
+
+        <span class="n">iterations</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">train_set</span><span class="o">.</span><span class="n">num_examples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">updates</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_feed_dict</span><span class="p">(</span><span class="n">train_set</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RBM._run_summary"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._run_summary">[docs]</a>    <span class="k">def</span> <span class="nf">_run_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            After every 20 completed epochs the network performs a mergesummary call. The in create_summary_node</span>
+<span class="sd">            called tensors are save to the logs file. Also the loss is calculated and also saved. The progress of the</span>
+<span class="sd">            network can be monitored by tensorboard.</span>
+
+<span class="sd">        :param train_set: [Update Needed] Can either operate the validation or the trainset.</span>
+<span class="sd">        :param epoch: An integer to plot the summary data to an x-value.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">loss</span><span class="p">,</span> <span class="n">summary_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_loss_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_merged_summaries</span><span class="p">],</span>
+                                                 <span class="n">feed_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_feed_dict</span><span class="p">(</span><span class="n">train_set</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_summary_writer</span><span class="o">.</span><span class="n">add_summary</span><span class="p">(</span><span class="n">summary_str</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[loss]: &quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._create_feed_dict"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._create_feed_dict">[docs]</a>    <span class="k">def</span> <span class="nf">_create_feed_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Helper function, which slices the inputdata at every iteration and feeds the data in a dictionary.</span>
+<span class="sd">            The dictionary is used to feed the tensorplaceholders.</span>
+
+<span class="sd">        :param data: takes the whole train_set in form of input_format.</span>
+<span class="sd">        :return: A dictionary with the data to feed to the network.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">next_batch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_hrand</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_vrand</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_momentum</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentum_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_weight_decay</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_decay_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_gibbs_steps</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="RBM._create_complete_dict"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._create_complete_dict">[docs]</a>    <span class="k">def</span> <span class="nf">_create_complete_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            This function works like create_feed_dict but it also feeds a placeholder(self._tf_desired_output) with the desired output</span>
+<span class="sd">            of the network.</span>
+
+<span class="sd">        :param data: Validation data as input_format.</span>
+<span class="sd">        :return: A Dictionary with all data that needs to be feed to the network.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">images</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_hrand</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_vrand</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_momentum</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentum_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_weight_decay</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_decay_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_gibbs_steps</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="RBM._build_model"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._build_model">[docs]</a>    <span class="k">def</span> <span class="nf">_build_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            For Tensorflow we need to specify the graph we want to run beforehand. A need graph is build by every call</span>
+<span class="sd">            of fit. the build model has every needed to train the network.</span>
+<span class="sd">            It creates the placeholders and variables. Then it performs the gibbs sampling steps to update the weights.</span>
+<span class="sd">            The steps are structured with tf.name_scope to format the graph displayed in tensorboard.</span>
+<span class="sd">            The build function also includes a graph for the accuracy and loss function.</span>
+
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_placeholders</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_variables</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;learning_process&#39;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;gibbs_sapmling_step&#39;</span><span class="p">):</span>
+                <span class="n">hprobs0</span><span class="p">,</span> <span class="n">hstates0</span><span class="p">,</span> <span class="n">vprobs</span><span class="p">,</span> <span class="n">hprobs1</span><span class="p">,</span> <span class="n">hstates1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_step</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_sample_prob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_vrand</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;_compute_positive_association&#39;</span><span class="p">):</span>
+                <span class="n">positive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_positive_association</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">,</span> <span class="n">hprobs0</span><span class="p">,</span> <span class="n">hstates0</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;gibbs_sampling_steps&#39;</span><span class="p">):</span>
+                <span class="n">nn_input</span> <span class="o">=</span> <span class="n">vprobs</span>
+
+                <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">hprobs</span><span class="p">,</span> <span class="n">hstates</span><span class="p">,</span> <span class="n">vprobs</span><span class="p">,</span> <span class="n">hprobs1</span><span class="p">,</span> <span class="n">hstates1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_step</span><span class="p">(</span><span class="n">nn_input</span><span class="p">)</span>
+                    <span class="n">nn_input</span> <span class="o">=</span> <span class="n">vprobs</span>
+
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;compute_negative_association&#39;</span><span class="p">):</span>
+                <span class="n">negative</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">vprobs</span><span class="p">),</span> <span class="n">hprobs1</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">encode</span> <span class="o">=</span> <span class="n">hprobs1</span>
+
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;calculate_delta_weights&#39;</span><span class="p">):</span>
+                <span class="n">d_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_w</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">positive</span> <span class="o">-</span> <span class="n">negative</span><span class="p">)</span>
+                                              <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">scalar_mul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_momentum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_w</span><span class="p">)</span>
+                                              <span class="o">-</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">scalar_mul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_weight_decay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">)))</span>
+                <span class="n">d_bh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_bh</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">hprobs0</span> <span class="o">-</span> <span class="n">hprobs1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">d_bv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_bv</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">-</span> <span class="n">vprobs</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;update_weights&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w_upd8</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">d_w</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh_upd8</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">d_bh</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv_upd8</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">d_bv</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_hidden_from_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span><span class="p">)</span>
+
+            <span class="n">correct_prediction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_accuracy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">correct_prediction</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_loss_function</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">-</span> <span class="n">vprobs</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="RBM._create_placeholders"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._create_placeholders">[docs]</a>    <span class="k">def</span> <span class="nf">_create_placeholders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Creates all needed Placeholders in one call. The placeholders can be feed at runtime.</span>
+
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_input_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x-input&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_hrand</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hrand&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_vrand</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vrand&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_desired_output</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Desired_Output&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_lr</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_momentum</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;momentum_term&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_weight_decay</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;alpha&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_gibbs_steps</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;gibbs_sampling_steps&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._create_variables"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._create_variables">[docs]</a>    <span class="k">def</span> <span class="nf">_create_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Creates all Variables in one function call. The variables contain the weights and weight changes.</span>
+<span class="sd">            Tensor specified as tf.Variable are save by the tf.train.Saver after every succefull call of fit.</span>
+<span class="sd">            If restore_previous_model is true the pre-initialised values we&#39;ll be overwritten by the previously save one.</span>
+
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">),</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_standard_derivation</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weights_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hidden_bias_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;visible_bias_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_w</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_w_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_bh</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_bh_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_delta_bv</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_size</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;delta_bv_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._gibbs_sampling_step"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._gibbs_sampling_step">[docs]</a>    <span class="k">def</span> <span class="nf">_gibbs_sampling_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Performes a complete Gibbs-Sapmling-Step.</span>
+
+<span class="sd">        :param visible: input vector</span>
+<span class="sd">        :return: probality of the hidden layer, visible layer and a new hidden layer after one down up pass. Also the</span>
+<span class="sd">                    binary staes of the hidden and the new hidden layer.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">hprobs</span><span class="p">,</span> <span class="n">hstates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_hidden_from_visible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+        <span class="n">vprobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_visible_from_hidden</span><span class="p">(</span><span class="n">hprobs</span><span class="p">)</span>
+        <span class="n">hprobs1</span><span class="p">,</span> <span class="n">hstates1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_hidden_from_visible</span><span class="p">(</span><span class="n">vprobs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hprobs</span><span class="p">,</span> <span class="n">hstates</span><span class="p">,</span> <span class="n">vprobs</span><span class="p">,</span> <span class="n">hprobs1</span><span class="p">,</span> <span class="n">hstates1</span></div>
+
+<div class="viewcode-block" id="RBM._sample_hidden_from_visible"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._sample_hidden_from_visible">[docs]</a>    <span class="k">def</span> <span class="nf">_sample_hidden_from_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Helper function. Performs an up-pass from the visible into the hidden layer.</span>
+
+<span class="sd">        :param visible: Input vector with size of the visible layer.</span>
+<span class="sd">        :return: The probability and the states of the hidden layer after the up-pass.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">hprobs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">visible</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="p">)</span>
+        <span class="n">hstates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_prob</span><span class="p">(</span><span class="n">hprobs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_hrand</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hprobs</span><span class="p">,</span> <span class="n">hstates</span></div>
+
+<div class="viewcode-block" id="RBM._sample_visible_from_hidden"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._sample_visible_from_hidden">[docs]</a>    <span class="k">def</span> <span class="nf">_sample_visible_from_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Helper function. Performs an down-pass from the hidden into the visible layer.</span>
+
+<span class="sd">        :param hidden: Input vector with size of hidden layer.</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._compute_positive_association"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._compute_positive_association">[docs]</a>    <span class="k">def</span> <span class="nf">_compute_positive_association</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Helper function to compute the positive association in one function call.</span>
+
+<span class="sd">        :param visible: A tensor which represents the states of the visible units.</span>
+<span class="sd">        :param hidden_states: A tensor which represents the states of the hidden units.</span>
+<span class="sd">        :return: self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">visible</span><span class="p">),</span> <span class="n">hidden_states</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._sample_prob"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._sample_prob">[docs]</a>    <span class="k">def</span> <span class="nf">_sample_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probs</span><span class="p">,</span> <span class="n">rand</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Helperfunction to randomly convert a value into 1 or 0.</span>
+
+<span class="sd">        :param probs: The probability vector of the up or down pass.</span>
+<span class="sd">        :param rand: A Vector with the same size as probs which contains random values.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">probs</span> <span class="o">-</span> <span class="n">rand</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RBM._create_summary_nodes"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._create_summary_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">_create_summary_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function adds additional nodes to the computation graph. These are sidenodes which get only evaluated when</span>
+<span class="sd">                self._tf_merged_summarys runs. The summary nodes create Data which is visualized with Tensorboard.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;summaries&#39;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;learning_progress&#39;</span><span class="p">):</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_loss_function</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;weight_development&#39;</span><span class="p">):</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;max_Weight&quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">))</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;min_weight&quot;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="p">))</span>
+                <span class="c1"># tf.summary.histogram(&quot;delta_weights&quot;, self._tf_delta_w)</span>
+                <span class="c1"># tf.summary.histogram(&quot;weights&quot;, self._tf_w)</span>
+            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;hyperparameter&#39;</span><span class="p">):</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;_learning_rate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learning_rate</span><span class="p">)</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">&quot;Gibbs_sampling_steps&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gibbs_sampling_steps</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RBM._create_data_directories"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM._create_data_directories">[docs]</a>    <span class="k">def</span> <span class="nf">_create_data_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A Helper function to create the directories to save the logs and the model weights.</span>
+
+<span class="sd">        :return: Returns the path as string for the model, data and summary directory.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+
+        <span class="n">models_dir</span> <span class="o">=</span> <span class="s2">&quot;models/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="s2">&quot;data/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+        <span class="n">summary_dir</span> <span class="o">=</span> <span class="s2">&quot;logs/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dir</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="n">models_dir</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">summary_dir</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">models_dir</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">summary_dir</span></div>
+
+<div class="viewcode-block" id="RBM.get_weights"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM.get_weights">[docs]</a>    <span class="k">def</span> <span class="nf">get_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initializes a Session and loads the model data. The tensorflow eval function returns the variable values as</span>
+<span class="sd">                a numpy array. The numpy array is used to initialize the DBN weights.</span>
+
+<span class="sd">        :return: Return the weights and biases as numpy array</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_variables</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">)</span>
+
+            <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            <span class="n">bh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_bh</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">w</span><span class="p">,</span> <span class="n">bh</span></div>
+
+<div class="viewcode-block" id="RBM.get_weights_as_images"><a class="viewcode-back" href="../code.html#RBM_CDK.RBM.get_weights_as_images">[docs]</a>    <span class="k">def</span> <span class="nf">get_weights_as_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;img/&#39;</span><span class="p">,</span> <span class="n">n_images</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">img_type</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and save the weights of the hidden units with respect to the</span>
+<span class="sd">                visible units as images.</span>
+
+<span class="sd">        :param width: width of the image</span>
+<span class="sd">        :param height: height of the image</span>
+<span class="sd">        :param outdir: directory where the created images should be saved</span>
+<span class="sd">        :param n_images: How many images should be createds</span>
+<span class="sd">        :param img_type: Should the image be color or grey. If it should be colored for every pixel should exist 3 neurons.</span>
+<span class="sd">        :return: self.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">outdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_dir</span> <span class="o">+</span> <span class="n">outdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_model</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tf_saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_path</span><span class="p">)</span>
+
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_w</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hidden_size</span><span class="p">)[:</span><span class="n">n_images</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perm</span><span class="p">:</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">weights</span><span class="p">])</span>
+                <span class="n">image_path</span> <span class="o">=</span> <span class="n">outdir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+                <span class="n">utilities</span><span class="o">.</span><span class="n">gen_image</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">image_path</span><span class="p">,</span> <span class="n">img_type</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Gi-Project 1.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>

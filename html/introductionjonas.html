@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Get Started: Request and PyQt5 &#8212; Gi-Project 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Fetch data and GUI mechanism" href="explanationjonas.html" />
+    <link rel="prev" title="Welcome To Our Documentation Page" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="explanationjonas.html" title="Fetch data and GUI mechanism"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome To Our Documentation Page"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="get-started-request-and-pyqt5">
+<h1>Get Started: Request and PyQt5<a class="headerlink" href="#get-started-request-and-pyqt5" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The userinterface is built with <a class="reference external" href="https://www.riverbankcomputing.com/software/pyqt/intro">PyQt5</a>.
+We use <a class="reference external" href="http://docs.python-requests.org/en/master/">Requests: HTTP for Humans</a> and requests_oAuthlib to fetch the required data
+from GitHub.
+The requirements for this part of the project are easily installed via pip:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">requests</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">requests_oauthlib</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">PyQt5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-requests-and-requests-oatuhlib">
+<h2>Basic: Requests and Requests_oAtuhLib<a class="headerlink" href="#basic-requests-and-requests-oatuhlib" title="Permalink to this headline">¶</a></h2>
+<p>Both libraries are very easy to use. We will show you some examples on how to use them so you have a better understanding of our code.</p>
+<p>First we import the needed modules as followed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>  <span class="c1"># for the Standart HTTP Requests</span>
+<span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="k">import</span> <span class="n">OAuth2Session</span> <span class="c1"># for the OAuth lib which we need later for OAuth 2 support</span>
+<span class="kn">import</span> <span class="nn">json</span>
+</pre></div>
+</div>
+<p>To send a basic webpage request we use the <code class="xref py py-meth docutils literal"><span class="pre">get()</span></code> function.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.GitHub.com/events&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The sever responds is now saved in our r variable.</p>
+<p>To view its content we use the python <code class="xref py py-meth docutils literal"><span class="pre">print()</span></code> functionality:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>From the GitHub API we get a JSON string back. We can easily convert the responds into a JSON string.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">jsonobject</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To get fewer problems while handling GitHub requests a simple if-construction helps.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span> <span class="c1"># is ok when request is ok -&gt; when you hit ratelimit it&#39;s not ok</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">request</span></code> can be used for more advanced tasks. The links for more information are
+<a class="reference external" href="http://docs.python-requests.org/en/master/user/quickstart/">here</a> and <a class="reference external" href="http://docs.python-requests.org/en/master/user/advanced/">here</a>.</p>
+<p>The next step is to use the <code class="xref py py-mod docutils literal"><span class="pre">OAuth2Session</span></code>.
+First we create two variables which hold our userinformation.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Credentials you get from registering a new application</span>
+<span class="n">client_id</span> <span class="o">=</span> <span class="s1">&#39;Your Client ID&#39;</span>
+<span class="n">client_secret</span> <span class="o">=</span> <span class="s1">&#39;Your Client Secret&#39;</span>
+</pre></div>
+</div>
+<p>If you want to register your own application follow this link <a class="reference external" href="https://GitHub.com/settings/applications/new">here</a>.
+Let&#8217;s create some more variables with needed information:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># OAuth endpoints given in the GitHub API documentation</span>
+<span class="n">authorization_base_url</span> <span class="o">=</span> <span class="s1">&#39;https://GitHub.com/login/oauth/authorize&#39;</span>
+<span class="n">token_url</span> <span class="o">=</span> <span class="s1">&#39;https://GitHub.com/login/oauth/access_token&#39;</span>
+</pre></div>
+</div>
+<p>Now we have nearly all what we need</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">GitHub</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
+<span class="c1"># Redirect user to GitHub for authorization</span>
+<span class="n">authorization_url</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">GitHub</span><span class="o">.</span><span class="n">authorization_url</span><span class="p">(</span><span class="n">authorization_base_url</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Please go here and authorize,&#39;</span><span class="p">,</span> <span class="n">authorization_url</span><span class="p">)</span>
+<span class="c1"># Get the authorization verifier code from the callback url</span>
+<span class="n">redirect_response</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">(</span><span class="s1">&#39;Paste the full redirect URL here:&#39;</span><span class="p">)</span>
+<span class="c1"># Fetch the access token</span>
+<span class="n">GitHub</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span><span class="n">token_url</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">client_secret</span><span class="p">,</span> <span class="n">authorization_response</span><span class="o">=</span><span class="n">redirect_response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the GitHub object you can do request with oauth.
+Simple do the same as you did before only this time with the GitHub object instead of <code class="xref py py-meth docutils literal"><span class="pre">requests()</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">GitHub</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.GitHub.com/user&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more look <a class="reference external" href="http://requests-oauthlib.readthedocs.io/en/latest/index.html">here</a>.</p>
+</div>
+<div class="section" id="basics-pyqt5">
+<h2>Basics: PyQt5<a class="headerlink" href="#basics-pyqt5" title="Permalink to this headline">¶</a></h2>
+<p>Within the project we need 13 imports from PyQt for different objects like Buttons, TextFields and more.
+In this section we give you nice insight into the methods we used in our code.
+Here we only show a basic window with a button and a tooltip.</p>
+<p>Our imports are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">QToolTip</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="k">import</span> <span class="n">QFont</span>
+</pre></div>
+</div>
+<p>Next we create a main for our window:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">ex</span> <span class="o">=</span> <span class="n">Example</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The variable is our class which we use to create our window.
+That&#8217;s what the class will look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Example</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is the basic init structure for a QWidget.
+The only part which is missing is &#8216;initUI&#8217;.
+Lets&#8217;s implement it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># set the font for buttons, texts and the window</span>
+    <span class="n">QToolTip</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">QFont</span><span class="p">(</span><span class="s1">&#39;SansSerif&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+    <span class="c1"># Creates the tooltip for our window</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;This is a &lt;b&gt;QWidget&lt;/b&gt; widget&#39;</span><span class="p">)</span>
+
+    <span class="c1"># creates a button</span>
+    <span class="n">btn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Button&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1"># Creates the tooltip for our button</span>
+    <span class="n">btn</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;This is a &lt;b&gt;QPushButton&lt;/b&gt; widget&#39;</span><span class="p">)</span>
+
+    <span class="n">btn</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">btn</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">())</span>
+    <span class="n">btn</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s1">&#39;Tooltips&#39;</span><span class="p">)</span>
+
+    <span class="c1"># this call is needed otherwise the window won&#39;t show up</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Our Program now looks like this:</p>
+<img alt="_images/tooltips.png" src="_images/tooltips.png" />
+<p>For more details you may look <a class="reference external" href="http://zetcode.com/gui/pyqt5/">here</a> for a good basic tutorial about PyQt5.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Get Started: Request and PyQt5</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#basic-requests-and-requests-oatuhlib">Basic: Requests and Requests_oAtuhLib</a></li>
+<li><a class="reference internal" href="#basics-pyqt5">Basics: PyQt5</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome To Our Documentation Page</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="explanationjonas.html"
+                        title="next chapter">Fetch data and GUI mechanism</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/introductionjonas.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="explanationjonas.html" title="Fetch data and GUI mechanism"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome To Our Documentation Page"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gi-Project 1.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright None.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
