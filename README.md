@@ -1,6 +1,6 @@
 # InformatiCup2017
+Niels Nuthmann
+Jonas Fabisiak
+Jan Feuchter
 
-A Cool Ki to Tag Repos within 7 Categories
-Project is not complete know 
-more information comes later
-see you :D
+Documentation at https://rencloud.github.io/InformatiCup2017/
