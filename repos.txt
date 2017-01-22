@@ -1,5 +1,0 @@
-https://github.com/babesk/babesk
-https://github.com/Auwibana/OSI-7124
-https://github.com/Slazzyer/Minimax
-https://github.com/syoon46/Homework
-https://github.com/raspberrypi/documentation
