@@ -254,6 +254,13 @@ the same time. But our trainingset just consisted of only one class solutions.
 So we use the softmax version as default.
 
 
+**************************
+
+Hier noch die Youtubereihe als Quelle angeben.
+
+****************************
+
+
 Pretraining
 
 We variet the length of the training a little bit but we always stuck to the same plan of decaying the learning rate over time and meanwhile
@@ -271,49 +278,30 @@ with binary states should prevent this.
 Evaluation
 ^^^^^^^^^^
 
-Kurze zusammenfassung der Ergebnisse des aufbaus und so weiter
+The concept of pretraining a Deep Neural Network with RBM's and then finetune it with backpropagation proofed to be ineffective.
+With the modular development the network could be easily modified. Also was the Tensorflow API easy to understand and to use.
+That gave us the chance to test different input vectors,
+neuron type, optimizers and learning rates. But none of the experiments performed well in our test setups.
 
-danach was hat functioniert was nicht
+The network itself was tested with the MNIST dataset. So it's capability of learning complex interactions with only raw pixel
+is proofed.
+We expect the error either in the input vector or in the chosen structure of our network. For example we couldn't find a
+working network topology. Mostlikely it is a combination of all the above.
 
-Warum
+This high complexity makes it extremely difficult to find a solution. In addition to that the field of Deep Neural Networks
+is a pretty new. Many different theories in how to interpret and improve their performance are out there. Most of them
+can't be proven mathematically. We had only the possibility to try out different things that worked in other networks and test
+them in our.
+Also is it difficult to interpret the output of the network. The low accuracy for example can be a result of a poor input vector,
+poor trainingsdata or it can simply be stuck in a bad local minima.
 
-Gründe beim Netzwerk
-eher nicht bei uns :D
+To improve the performace we have different options:
+#. The network would defently profit from more trainingdata because it helps generalising the problem.
+#. We could use a more complex network like a convolutional network which can find solutions for more complex tasks.
+#. If we retrieve more information from the GitHub API we could find a better suited input vector. Additionally we could
+    perform something like Principal Component Analysis (PCA) to filter with value has  a real impact on our classification problem.
+#. The normalisation could also be improved. The values should be between 0 and 1 which our method does. But most of the
+    values getting to small which isn't optimal for the network.
 
-Auf diesen Grundlagen evaluieren ob der Ansatz falsch war
-was man im nachhinein hätte besser machen können.
-
-Wie kann man solche fehler vermeiden (Tests, Infos)
-
-Sagen das man trotzdem mit der Leistung ergebnis zufrieden ist auch wenn es überhaupt nciht das ist was man sich vorgstellt hat.
-
-
-
-We developed a network which is easiely configureable. But has some restrictions in how to use it. For example isn't it possible to use early
-stopping or continue training at every chosen point. But the network documents itself in Tensorboard and can be used
-for all different kind of task. The Main interface is a little bit special but the DBN and RBM is as general as possible.
-
-Found out which different things we can use to influence the behaviour of the network. Also tested different kinds of input(Jan's abschluss statement).
-We can prevent the network from overfitting. Fight the vanishing gradient and prevent the weights from exploding. Although
-the weights are greatly initialized with the pretraining.
-
-The network is most likely functioning we already tested that with the MNIST dataset. Although we mad changed that we didn't tested
-with this dataset so it could be possible that one of our design desicions broke the network.
-More likely is that we chose a bad input vector. Or our idea is complete wrong.
-
-But we wanted to use a deep network because the task look quiet complex. A shallow network or the k-means algorithm
-seems unlikely to work.
-
-Because the Deep neural network is such a complex construct we weren't able to pinpoint our mistakes and why the network ins't performing well.
-That made it really problematic to find a solution because couldn't determine if our changes are now helping or not.
-In addition it is dfficult to debug Tensorflow code because it isn't running in python. So we had no direct inside in what
-is happening in our network.
-
-The modular architecture and the few interfaces helps developing. But the interfaces were often changed and every team member only
-worked on their own small project. So help across the inferface wasn't possible. Three people maybe would have found more ideas then one.
-
-
-Neural Networks are pretty complex and it is mostly a heuristic decision in how to change the network. But because of the
-lack of experience we dind't succeeded in our task.
-
-DBN's are a new field and most of the papers are just suggestions.
+All in all there are many possible ways to improve the classification ability of our network. But it is really difficult to tell
+which should be used.

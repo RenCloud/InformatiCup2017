@@ -8,14 +8,6 @@ from learning.networks.RBM_CDK import RBM
 from tensorflow.examples.tutorials.mnist import input_data
 from learning.utils.input_format import DataSet
 
-# TODO
-'''
- 1. neuer ordner zum speichern und laden von finegetuneten models
- 2. die möglichkeit das finetuning fortzusetzen
- 3. für das finetunig die variable global step einführen
- 4. refracturing des codes
-'''
-
 
 class DBN(object):
     def __init__(self,
@@ -117,7 +109,7 @@ class DBN(object):
                 print("[INFO] started training periode ", n + 1, " of ", len(epoch_steps))
 
                 rbm.fit(train_set, restore_previous_model=continue_training[n], start_epoche=start_epoch,
-                        validation_set=None, learning_rate=learning_rate[n],
+                        learning_rate=learning_rate[n],
                         momentum_factor=momentum[n], epochs=epoch_steps[n], weight_decay_factor=weight_decay[i],
                         gibbs_sampling_steps=gibbs_sampling_steps[n], batch_size=batch_size[n])
 
@@ -142,6 +134,10 @@ class DBN(object):
         :param batch_size: Specifies the size of batches the data_set is slices into.
         :param epochs: Number of epochs the network should train.
         :param validation_set: If a validation_set is given the network will calculate it's accuracy after every epoch.
+        :param global_epoch: If you use multiple calls of supervised_finetuning this variable should keep track of the
+                    global epoch.
+        :param finetune_load_dir: If make_dbn is false a previously trained network is loaded from this subdir.
+        :param finetune_save_dir: The network and the log data will be saved into this directory.
         :return: self
         '''
 
@@ -178,6 +174,8 @@ class DBN(object):
         :param input: The data used to make the prediction.
         :param build_dbn: If the prediction has to be made before the finetuning the network can be build from
                             pretrained RBMs.
+        :param finetune_sub_dir: If you want to classify data you need a already trained network. This is specified in
+                    this parameter. The main_dir will already be set with the DBN constructor.
         :return: The prediction
         '''
 
@@ -199,6 +197,23 @@ class DBN(object):
 
     def supervised_training(self, train_set, validation_set, epochs=1, batch_size=1,
                             sub_dir="dbn/", global_epoch=0, restore_previouse_model=True):
+
+        '''
+            This function performes supervised training without pretraining. Except this difference this method behaves
+            like supervised_finetuning.
+
+        :param train_set: A trainingset with labeled data as a Dataset.
+        :param batch_size: Specifies the size of batches the data_set is slices into.
+        :param epochs: Number of epochs the network should train.
+        :param validation_set: If a validation_set is given the network will calculate it's accuracy after every epoch.
+        :param global_epoch: If you use multiple calls of supervised_finetuning this variable should keep track of the
+                    global epoch.
+        :param sub_dir: The network and the log data will be saved into this directory.
+        :param restore_previouse_model: If you want to restore a model from the given sub_dir then set the
+                    restore_previouse_model boolean to true.
+        :return: self
+        '''
+
         self._build_deterministic_model()
 
         self._create_finetune_dir(sub_dir)
@@ -366,8 +381,6 @@ class DBN(object):
             with tf.name_scope("backpropagation"):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(output, self._tf_desired_output)
 
-                # cross_entropy = tf.reduce_mean(-tf.reduce_sum(self._tf_desired_output * tf.nn.sigmoid(self._tf_output), reduction_indices=[1]))
-
                 self.learningrate = 0.5
                 learning_rate = tf.train.exponential_decay(self.learningrate, self._tf_global_step, 300, 0.99,
                                                            staircase=True)
@@ -380,8 +393,6 @@ class DBN(object):
         with tf.name_scope("accuracy"):
             prediction = tf.nn.softmax(output)
             correct_prediction = tf.equal(tf.argmax(prediction, 1), tf.argmax(self._tf_desired_output, 1))
-
-            # correct_prediction = tf.nn.in_top_k(prediction, tf.argmax(self._tf_desired_output, 1), 2)
 
             self._tf_accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -461,14 +472,3 @@ class DBN(object):
 
         if not os.path.isdir("logs/" + self._main_dir + finetune_dir):
             os.makedirs("logs/" + self._main_dir + finetune_dir)
-
-
-if __name__ == '__main__':
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-
-    dbn = DBN([784, 500, 500, 1500, 10], main_dir="mnist_test")
-
-    dbn.pretraining(mnist, gibbs_sampling_steps=[1, 3, 5], learning_rate=[0.1, 0.01, 0.005],
-                    weight_decay=[0.0001, 0.0001, 0.0002],
-                    momentum=[0.5, 0.9, 0.9], continue_training=[False, True, True], epoch_steps=[10, 10, 10],
-                    batch_size=[10, 10, 10])

@@ -1,3 +1,5 @@
+from guacamole.ingredients.test_cmdtree import _sub
+
 import data.dataprepNumeric as dataprep
 import os
 import learning.frontend.Main
@@ -80,7 +82,7 @@ elif(inp == "v"):
     vs.append(open("./gegebenarray.json").read())
 
     # vs
-    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_7", supervised_train_set=svt, validation_set=svt, do_pretraining=False)
+    cat = learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_7", supervised_train_set=svt, validation_set=svt, do_pretraining=False, dir="Adagrad_1/")
 else:
     tmp = []
     for jsonFile in os.listdir("./data/json"):

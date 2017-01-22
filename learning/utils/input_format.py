@@ -72,16 +72,44 @@ class DataSet(object):
 
     @property
     def num_examples(self):
+
+        '''
+            A getter method for the number of examples
+
+        :return: Number of examples
+        '''
+
         return self._images.shape[0]
 
     @property
     def input_dim(self):
+
+        '''
+            A getter function for the input size.
+
+        :return: Returns the size of a single vector
+        '''
+
         return self._images.shape[1]
 
     @property
     def images(self):
+
+        '''
+            A getter function to get the input data for the network.
+
+        :return: Returns the image numpy array.
+        '''
+
         return self._images
 
     @property
     def labels(self):
+
+        '''
+            A getter function to get the labeled data for the network.
+
+        :return: Returns the labeles numpy array.
+        '''
+
         return self._labels

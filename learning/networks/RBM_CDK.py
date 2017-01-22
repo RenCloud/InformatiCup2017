@@ -8,63 +8,6 @@ from learning.utils import utilities
 from tensorflow.examples.tutorials.mnist import input_data
 from learning.utils.input_format import DataSet
 
-# TODO
-'''
-10. Runtime profiling
-12. Weight decay L2
-13. Variable zum speichern der epochen die bereits abgelaufen sind
-14. Learning rate auch außerhalb der Klasse setzen
-15. Mehrere Checkpoints erstellen damit man die gewichte von unterschiedlichen zeiten wiederherstellen kann
-16. Erkennung für overtraining mit validation set einführen
-17. die run_test funktion und den test mit validationset trennen für bessere verwendbarkeit
-18. Eine allgemeine Form für die übergabe der Trainingsdaten einbauen damit es für das Porjekt ohne Probleme funktioniert
-
-19. eine property function für das setzen von weight decay und learning rate, da die noch durch durch batch_size geteilt werden müssen
-'''
-
-'''
-############# Documentation #################
-    #Python code for a restricted boltzmann machine (RBM). The neural network is learning unsupervised.
-
-    #Userinteraction: Initialise the class
-        As a user you can instantiate a RBM class with the arguments input and hidden size. The parameters are mandatory.
-        The inputsize is determind by the number of features your vector has. For an image it's the number of pixels.
-        The hiddensize is the number of classes you want your network to be divided into.
-
-        The 3 hyperparameters in this network are learningrate, momentumterm and weight decay. They are set during
-        initialisation automatically, but can be changed afterwards.
-        Additionally the number of Gibbs-Sampling-Steps is set to 1 by default. An increased Samplingrate highers the
-        precision but also increases the computation costs linearly.
-
-        The dataset feed by every call of fit is sliced into mini-batches determind by the batch_size parameter.
-        The whole data set is processed by the number of epochs specified in the constructor. The epochs can also be
-        changed between the trainingcalls.
-
-        If the verbose parameter is set true, the programm will be printing every 20 epochs the reconstruction error.
-
-        The input_to_binary parameter converts every scalar on the input vector to 0 or 1.
-
-
-    #Userinteraction: Train your Net
-        The trainingprocess will start with the call fit. The function needs a trainset as input. The input can be
-        formated with input_format.py. The contained python class uses a numpy array manage the input.
-        During the training ever mini-batch will be processed and then the network will updates it's weights.
-
-        The trainingprogress will be saved after every succefull call of fit.
-        If one succesfull training with the fit function finished the trained weights can be restored by using the
-        restore_previous_model parameter. In this case also a start_epoche should be specified, otherwise the visualisation
-        of Tensorboard will be compromised.
-
-        Every 20 epochs the network will calculate the loss. The result and some other statistically important values
-        will be saved into the logs folder. Tensorboard can be used to visualize the progress of the network.
-
-    #Userinteraction: Use the train Net
-        After succesfully training the net, the classify function can be used to create prediction for a given input.
-        The result will be provided as a numpy array. The input is again a input format. The user can specifiy if he
-        wants to convert the input and/or output into binary digits. These options can influence the results of the
-        network.
-'''
-
 
 class RBM(object):
     def __init__(self, input_size, hidden_size, main_dir="rbm", model_name="rbm_model",
@@ -135,12 +78,11 @@ class RBM(object):
         self._model_path = self._model_dir + self._model_name
         self._verbose = verbose
 
-    def fit(self, train_set, validation_set=None, restore_previous_model=None, start_epoche=0, epochs=300,
+    def fit(self, train_set, restore_previous_model=None, start_epoche=0, epochs=300,
             gibbs_sampling_steps=1, learning_rate=0.01, momentum_factor=0.9, weight_decay_factor=0.0001, batch_size=10):
         '''
 
         :param train_set: Trainset formatted as input_format.
-        :param validation_set: Validationset formatted as input_format.
         :param restore_previous_model: If true restores learned model weights.
         :param start_epoche: Already passed epochs to keep the Tensorboard graph well formatted.
         :param epochs: Number of epochs the learning should last.
@@ -164,7 +106,7 @@ class RBM(object):
 
         with tf.Session() as self._tf_session:
             self._initialize_tf_utilities_and_ops(restore_previous_model)
-            self._train_model(train_set, validation_set, start_epoche)
+            self._train_model(train_set, start_epoche)
             self._tf_saver.save(self._tf_session, self._model_path)
 
         tf.reset_default_graph()
@@ -221,15 +163,15 @@ class RBM(object):
 
         self._tf_summary_writer = tf.summary.FileWriter(self.summary_dir, self._tf_session.graph)
 
-    def _train_model(self, train_set, validation_set, start_epoche):
+    def _train_model(self, train_set, start_epoche):
 
         '''
             Devides the training process into the number of epochs. Every epoch run_train_step is called to iterate
             over the whole train_set.
 
         :param train_set: The input data formatted as input_format.
-        :param validation_set: The validation data formatted as input_format.
-        :param start_epoche:
+        :param start_epoche: If the training is performed in multiple steps then the start_epoch should be specified.
+                    The start_epoch is the number of already performed trainingsteps.
         :return: self.
         '''
 
@@ -238,8 +180,6 @@ class RBM(object):
             # print("finished train-step ", i)
             if i % 5 == 0:
                 self._run_summary(train_set, i + start_epoche)
-                if validation_set:
-                    self._run_validation_results(validation_set)
 
     def _run_train_step(self, train_set):
 
@@ -249,6 +189,7 @@ class RBM(object):
         :param train_set: The input data formatted as input_format.
         :return: self.
         '''
+
         updates = [self._tf_w_upd8, self._tf_bh_upd8, self._tf_bv_upd8]
 
         iterations = (int)(train_set.num_examples / self._batch_size)
@@ -276,20 +217,6 @@ class RBM(object):
         if self._verbose:
             print("[loss]: ", loss)
 
-    def _run_validation_results(self, mnist):
-
-        '''
-            [Update Needed] Not in use
-        :param mnist:
-        :return:
-        '''
-
-        validation_results = self._tf_session.run([self._tf_accuracy, self._tf_merged_summaries],
-                                                  feed_dict=self._create_complete_dict(mnist))
-
-        if self._verbose:
-            print("[Accuracy]: ", validation_results[0])
-
     def _create_feed_dict(self, data):
 
         '''
@@ -299,6 +226,7 @@ class RBM(object):
         :param data: takes the whole train_set in form of input_format.
         :return: A dictionary with the data to feed to the network.
         '''
+
         x, y = data.next_batch(self._batch_size)
         return {
             self._tf_input_data: x,
@@ -319,6 +247,7 @@ class RBM(object):
         :param data: Validation data as input_format.
         :return: A Dictionary with all data that needs to be feed to the network.
         '''
+
         x = data.images
         return {
             self._tf_input_data: x,
@@ -460,18 +389,20 @@ class RBM(object):
         '''
         return tf.nn.sigmoid(tf.matmul(hidden, tf.transpose(self._tf_w)) + self._tf_bv)
 
-    def _compute_positive_association(self, visible, hidden_probs, hidden_states):
+    def _compute_positive_association(self, visible, hidden_states):
+
         '''
         Helper function to compute the positive association in one function call.
 
-        :param visible:
-        :param hidden_probs:
-        :param hidden_states:
+        :param visible: A tensor which represents the states of the visible units.
+        :param hidden_states: A tensor which represents the states of the hidden units.
         :return: self
         '''
+
         return tf.matmul(tf.transpose(visible), hidden_states)
 
     def _sample_prob(self, probs, rand):
+
         '''
         Helperfunction to randomly convert a value into 1 or 0.
 
@@ -479,14 +410,17 @@ class RBM(object):
         :param rand: A Vector with the same size as probs which contains random values.
         :return: self.
         '''
+
         return tf.nn.relu(tf.sign(probs - rand))
 
     def _create_summary_nodes(self):
+
         '''
         This function adds additional nodes to the computation graph. These are sidenodes which get only evaluated when
                 self._tf_merged_summarys runs. The summary nodes create Data which is visualized with Tensorboard.
         :return: self.
         '''
+
         with tf.name_scope('summaries'):
             with tf.name_scope('learning_progress'):
                 tf.summary.scalar("loss", self._tf_loss_function)
@@ -500,11 +434,13 @@ class RBM(object):
                 tf.summary.scalar("Gibbs_sampling_steps", self._gibbs_sampling_steps)
 
     def _create_data_directories(self):
+
         '''
         A Helper function to create the directories to save the logs and the model weights.
 
         :return: Returns the path as string for the model, data and summary directory.
         '''
+
         self._main_dir = self._main_dir + '/' if self._main_dir[-1] != '/' else self._main_dir
 
         models_dir = "models/" + self._main_dir
@@ -518,6 +454,7 @@ class RBM(object):
         return models_dir, data_dir, summary_dir
 
     def get_weights(self):
+
         '''
         Initializes a Session and loads the model data. The tensorflow eval function returns the variable values as
                 a numpy array. The numpy array is used to initialize the DBN weights.
@@ -538,15 +475,16 @@ class RBM(object):
         return w, bh
 
     def get_weights_as_images(self, width, height, outdir='img/', n_images=10, img_type='grey'):
+
         """
         Create and save the weights of the hidden units with respect to the
                 visible units as images.
 
-        :param width:
-        :param height:
-        :param outdir:
-        :param n_images:
-        :param img_type:
+        :param width: width of the image
+        :param height: height of the image
+        :param outdir: directory where the created images should be saved
+        :param n_images: How many images should be createds
+        :param img_type: Should the image be color or grey. If it should be colored for every pixel should exist 3 neurons.
         :return: self.
         """
 
@@ -566,26 +504,3 @@ class RBM(object):
                 image_path = outdir + self._model_name + '_{}.png'.format(p)
 
                 utilities.gen_image(w, width, height, image_path, img_type)
-
-
-if __name__ == "__main__":
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-
-    rbm = RBM(784, 10, main_dir="Test", input_to_binary=True, verbose=False)
-
-    rbm.fit(mnist.train, validation_set=None, restore_previous_model=False, start_epoche=0, gibbs_sampling_steps=1,
-            learning_rate=0.1, weight_decay_factor=0.001, momentum_factor=0.5, epochs=1, batch_size=10)
-
-    rbm.fit(mnist.train, validation_set=None, restore_previous_model=True, start_epoche=1, gibbs_sampling_steps=3,
-            learning_rate=0.05, weight_decay_factor=0.001, momentum_factor=0.9, epochs=1, batch_size=100)
-
-    rbm.fit(mnist.train, validation_set=None, restore_previous_model=True, start_epoche=2, gibbs_sampling_steps=5,
-            learning_rate=0.01, weight_decay_factor=0.001, momentum_factor=0.9, epochs=1, batch_size=100)
-
-    rbm.fit(mnist.train, validation_set=None, restore_previous_model=True, start_epoche=3, gibbs_sampling_steps=10,
-            learning_rate=0.001, weight_decay_factor=0.001, momentum_factor=0.9, epochs=1, batch_size=100)
-
-    rbm.fit(mnist.train, validation_set=None, restore_previous_model=True, start_epoche=4, gibbs_sampling_steps=20,
-            learning_rate=0.0001, weight_decay_factor=0.001, momentum_factor=0.9, epochs=1, batch_size=100)
-
-# bis 2880 gelernt

@@ -17,7 +17,7 @@ The task was to write a software which can automatically classify a GitHub repos
 #. Other
 
 Further information about the contest can be found on `informaticup.gi.de <http://informaticup.gi.de/fileadmin/redaktion/InformatiCup2017.pdf>`_
-or `github <https://informaticup.github.io/InformatiCup2017/>`_.
+or `GitHub <https://informaticup.github.io/InformatiCup2017/>`_.
 
 The task could be solved in many different ways. We decided to use Deep Neural Network. It is complex but a capable problem solver
 for task with much available data. That is also their biggest weakness: They need many datasets to work properly.
@@ -31,7 +31,7 @@ Our unlabeled trainingset has a size of 31700 and the labeled dataset 308.
 
 We decided to divide the project into three main modules. Every module has its specific task.
 The :ref:`first module <first-label>` handles the user input and manages the data download and was also used to download our datasets.
-The :ref:`second module <second-label>` extracts the information out of the raw data. The :ref:`third modul <third_label>` uses it to train the model und hands the
+The :ref:`second module <second-label>` extracts the information out of the raw data. The :ref:`third module <third_label>` uses it to train the model und hands the
 results back to the userinterface.
 
 The documentation is divided into these three modules. Each Section explains one section.
