@@ -4,10 +4,10 @@ Get Started: Request and PyQt5
 Installation
 ------------
 
-The userinterface is build with `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/intro>`_.
+The userinterface is built with `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/intro>`_.
 We use `Requests: HTTP for Humans <http://docs.python-requests.org/en/master/>`_ and requests_oAuthlib to fetch the required data
 from GitHub.
-The requirements for this part of the project are easiely installed via pip:
+The requirements for this part of the project are easily installed via pip:
 ::
 
     pip install requests
@@ -31,7 +31,7 @@ Both can installed via pip:
 Basic: Requests and Requests_oAtuhLib
 -------------------------------------
 
-Both libarys are very easy to use. We will should you some examples on how to use them so you have a better time understanding our code.
+Both libraries are very easy to use. We will show you some examples on how to use them so you have a better understanding of our code.
 
 First we import the needed modules as followed: ::
 
@@ -41,11 +41,11 @@ First we import the needed modules as followed: ::
 
 To send a basic webpage request we use the :meth:`get` function.::
     
-    r = requests.get('https://api.github.com/events')
+    r = requests.get('https://api.GitHub.com/events')
 
-The severresponds is now in our r variable.
+The sever responds is now saved in our r variable.
 
-To view it's content we use the python :meth:`print` functionality::
+To view its content we use the python :meth:`print` functionality::
 
     print(r.text)
 
@@ -53,7 +53,7 @@ From the GitHub API we get a JSON string back. We can easily convert the respond
 
     jsonobject = json.loads(r.text or r.content)
 
-To run in fewer problems while handling github requests a simple if construction helps. ::
+To get fewer problems while handling GitHub requests a simple if-construction helps. ::
 
     if r.ok: # is ok when request is ok -> when you hit ratelimit it's not ok
         print(r.text)
@@ -68,28 +68,28 @@ First we create two variables which hold our userinformation. ::
     client_id = 'Your Client ID'
     client_secret = 'Your Client Secret'
 
-If you want to register your own application follow this link `here <https://github.com/settings/applications/new>`_.
+If you want to register your own application follow this link `here <https://GitHub.com/settings/applications/new>`_.
 Let's create some more variables with needed information::
 
     # OAuth endpoints given in the GitHub API documentation
-    authorization_base_url = 'https://github.com/login/oauth/authorize'
-    token_url = 'https://github.com/login/oauth/access_token'
+    authorization_base_url = 'https://GitHub.com/login/oauth/authorize'
+    token_url = 'https://GitHub.com/login/oauth/access_token'
 
 Now we have nearly all what we need ::
 
-     github = OAuth2Session(client_id)
+     GitHub = OAuth2Session(client_id)
      # Redirect user to GitHub for authorization
-     authorization_url, state = github.authorization_url(authorization_base_url)
+     authorization_url, state = GitHub.authorization_url(authorization_base_url)
      print ('Please go here and authorize,', authorization_url)
      # Get the authorization verifier code from the callback url
      redirect_response = raw_input('Paste the full redirect URL here:')
      # Fetch the access token
-     github.fetch_token(token_url, client_secret=client_secret, authorization_response=redirect_response)
+     GitHub.fetch_token(token_url, client_secret=client_secret, authorization_response=redirect_response)
 
-With the github object you can do request with oauth.
-Simple do the same as you did before only this time with the github object instead of :meth:`requests` ::
+With the GitHub object you can do request with oauth.
+Simple do the same as you did before only this time with the GitHub object instead of :meth:`requests` ::
 
-    r = github.get('https://api.github.com/user')
+    r = GitHub.get('https://api.GitHub.com/user')
 
 For more look `here <http://requests-oauthlib.readthedocs.io/en/latest/index.html>`_.
 
@@ -97,8 +97,8 @@ For more look `here <http://requests-oauthlib.readthedocs.io/en/latest/index.htm
 Basics: PyQt5
 -------------
 
-Within the project we need 13 Imports from PyQt for different objects like Buttons, TextFields and more.
-In this section we give you nice inside about the methods we used in our code.
+Within the project we need 13 imports from PyQt for different objects like Buttons, TextFields and more.
+In this section we give you nice insight into the methods we used in our code.
 Here we only show a basic window with a button and a tooltip.
 
 Our imports are: ::
@@ -111,9 +111,9 @@ Next we create a main for our window: ::
 
     if __name__ == '__main__':
     
-    app = QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
 
 The variable is our class which we use to create our window.
 That's what the class will look like::
@@ -126,7 +126,7 @@ That's what the class will look like::
             self.initUI()
 
 This is the basic init structure for a QWidget.
-The only part which is missing 'initUI'.
+The only part which is missing is 'initUI'.
 Lets's implement it:
 ::
 
@@ -158,4 +158,4 @@ Our Program now looks like this:
 
 .. image ::tooltips.png
 
-For more and more detailed you may look `here <http://zetcode.com/gui/pyqt5/>`_ for a good basic of PyQt5.
+For more details you may look `here <http://zetcode.com/gui/pyqt5/>`_ for a good basic tutorial about PyQt5.

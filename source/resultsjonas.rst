@@ -20,8 +20,8 @@ Ich wäre dafür du gehts einmal über die Änderungen drüber die du mit der Ze
 
 
 
-The graphical interface change with the development and rise to a good looking basic interface.
-At the begin the interface should have basic control. This means you can start an training without option, select an file with Github repository links, and start the classify process.
+The graphical interface changes with the development and rise to a good looking basic interface.
+At the begin the interface should have basic control. This means you can start a training without option, select a file with Github repository links and start the classifing process.
 Because of the smaller size of the button and to show the user more information 2 option were possible: tooltip and statusbar. 
 For our application we decided statusbar is the better option.
 Also to get more control over the training, 2 checkboxes were added.
@@ -30,7 +30,7 @@ Also to get more control over the training, 2 checkboxes were added.
 
 The login button came with the OAuth2 feature. This was a must to get enough request for more than one or two repositorys.
 Problem here, after the classify there was no more place to show the solution.
-To get more place and make a seperation between Classify, Solution and Training tabs was the choosen thing.
+To get more place and make a separation between Classify, Solution and Training tabs was the choosen thing.
 This also create the possibility to add the function that the user can add his own repositorys after login and make a table for the solution.
 At this time the login function get the feature to open the loginlink direct within the browser so the user must not copy and open it on his own.
 

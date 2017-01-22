@@ -4,7 +4,7 @@ Fetch data and GUI mechanism
 Basic Structure
 ---------------
 
-The GUI and the data fetching are devided into two file: :file:`getJsonwithoauth` and :file:`Gui`.
+The GUI and the data fetching are divided into two file: :file:`getJsonwithoauth` and :file:`Gui`.
 
 
 
@@ -26,8 +26,8 @@ So the application is only useable on windows but we want an cross-platform appl
 Fetch Data
 ----------
 
-To fetch the data we have decided befour what we need: readme, file typ, issues, comments, commits, author login and a few more we choose later do not use them.
-For almost every information was an extra request necessary. So the requested directorys look as followed: ::
+To fetch the data we have decided in a first step what we need: readme, file typ, issues, comments, commits, author login and a few more.
+For almost every information an extra request was necessary. So the requested directories look as followed: ::
 
    /repos/:owner/:repo/git/trees/:sha?recursive=1       # to get file data
    /repos/:owner/:repo/issues                           # to get issue data
@@ -45,7 +45,7 @@ from the GitHub API. To get more you have to use Basic Authentication or use oAt
 
 *********************************
 
-Das ist nicht wirklich was hier nich stehen sollte. Es ist gut das du einmal das Thema noch genauer erläuterst. Aber
+Das ist nicht wirklich das was hier stehen sollte. Es ist gut das du einmal das Thema noch genauer erläuterst. Aber
 was in diesem Kapitel eher geklärt werden sollte ist, was du für einen Programmaufbau hast. Zum Beispiel was ist deine Schnittstelle
 , was erwartet sie für Argumente und was gibt sie zurück. Wie sie das tut hast du ja bereits mit den Bibliotheken erläutert und wer
 es genauer wissen will soll sich deinen Code ansehen.
@@ -66,7 +66,7 @@ besser nachvollziehen.
 Beschränke dich auf das wesentlich und schreib nicht zu viel :-P
 
 
-Das was da unten noch in diesem unterkapitel steht wieder holt nur das was du schon erzählt hast. Ich glaube nicht das das noch darin verbleiben sollte.
+Das was da unten noch in diesem unterkapitel steht wiederholt nur das, was du schon erzählt hast. Ich glaube nicht, dass das noch darin verbleiben sollte.
 
 ***********************************
 
@@ -84,8 +84,8 @@ GUI
 
 The GUI is build with PyQt5. PyQt5 is based on Qt which is a cross-plattform libary in C++.
 It is accessible with many high-level APIs for modern desktop and mobile system development.
-PyQt5 is a comprehensive set of Python bindings for Qt v5. Not all parts are completly implements but 35 are. Enough to build our functioning GUI.
-Qt has powerfull features to make nice graphical interfaces which can run on different platforms.
+PyQt5 is a comprehensive set of Python bindings for Qt v5. Not all parts are completely implemented but 35 are. Enough to build our functioning GUI.
+Qt has powerful features to make nice graphical interfaces which can run on different platforms.
 More Information about `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/download5>`_.
 
 **************************************
