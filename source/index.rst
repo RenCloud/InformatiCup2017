@@ -76,8 +76,8 @@ Training and predictions
 
    introduction
    explanation
-   code
    results
+   code
 
 
 

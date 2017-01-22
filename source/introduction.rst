@@ -3,32 +3,33 @@ Get Started with Tensorflow
 
 Installation
 ------------
-The program mainly uses `Tensorflow <https://www.tensorflow.org/>`_ and `numpy <http://www.numpy.org/>`_ and python 3.5.
-
+This part of the program mainly uses `Tensorflow <https://www.tensorflow.org/>`_ and `numpy <http://www.numpy.org/>`_ with python 3.5.
 Tensoflow can be installed via pip install. Additional installation Methods can be found at
-`Tensorflow.org <https://www.tensorflow.org/get_started/os_setup>`_. Tensorflow offers an additional version to run
-your program on a GPU. The website offers a describtion on how to use
-`NVIDIA GPUs <https://www.tensorflow.org/how_tos/using_gpu/>`_
-, but this code is only programed and tested for CPUs.
+`Tensorflow.org <https://www.tensorflow.org/get_started/os_setup>`_. Tensorflow offers additional support for NVIDIA GPUs.
+If you want to run this program on
+`NVIDIA GPUs <https://www.tensorflow.org/how_tos/using_gpu/>`_ it should be working
+but this code is only programed and tested for CPUs.
 
 
 Basic usage of Tensorflow
 -------------------------
 
-To get a better understanding of python we take a look at program example from `Tesorflow.org <https://www.tensorflow.org/get_started/>`_.
+To get a better understanding of Tensorflow we take a look at program example from `Tesorflow.org <https://www.tensorflow.org/get_started/>`_.
 
 First Tensorflow and numpy have to be imported.::
 
     import tensorflow as tf
     import numpy as np
 
-Then we create our input data and the desired output. These are saved as numpy arrays. Numpy arrays can be easyly converted
-in to Tensorflow Variables.
+Then we create our input data and the desired output. These are saved as numpy arrays. Numpy arrays can be easiely converted
+into Tensorflow Variables.
 
 Next we specify the Tensorflow variables we want to use. In this case we create one weight and one bias variable. For the
-initial values of W and b we use helperfunction, which create a numpy array for us.::
+initial values of W and b we use helperfunctions, which create a numpy array for us.::
 
+    # helperfunction creates a numpy array with random initial values
     W = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+    # helperfunction creates numpy array with zero values
     b = tf.Variable(tf.zeros([1]))
 
 Next we specify the computation Tensorflow should perform. But this listing of commands isn't executed yet. We are only
@@ -43,7 +44,7 @@ error.::
     optimizer = tf.train.GradientDescentOptimizer(0.5)
     train = optimizer.minimize(loss)
 
-Now that our computation graph is complete we let Tensorflow run it. First we initialize our Variables.::
+Now that our computation graph is complete we let Tensorflow run it. Bu first we initialize our Variables.::
 
     init = tf.global_variables_initializer()
     sess = tf.Session()
@@ -66,7 +67,7 @@ During the training the variables learn to fit the values W: [0.1], b: [0.3].
 Further reading
 ---------------
 
-For a more in depth tutorial about Tensorflow you can check out the mnist turial for `beginner <https://www.tensorflow.org/tutorials/mnist/beginners/>`_
+For a more in depth tutorial about Tensorflow you can check out the MNIST tutorial for `beginner <https://www.tensorflow.org/tutorials/mnist/beginners/>`_
 and for `experts <https://www.tensorflow.org/tutorials/mnist/pros/>`_.
 
 `Tensorflow Mechanics 101 <https://www.tensorflow.org/tutorials/mnist/tf/>`_ presents you additional features of Tensorflow.
@@ -83,7 +84,7 @@ of the containing folders. Then type the command.::
 
     tensorboad --logdir .
 
-In the following image you can see the progress of 3 restricted Boltzmann machines during pretraining from a MNIST dataset:
+In the following image you can see the progress of 3 restricted Boltzmann machines during pretraining with a MNIST dataset:
 
 .. image:: RBM_pretraining_MNIST.png
 
@@ -92,13 +93,13 @@ In the following image you can see the progress of 3 restricted Boltzmann machin
 We added also some of the hyperparameters to the observed variables. So we could directly link the loss to the corresponding
 hyperparameters.
 As we can see as the training starts the loss is jumping up and down but the trend is a decreasing loss. After some time the
-loss is stabilized. Even an increasing Gibbs sampling rate can change that.
+loss is stabilized. Even an increasing Gibbs sampling rate can't change that.
 Two other important graphs are the maximal and minimal weights. As the training progresses the absolut value of the maximal and the minimal weight
 are getting higher. That isn't a development we want. Optimally the weights should always stay between -1 and 1.
 One explanation could be that we are overtraining because your loss is stuck but we keep training. That forces some weights
 to become extremly big or small. Even the weight decay regulization can't stop that.
 
-In the next image is one of the RMBs visualized by Tensorboard:
+In the next image is one of the RMBs computationgraphs visualized by Tensorboard:
 
 .. image:: RBM_pretraining_learning_MNIST.png
 
@@ -143,7 +144,7 @@ from the user.::
         with tf.name_scope('update_weights'):
             # weight updates
 
-The information of the summary nodes is evaluated by the call of merge_all_summarys.::
+The information of the summary nodes is evaluated by the call of merge_all_summarys and writen to a file by :class:`Tensorflow.FileWriter` ::
 
     self._tf_merged_summaries = tf.summary.merge_all()
 
@@ -159,8 +160,30 @@ The information of the summary nodes is evaluated by the call of merge_all_summa
 If we specify the Tensorflow graph, the computationgraph is visualized in Tensorboard as seen above.
 
 
-Topic
------
+Loading and Saving a model
+--------------------------
 
-How does Tensorflow save and load models.
-My implementation of the saving and looading mechanisms in RBM and DBM
+Another feature Tensorflow is providing, is that it let us save our training progress and we can reload them at any time.
+
+To use this handy feature we first initialise a :class:`Tensorflow.Saver` object within our session. ::
+
+    # create the variables beforehand
+    with tf.Saver() as self._tf_saver:
+        self._tf_saver = tf.train.Saver()
+
+Then we can save every variable in our session to the specified path. ::
+
+    self._tf_saver.save(self._tf_session, "path/to/save_dir/model_name")
+
+We can have as many :class:`Saver` objects as we want and also specify with variable should be save.
+
+But here we stick to the basics and just load all variables we saved. ::
+
+    # the viriables have to be created but not yet initialised
+    self._tf_saver.restore(self._tf_session, path/to/save_dir/model_name)
+
+This loading and saving is used in every of our networks. They save their model only if they compleded the task. If an
+error occurred before they finished all training progress is lost. Also can our networks only load the newest changes in the network.
+All previous states are lost.
+
+

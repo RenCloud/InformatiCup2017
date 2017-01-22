@@ -1,37 +1,34 @@
 
+Experiment Results
+==================
+
 Test and Validation that the network is working
 -----------------------------------------------
 
-MNIST on both networks performed.
-Obeserving of loss and with supervised training observe the training accuracy.
-
+To test that our implementation we let the network learn with the MNIST dataset. We used the dataset provided in the Tensorlow API.
+Many networks have been tested with this dataset and if our network could perform well with it it is most likely that the
+implementation is functioning.
 
 
 RBM
 ^^^
 
-The RBM got first tested with the MNIST dataset provided by google(link).
-The training progresses as described by the paper.
-After this we couldn't test the accuracy because the unsupervised learning network didn't knew how the numbers are labeled.
-It just could see the differences. But with the getImage function from (link) we got a nice representation of our learned
+The :class:`RBM` got first tested with the MNIST dataset provided by `google <https://www.tensorflow.org/tutorials/mnist/beginners/>`_.
+After the training we couldn't test the accuracy because the unsupervised learning network didn't knew which value in the solution vector
+corresponds to which number in the dataset.
+It just could see the differences. But with the getImage function from GitHub we got a nice representation of our learned
 states.
-
-Also most of the code is taken from github(link)
 
 DBN
 ^^^
 
-The dbn was also tested by the mnist dataset. We succeeded in learning the MNIST data up to 92%.
-That was the prove that it worked.
-But maybe this wasn't enough. We hadn't got any other test cases. But we hat Tensorboard to visualize the most important
-facts we needed to evaluate the preformance of our model
+The :class:`DBN` was also tested by the mnist dataset. We succeeded in learning the MNIST data up to 92%.
+That was the prove that it worked. We first pretrained the network and then used the standard training process as discribed in
+the `Tensorflow tutorials <https://www.tensorflow.org/tutorials/mnist/pros/>`_.
 
 
-
-
-
-Experiment Results
-==================
+The idea
+--------
 
 The task was to write a automated classifier for GitHub repositorys.
 
@@ -41,6 +38,7 @@ some repositorys by hand. With this data set we could finetune the DBN and then 
 
 For your network we used Tensorflow with numpy to build the network. The introduction on how to use them can be found on the
 :doc:`introduction` page. All testresults are visualized with Tensorboard.
+
 
 First Experiments
 -----------------
@@ -62,16 +60,15 @@ Each layer is trained with the same 3 values.
 
 Network structure: [1370, 500, 500, 1500, 7]
 
-Accuracy got never over 16%. Sometimes way worse. But the weights stay small which was a win for us.
+Accuracy got never over 16%. Sometimes way worse. But the weights stayed small which we interpreted as a good sign.
 The choice of Opitmizer and learning rate for the finetuning part didn't had any effect on the testresults.
 
 
 Next try with almost the same parameters but this time with 31700 unlabeled data sets. The initialization was long and the
-input vector got up to 7300. The program took just 3GB but after the first epoch the memory usage doubled. We expect that
-the :meth:`np.random.shuffle` and the ne permutated image and label array are the reason why the memeory usage exploded. In previouse tests
-wasn't this in issue. We expect that there had to be some kind of an bug.
+input vector got up to 7300. The program took just 3GB but after the first epoch the memory usage doubled. We decided to
+shorten our input vector.
 
-Because of this we had to constrain the input vector. Every word which happens to occure to few or too much is cut out of the vector.
+Every word which happens to occure to few or too much is cut out of the vector.
 
 After this we ended up with 1636 in input vector size. The hyperparameters for the third test were as followed:
 
@@ -105,11 +102,11 @@ So we tried a new short input vector. Which encoded the following things:
 #. Number of Users how left a comment
 #. Number of Users how commited something
 
-Every of these parameters was normalized relativly to the number of ... in the whole data set.
+Every of these parameters was normalized relativly to the number of ... in the whole data set. ( Jan muss noch sagen mit was er das normalisiert hatte)
 But we observed that the network couldn't even learn a small dataset. To prove this we let the network train with our
 supervised dataset and test every epoch how many of them it could classify correctly.
-We never did crack the 21% accuracy rate. That's why we reconstructed the vector again this time we made the value relative
-to the other values in the repository. Because we expected that all of the given parameters are also kind of dependent how
+We never came above the 21% accuracy rate. That's why we reconstructed the vector again this time we made the value relative
+to the other values in the same repository. Because we expected that all of the given parameters are also kind of dependent how
 big the repository is.
 New vector:
 #. Number of Files / the number of maximal possible files
@@ -128,9 +125,6 @@ Although the network should be able to memorys the class of the different inputv
 
 That's why we tried to find a better fitting one. That was our biggest concern. If the network could tell our 300 vectors apart
 it probably could learn more and generalise this idea.
-
-New kind of Weight decay in rbms to controll the jumping weight growth.
-
 
 The new vector we tested uses almost the same input values but this time we weren't trying to make them relative to each other.
 As in this post (insert post here) isn't the scale of the input that important. We will just normalize the vector to prevent the values in
@@ -169,10 +163,9 @@ Momentumterm            0.5              0.9               0.9               0.9
 
 Keep in mind that the graph is smoothed by Tensorboard. That's why the 30% accuracy isn't visible.
 
-But this time we changed the weight decy mechanic. Each entry in weight_dacy parameter coresponds to one RBM network.
-Because we observed that the first one or two networks tend to have huge weights, therefore they get a higher weight penalty.
-On the other side the later networks are more likely to have too small weights, when they have the same big learning rate as the early networks.
-
+During the pretraining we could observe that the first networks had really big weight and the following RBM's had too small weights.
+That's why we changed the weight decay mechanic. Each entry in weight_dacy parameter coresponds to one RBM network.
+That allowed us to tweak the weight decay for every RBM independently.
 With this change the networks had a better weight development. The highest or lowest weights have a good initial value for the finetuning as
 it can be seen here:
 
@@ -190,7 +183,7 @@ variance of 0.
 
 In `this tutorial <http://r2rt.com/implementing-batch-normalization-in-tensorflow.html>`_ they used this normalization technique to normalize
 the output of every layer in the neural network. We tried to use it as a way to normalize our input data into the first layer.
-In this testcase with the same pretraining as done before only with differently normalized data. This strategy doesn't worked out.
+In this testcase with the same pretraining as done before only with differently normalized data. This strategy doesn't worked better then the previous ones.
 
 
 
@@ -208,7 +201,7 @@ MNIST dataset. With a higher learning rate the loss couldn't decrement because t
 After some time we decided to start with learningrate higher and degrade them over time. The pretraining results were much better
 because the change in the loss was higher and most of the networks had an 20% accuracy after the first finetuning epoch.
 
-Nettopologie
+Network topology
 
 The network shrunk naturally after we thinned the input vector.
 But during the testing process we tried different topologies:

@@ -4,21 +4,18 @@ Introducing the learning mechanism
 Basic Structure
 ---------------
 
-To handle such a complexe task we split the project in three parts. Every one of use got one of them.
-    #. Data Download, GUI and handling of the GitHub API
-    #. Datapreparation
-    #. Neural Networks ( The learning part)
+The learning part of Project contains three directories: :file:`frontend`, :file:`networks` and :file:`utils`.
 
-The learning part of Project exists of three directories: :file:`frontend`, :file:`networks` and :file:`utils`.
+The networks are in :file:`networks`. The package :file:`frontend` is a wrapper for the learning process.
+The :file:`utils` is a package containing all helper modules. The helper functions and the structure of :class:`RBM_CDK` is
+taken from `GitHub <https://gist.github.com/blackecho/db85fab069bd2d6fb3e7>`_.
 
-The networks are contained in :file:`networks`. The package :file:`frontend` is a wrapper for the learning process.
-The :file:`utils` is a package containing all helper modules.
-
-:file:`Main` has four function for training and classifying a given dataset. The :meth:`Main.fit_rbm` and :meth:`Main.classify_rbm`
+:file:`Main` has five function for training and classifying a given dataset. The :meth:`Main.fit_rbm` and :meth:`Main.classify_rbm`
 are functions to demonstrate how the training of an RBM would look like. But we only used :meth:`Main.fit_dbn` and :meth:`Main.classify_dbn`
 :meth:`Main.fit_dbn` performs a complete pretraining with the given dataset. Then it calls :meth:`DBN.supervised_finetuning`.
+With :meth:`Main.supervised_training` we tried to see if pretraining had an effect on our training.
 
-:class:`DBN` has three public functions which hide most of the implementation from the user. But additionally they should provide
+:class:`DBN` has three public functions which hide most of the implementation from the user. But additionally they should give
 the user full controll over the learning process. That's why the :meth:`DBN.pretraining` and :meth:`DBN.supervised_finetuning`
 give the user access to all hyperparameters and the loading and saving directory. But the training process itself is hidden from
 the user.
@@ -56,7 +53,7 @@ This is a way of effectively pretrain a `Deep Belief Network <https://en.wikiped
 
 After the pretraining supervised backpropagation can be used to train an effective discriminative model.[HintonDiscrim]_
 
-The pretraining helps to kind of initialize the weights for the supervised training. So the networks progress is better.
+The pretraining helps to kind of initialize the weights for the supervised training. So the networks learning progress is better.
 It also limits the amount of labeled training date which is needed to train the model.
 
 The supervised training is visualized by this Tensorboard graph:
