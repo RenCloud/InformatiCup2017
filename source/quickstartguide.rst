@@ -43,7 +43,37 @@ Then start the userinterface with the following command:
 Use the program to train a neural network
 -----------------------------------------
 
+When you started the program a GUI will show.
+Click on the tab training. Then select the appropriate files and directories to run the training.
+
+Pick the listed files and directories in the same order as shown here:
+
+#. Unclassified training data: (Choose multiple file) Every File in the data/json directory.
+#. Main directory of the network: Take a directory of your choice.
+#. Sub directory of the network: Take a directory of your choice.
+#. Validationset data: Select the file validationData.json.
+#. Validation data labels: Select the file validationDataLabels.json.
+#. Supervised trainset data: Select every file in tagged/data.
+#. Supervised trainset labels: Select every file in tagged/labels.
+
+
 .. _classify:
 
 Use the program to classify a repository of your choice
 -------------------------------------------------------
+
+If you want to classify a repository start the program follow these steps.
+
+#. Create a file with all repository URLs you want to classify. For each repository use just one line.
+
+#. Click the button 'login to GitHub'.
+
+#. The browser will open GitHub automatically. Log in.
+
+#. The URL in your browser will change. Copy the new URL.
+
+#. Click the 'login' button of our GUI.
+
+#. Then click the button 'classify repositories'
+
+#. Wait till the program finishes working then see the results in the results tab.
