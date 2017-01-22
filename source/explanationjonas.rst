@@ -43,8 +43,8 @@ When you aren't registered you can only request 60 times per hour. If you are ab
 from the GitHub API. To get more you have to use Basic Authentication or use oAtuh which we would recommend.
 
 To call the the api nearly every time the same routine is done:
-
 ::
+
     # request the api here we call the tree api to get the git data 
     r = github.get('https://api.github.com/repos/' + owner + '/' + repos + '/git/trees/master?recursive=1')
     # if request ok
@@ -64,6 +64,7 @@ To call the the api nearly every time the same routine is done:
 
 The routine for commits, issue and comments is a big greater. It needs to add Pagination or something that do the same task.
 ::
+
      if r.ok:
         # CommitJson -> Object
         # get up to 1000 commits with the header that comes back from github api
@@ -101,6 +102,7 @@ The routine for commits, issue and comments is a big greater. It needs to add Pa
 
 Commit it there a extra special case. At this point the json is create complete by hand.
 ::
+
      for i in repoItemCommits:
                     author = i['author']['login']
                     commiter = i['committer']['login']
@@ -108,16 +110,19 @@ Commit it there a extra special case. At this point the json is create complete 
 
 The other parts use 
 ::
+
      infoJson = json.dumps(repoInfo)
 
 But they need little changes.
 Treedata was cut a part of the json and change the word tree to repository.
 The other get her type presentation in front of the json like 
 ::
+
     commit -> '"commits":['+ stringcommits + ']'
 
 At the end all json strings are combined in one big string
 ::
+
      finalReposItem = '[{' + infoJson + ',' + treeJson + ',' + readmeJson + ',' + languageJson + ',' + commitsJson + ',' + commentsJson + ',' + issueJson + '}]'
 
 
@@ -147,7 +152,7 @@ Beschränke dich auf das wesentlich und schreib nicht zu viel :-P
 Das was da unten noch in diesem unterkapitel steht wiederholt nur das, was du schon erzählt hast. Ich glaube nicht, dass das noch darin verbleiben sollte.
 
 ***********************************
-
+Soll dieser Teil auch raus?
 OAuth2 is an Authorization Flow for webapplication (and other ). It's make it easy to control which application is connected.
 Every application gets an client id and secret which this an application is registert at the server. 
 When a user use it the application contact the server with his id and secret. Than the user have to log in. Than the application gets an token from the server.
@@ -168,8 +173,8 @@ More Information about `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/
 
 Within our code we need not mutch of them, but often the same parts.
 The interface is build with buttons, textfield(LineEdits), filepicker and a tableview.
-
 ::
+
     # objectwidth = 25
     # create a button on tab3
             self.btraining = QPushButton('Training', tab3)
@@ -185,6 +190,7 @@ The interface is build with buttons, textfield(LineEdits), filepicker and a tabl
 Like this button every button is create.
 The Code for a LineEdit is a bit shorter.
 ::
+
        # create a 'textField'
         self.lepath = QLineEdit(tab1)
         # set his position and size
@@ -194,6 +200,7 @@ The Code for a LineEdit is a bit shorter.
 
 The TableView is a bit complicated, but have not so mutch lines.
 ::
+
      # create an table view on tab2
         self.view = QTableView(tab2)  # declare table view
         self.view.setGeometry(0, 0, 495, 250) # set his position and size
@@ -220,6 +227,7 @@ The TableView is a bit complicated, but have not so mutch lines.
 
 To create the filepicker after a button is clicked a simple class can used.
 ::
+
       def showdialog(self):
         """
             user wants to pick a file so we open the file picker for him
@@ -230,6 +238,7 @@ To create the filepicker after a button is clicked a simple class can used.
 
 For the directory picker or the selected file picker only a small change is made.
 ::
+
     # for the directory
     fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')
 
@@ -243,7 +252,4 @@ For the directory picker or the selected file picker only a small change is made
 
 
 
-**************************************
-Hier nochmal wie deine Schnittstellen und Teile deines Codes besprechen (s.o.).
 
-**************************************
