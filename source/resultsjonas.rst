@@ -54,16 +54,6 @@ needed a lot of time. Because the GitHub API only allows 5000 requests per hour.
 At the end we fetch 31.7k id's. We tested every id from 1 to 110.000. Every third was
 a public and not deleted repository. To get this amount of data it needs a minimum of 46 hours.
 
-********************************************
-
-Jan soll das hier noch neu schreiben.
-
-Also around 15 clicks per run(700id's) -> 690 clicks within the server application.
-Why this? Because it is a local server it has to start nearly every hour new, login in Github and than fetch 700 id's.
-For this it needs around 20 minutes and every few minutes a new click was need to start a new fetch process(100 id's).
-
-******************************************
-
 Later we added a new feature: It is possible to give the program a list of id's and the application fetches the data and
 returns the found repositories.
 
