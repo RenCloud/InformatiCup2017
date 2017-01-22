@@ -2,13 +2,6 @@ Why is Datapreparation necessary?
 =================================
 
 
-****************************
-
-Das klang hier so als wäre es notwendig genau in diesem wertebereich zu sein. Ich habe es etwas weitläufiger formaliert.
-
-****************************
-
-
 The machine learning network, which we used, requires a normalized vector, tp prevent the values from being too big or small.
 The vector hasn't any length requirements, though its values have to be exclusively numerical.
 The repository data of GitHub needs to be converted into numerical values to be useful. Also is a the job of this module to
@@ -20,7 +13,7 @@ The Github data
 .. image:: singleValues.png
 
 The first part of the Github data are mainly unique value, such as the repository id or the repository name.
- Except for the author name these wont have much information, so we can inore them.
+ Except for the author name these wont have much information, so we can ignore them.
 
 .. image:: codeValues.png
 
