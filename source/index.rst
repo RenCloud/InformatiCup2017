@@ -36,6 +36,10 @@ results back to the userinterface.
 
 The documentation is divided into these three modules. Each Section explains one section.
 
+
+If you just want to use our program and don't want to read the documentation we offer you a :doc:`Quickstart Guide <quickstartguide>`
+
+
 .. _first-label:
 
 Userinterface and data management

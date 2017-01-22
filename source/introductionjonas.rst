@@ -11,9 +11,11 @@ The requirements for this part of the project are easily installed via pip:
 ::
 
     pip install requests
+
 ::
 
     pip install requests_oauthlib
+
 ::
 
     pip install PyQt5

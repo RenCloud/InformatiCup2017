@@ -39,6 +39,8 @@ some repositorys by hand. With this data set we could finetune the DBN and then 
 For your network we used Tensorflow with numpy to build the network. The introduction on how to use them can be found on the
 :doc:`introduction` page. All testresults are visualized with Tensorboard.
 
+Most of the general ideas and informations are from Youtube. [youtubeDeep]
+
 
 First Experiments
 -----------------
@@ -250,15 +252,7 @@ the offer additional build-in l1 and l2 regulisation. So they prevented the netw
 As error function we used the :meth:`tensorflow.nn.softmax_cross_entropy_with_logits`. This allows just one of the neurons to be active.
 An alternative would have been the cross entropy as the sum of the scared error. This would have allowed multiple neurons to be active at
 the same time. But our trainingset just consisted of only one class solutions.
-
 So we use the softmax version as default.
-
-
-**************************
-
-Hier noch die Youtubereihe als Quelle angeben.
-
-****************************
 
 
 Pretraining
@@ -305,3 +299,5 @@ To improve the performace we have different options:
 
 All in all there are many possible ways to improve the classification ability of our network. But it is really difficult to tell
 which should be used.
+
+.. [youtubeDeep] https://www.youtube.com/channel/UC9OeZkIwhzfv-_Cb7fCikLQ
