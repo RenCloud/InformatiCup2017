@@ -1,14 +1,14 @@
 First approach: Text Mining
 ===========================
 
-When we first started the project we tried to find the information needed to classifiy a repository. As a human we would
+When we first started the project we tried to find the information needed to classify a repository. As a human we would
 just look at the readme or the description file to get an idea what this repository is all about.
 
-That's why our first approach was to convert the readme and description file into one vector which the network then would learn.
+That's why our first approach was to convert the readme and description file into one vector which the network then would use to learn.
 
-To thin out the amount of words to save we tried to find decising words, which have an high impact in classifying repositories.
-These decisive words often don't need any context. Only the appearance of any of this words in an document can give us a hint on
-classifying the document. So we decided to only store one id for every word and don't store the context with it, as it would
+To thin out the amount of words to save we tried to find decisive words, which have an high impact in classifying repositories.
+These decisive words often don't need any context. Only the appearance of any of this words in a document can give us a hint on
+classification of the document. So we decided to only store one id for every word and don't store the context with it, as it would
 produce high additional costs while only giving low benefits.
 
 Gensim

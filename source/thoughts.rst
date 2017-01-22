@@ -4,8 +4,8 @@ Length of arrays
 ----------------
 Because of text mining alone not working properly, we wanted to filter some values which can be converted much easier into numerical
 representations. While searching for such values, the length of some array-based values seemed to be useful in order to analyze
-the repository. In our repository data the commits, comments, files/folders ans issues consists of array, which length we
-can extract and easily convert to the needed input vector for the learning network. We only had to normalize(number between 0 and 1)
+the repository. In our repository data the commits, comments, files/folders and issues consist of arrays, which length we
+can extract and easily convert to the needed input vector for the learning network. We only had to normalize (number between 0 and 1)
 them by the length dividing the maximum length(which is 1000 per array, larger arrays would be truncated).
 
 
@@ -29,7 +29,7 @@ We think, that this was not our main problem. Yes, more data nearly always is be
 Conclusion
 ----------
 With this approach we increased our accuracy up to 30%, which is 150% of the text-mining accuracy.
-Increasing the accuracy any further wont be possible without using much more computing power.
+Increasing the accuracy any further won't be possible without using much more computing power.
 With enough performance you can store and analyze the textual values better, which should be the
 main part in this analyzation. Only storing single words isn't enough, you will have to analyze the context too.
 Companies, who are working on Text Mining, surely have algorithms, which will work perfectly on this szenario. However, we tried a few different approaches and didnt concentrate on Text Mining, while Text Mining being the key for classification.
