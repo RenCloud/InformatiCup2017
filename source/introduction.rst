@@ -4,7 +4,7 @@ Get Started with Tensorflow
 Installation
 ------------
 This part of the program mainly uses `Tensorflow <https://www.tensorflow.org/>`_ and `numpy <http://www.numpy.org/>`_ with python 3.5.
-Tensoflow can be installed via pip install. Additional installation Methods can be found at
+Tensoflow can be installed via pip install. Additional installation methods can be found at
 `Tensorflow.org <https://www.tensorflow.org/get_started/os_setup>`_. Tensorflow offers additional support for NVIDIA GPUs.
 If you want to run this program on
 `NVIDIA GPUs <https://www.tensorflow.org/how_tos/using_gpu/>`_ it should be working
@@ -21,11 +21,11 @@ First Tensorflow and numpy have to be imported.::
     import tensorflow as tf
     import numpy as np
 
-Then we create our input data and the desired output. These are saved as numpy arrays. Numpy arrays can be easiely converted
-into Tensorflow Variables.
+Then we create our input data and the desired output. These are saved as numpy arrays. Numpy arrays can be easily converted
+into Tensorflow variables.
 
 Next we specify the Tensorflow variables we want to use. In this case we create one weight and one bias variable. For the
-initial values of W and b we use helperfunctions, which create a numpy array for us.::
+initial values of W and b we use helper functions, which create a numpy array for us.::
 
     # helperfunction creates a numpy array with random initial values
     W = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
@@ -33,18 +33,18 @@ initial values of W and b we use helperfunctions, which create a numpy array for
     b = tf.Variable(tf.zeros([1]))
 
 Next we specify the computation Tensorflow should perform. But this listing of commands isn't executed yet. We are only
-building a computation graph. Later on Tensorflow optimizes the graph and compiles it in a C language for maximum efficiency.::
+building a computation graph. Later Tensorflow optimizes the graph and compiles it in a C language for maximum efficiency.::
 
     y = W * x_data + b
 
-The variable y defines the prediction of the network. To correct the prediction we use an build in optimizer. Which minimizes our
+The variable y defines the prediction of the network. To correct the prediction we use a built in optimizer, which minimizes our
 error.::
 
     loss = tf.reduce_mean(tf.square(y - y_data))
     optimizer = tf.train.GradientDescentOptimizer(0.5)
     train = optimizer.minimize(loss)
 
-Now that our computation graph is complete we let Tensorflow run it. Bu first we initialize our Variables.::
+Now that our computation graph is complete we let Tensorflow run it. But first we initialize our variables.::
 
     init = tf.global_variables_initializer()
     sess = tf.Session()
@@ -76,11 +76,11 @@ and for `experts <https://www.tensorflow.org/tutorials/mnist/pros/>`_.
 Tensorboard
 -----------
 
-Tensorboard is a tool which is included in Tensorflow. With Tensorboard you can visualize your training data. In your project we
+Tensorboard is a tool which is included in Tensorflow. With Tensorboard you can visualize your training data. In our project we
 used Tensorboard to keep track of our accuracy, loss and weight development. Additionally it visualized our computation graph.
 
 To use Tensorboard, especially to visualize some of our test runs go to the logs directory in our project and open a Terminal in one
-of the containing folders. Then type the command.::
+of the contained folders. Then type the command.::
 
     tensorboad --logdir .
 
@@ -92,23 +92,23 @@ In the following image you can see the progress of 3 restricted Boltzmann machin
 
 We added also some of the hyperparameters to the observed variables. So we could directly link the loss to the corresponding
 hyperparameters.
-As we can see as the training starts the loss is jumping up and down but the trend is a decreasing loss. After some time the
+As we can see when the training starts the loss is jumping up and down but the trend is a decreasing loss. After some time the
 loss is stabilized. Even an increasing Gibbs sampling rate can't change that.
-Two other important graphs are the maximal and minimal weights. As the training progresses the absolut value of the maximal and the minimal weight
+Two other important graphs are the maximal and minimal weights. As the training progresses the absolute value of the maximal and the minimal weight
 are getting higher. That isn't a development we want. Optimally the weights should always stay between -1 and 1.
-One explanation could be that we are overtraining because your loss is stuck but we keep training. That forces some weights
-to become extremly big or small. Even the weight decay regulization can't stop that.
+One explanation could be that we are overtraining because our loss is stuck but we keep training. That forces some weights
+to become extremely big or small. Even the weight decay regulation can't stop that.
 
-In the next image is one of the RMBs computationgraphs visualized by Tensorboard:
+In the next image is one of the RMB's computationgraphs visualized by Tensorboard:
 
 .. image:: RBM_pretraining_learning_MNIST.png
 
-This is the main part of the learning precedure from our RBM. As you can see the x-input and the weights and biases perform a Gibbs sampling step.
-The inforamtion on how is currently hidden to make the presentation easier to understand. With the first sampling step
+This is the main part of the learning procedure of our RBM. As you can see the x-input and the weights and biases perform a Gibbs sampling step.
+The information on how the function works is currently hidden to make the presentation easier to understand. With the first sampling step
 the positive association can be calculated. And the value is later used to calculate delta. The thicker the line the more data
 is flowing between the nodes.
 
-To create our own visualizations in Tensorflow we need to tell Tensorflow which information are importan.
+To create our own visualizations in Tensorflow we need to tell Tensorflow which information are important.
 In the following code block are the summary_nodes we used to create these graphs.::
 
     with tf.name_scope('summaries'):
@@ -144,7 +144,7 @@ from the user.::
         with tf.name_scope('update_weights'):
             # weight updates
 
-The information of the summary nodes is evaluated by the call of merge_all_summarys and writen to a file by :class:`Tensorflow.FileWriter` ::
+The information of the summary nodes is evaluated by the call of merge_all_summarys and written to a file by :class:`Tensorflow.FileWriter` ::
 
     self._tf_merged_summaries = tf.summary.merge_all()
 
@@ -175,15 +175,15 @@ Then we can save every variable in our session to the specified path. ::
 
     self._tf_saver.save(self._tf_session, "path/to/save_dir/model_name")
 
-We can have as many :class:`Saver` objects as we want and also specify with variable should be save.
+We can have as many :class:`Saver` objects as we want and also specify which variables should be saved.
 
 But here we stick to the basics and just load all variables we saved. ::
 
     # the viriables have to be created but not yet initialised
     self._tf_saver.restore(self._tf_session, path/to/save_dir/model_name)
 
-This loading and saving is used in every of our networks. They save their model only if they compleded the task. If an
-error occurred before they finished all training progress is lost. Also can our networks only load the newest changes in the network.
+This loading and saving is used in every of our networks. They save their model only if they completed the task. If an
+error occurred before they finished all training progress is lost. Our networks can only load the newest changes in the network.
 All previous states are lost.
 
 
