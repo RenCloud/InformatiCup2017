@@ -48,7 +48,7 @@ Userinterface and data management
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
+
    introductionjonas
    explanationjonas
    resultsjonas
@@ -66,7 +66,7 @@ Datapreparation
 
    why
    textMining
-   efficency
+   implementation
    thoughts
 
 .. _third_label:

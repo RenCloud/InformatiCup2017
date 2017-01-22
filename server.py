@@ -5,14 +5,9 @@ import os
 import learning.frontend.Main
 import json
 
-"""
-def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD = None, vsR = None):
-    if(newDataset):
-        print("new DataSet")
 
-    if(len(data)<100):
-        print("Error: DataSet zu klein")
-        return None
+def training(data, valid = True, svtD=None, svtR = None, vsD = None, vsR = None, main_dir="dbn", sub_dir="train"):
+
 
     tmp = []
     for i in range(len(data)):
@@ -29,15 +24,15 @@ def training(data, newDataset = False, valid = True, svtD=None, svtR = None, vsD
         svt.append(json.dumps(tmp))
         tmp = []
         for i in range(len(svt)):
-            tmp += dataprep.prep(svtR[i])
+            tmp += svtR[i]
         svt.append(json.dumps(tmp))
 
         vs = []
-        vs.append(json.dumps(dataprep.prep(vsD)))
-        vs.append(open(vsR).read())
-        learning.frontend.Main.fit_dbn(vec, main_dir="data_normalized_3", supervised_train_set=svt, validation_set=vs, do_pretraining=True)
+        vs.append(json.dumps(dataprep.prep(vsD[0])))
+        vs.append(open(vsR[0]).read())
+        learning.frontend.Main.fit_dbn(vec, main_dir=main_dir, supervised_train_set=svt, validation_set=vs, do_pretraining=True)
     else:
-        learning.frontend.Main.fit_dbn(vec, main_dir="test")
+        learning.frontend.Main.fit_dbn(vec, main_dir=main_dir)
 
 def classify(json_str):
     print(json.dumps(dataprep.prep(json_str,2)))
@@ -89,4 +84,4 @@ else:
         tmp = tmp + dataprep.prep("data/json/"+jsonFile)
     vec = json.dumps(tmp)
     cat = learning.frontend.Main.fit_dbn(vec, main_dir="test")
-    
+"""

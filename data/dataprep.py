@@ -58,18 +58,16 @@ def search_desc(desc, readme):
             for i in range (0, dic_desc[e]):
                 words.append(e)
     return words
-# corpus ergebnis zuordnen
-# similarities mit ergebnissen
 """
 @param file json file to analyze or train with
-@param training 0-analyze, 1-training, 2-vector optimization
+@param mode 0-training_network; 1-training_dictionary; 2-Classify; 3-Shorten_dictionary
 @return vector for networks
 """
-def prep(file, training = 0):
+def prep(file, mode = 0):
     if(os.path.isfile(file)):
         data = json.loads(open(file).read())
     else:
-        if(training != 2):
+        if(mode != 2):
             print("file not found: "+file)
 
     # load dictionary and corpus
@@ -98,20 +96,20 @@ def prep(file, training = 0):
         tmp = [search_desc(rep['description'], rep['readme'])]
         dump = ""
 
-        if(training == 2):
+        if(mode == 2):
             dictionary.filter_extremes(50, 0.8, None)
             dictionary.compactify()
             print(dictionary)
             dictionaryEndings.filter_extremes(50, 0.8, None)
             dictionaryEndings.compactify()
             print(dictionaryEndings)
-        elif(training == 1):
+        elif(mode == 1):
             dictionary.merge_with(gensim.corpora.Dictionary(tmp))
             corpus.append(dictionary.doc2bow(tmp[0]))
             print(dictionaryEndings)
             dictionaryEndings.merge_with(gensim.corpora.Dictionary(endingstmp))
             corpusEndings.append(dictionary.doc2bow(endingstmp[0]))
-        elif(training == 0):
+        elif(mode == 0):
             tfidf = gensim.models.TfidfModel(corpus)
             json_out_raw = [0 for x in range(dictionary.__len__() + dictionaryEndings.__len__())]
             for elem in tfidf[dictionary.doc2bow(tmp[0])]:

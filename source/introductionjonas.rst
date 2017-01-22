@@ -19,7 +19,9 @@ The requirements for this part of the project are easily installed via pip:
 ::
 
     pip install PyQt5
+****************************************************************************
 
+ ich denke das war der teil vor der überarbeitung
 The Gui and the Data Fetch (the python part, we also have a ASP.Net C# version of it) use `Requests: HTTP for Humans <http://docs.python-requests.org/en/master/>`_
 for fetching the GitHub API data with requests_oAuthlib, `PyQt5 <https://www.riverbankcomputing.com/software/pyqt/intro>`_
 for the Graphical Interface and python 3.5 as language.
@@ -28,7 +30,7 @@ Both can installed via pip:
                             #. pip install requests
                             #. pip install requests_oauthlib
                             #. pip install PyQt5
-
+***************************************************************************
 
 Basic: Requests and Requests_oAtuhLib
 -------------------------------------
@@ -158,6 +160,6 @@ Lets's implement it:
 
 Our Program now looks like this:
 
-.. image ::tooltips.png
+.. image:: tooltips.png
 
 For more details you may look `here <http://zetcode.com/gui/pyqt5/>`_ for a good basic tutorial about PyQt5.

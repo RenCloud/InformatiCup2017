@@ -28,9 +28,7 @@ def search_repo(repo):
         if(dic_end[e] <= sum/100):
             del(dic_end[e])
         else:
-            for i in range (0, dic_end[e]):
-                endings.append(e)
-    #print(endings)
+            endings.append(e)
     return endings
 
 """
@@ -63,7 +61,6 @@ def prep(file, training=0):
         dictionaryEndings.compactify()
         print("After:"+str(dictionaryEndings))
         dictionaryEndings.save("dicEnd.txt")
-        dictionaryEndings.save_as_text("dicEndtext.txt", False)
         return
 
     for repo in data:
@@ -80,9 +77,8 @@ def prep(file, training=0):
             for path in repo['repository']:
                 if(path['type'] == "Blob"):
                     files+=1
-            # vec.append(logisFile(files))
-            vec.append(len(repo['commits'])) #relativ zu Anzahl Ordner+Files
-            vec.append(len(repo['comments'])) #relativ zu commits
+            vec.append(len(repo['commits']))
+            vec.append(len(repo['comments']))
             openI = 0
             closedI = 1
             for i in range(len(repo['issue'])):
@@ -90,7 +86,7 @@ def prep(file, training=0):
                     openI += 1
                 elif(repo['issue'][i]['state'] == 'closed'):
                     closedI += 1
-            vec.append(openI) #nur open-closed
+            vec.append(openI)
             vec.append(closedI)
             author = []
             for commit in repo['commits']:
@@ -105,6 +101,5 @@ def prep(file, training=0):
 
             json_out_raw_arr.append(vec)
 
-    print(dictionaryEndings)
     dictionaryEndings.save("dicEnd.txt")
     return json_out_raw_arr

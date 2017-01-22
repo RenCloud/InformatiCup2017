@@ -2,14 +2,7 @@ Why is Datapreparation necessary?
 =================================
 
 
-****************************
-
-Das klang hier so als wäre es notwendig genau in diesem wertebereich zu sein. Ich habe es etwas weitläufiger formuliert.
-
-****************************
-
-
-The machine learning network, which we used, requires a normalized vector to prevent the values from being too big or small.
+The machine learning network, which we used, requires a normalized vector, tp prevent the values from being too big or small.
 The vector hasn't any length requirements, though its values have to be exclusively numerical.
 The repository data of GitHub needs to be converted into numerical values to be useful. It is also the task of this module to
 filter the data and use only the useful information.
@@ -21,6 +14,7 @@ The Github data
 
 The first part of the GitHub data are mainly unique values, such as the repository id or the repository name.
  Except for the author name these data won't have much information, so we can ignore them.
+
 
 .. image:: codeValues.png
 
@@ -34,7 +28,7 @@ such as its commits or issues. These will be core for analyzing the data.
 
 
 All the data we want to analyze share one problem. All of them are text-based and not numerical values, which we need.
-The textual values in the repositories therefore needs to be converted into numerical ones in order to fit the learning network. *********************
+The textual values in the repositories therefore needs to be converted into numerical ones in order to fit the learning network.
 This is the purpose of the module named data preparation. Data preparation gets object representations of git repositories
 and returns numerical vectors which represent the textual values in an unique way.
 

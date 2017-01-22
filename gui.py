@@ -32,7 +32,7 @@ objectwidth = 25
 class Gui(QMainWindow):
     def __init__(self):
         """
-            init ui 
+            init ui
         """
         super().__init__()
 
@@ -156,70 +156,78 @@ class Gui(QMainWindow):
         self.cbt = QCheckBox('with Validation Set', tab3)
         self.cbt.setGeometry(50, 20, 150, objectwidth)
 
-        self.cb = QCheckBox('new Read of Dataset', tab3)
-        self.cb.setGeometry(50, 5, 150, objectwidth)
-
         # own repositorys?
         self.cbown = QCheckBox('Add own repositorys', tab1)
         self.cbown.setGeometry(50, 220, 150, objectwidth)
         self.cbown.hide()
         self.cbown.setStatusTip('Add Own Repositorys automaticly to the list')
 
-        # training create 6 textfield and 6 buttons 
+        # training create 6 textfield and 6 buttons
         self.letraingdir1 = QLineEdit(tab3)
-
         self.letraingdir1.setGeometry(50, 110, 300, objectwidth)
+        self.letraingdir1.setStatusTip('Network main dir')
 
         self.btraindir1 = QPushButton('Set Dir', tab3)
         self.btraindir1.setStatusTip('Set Dir')
         self.btraindir1.resize(self.btraindir1.sizeHint())
         self.btraindir1.setGeometry(370, 110, 80, objectwidth)
         self.btraindir1.clicked.connect(self.btraindir1clicked)
+        self.btraindir1.setStatusTip('Network main dir')
 
         self.letraingdir2 = QLineEdit(tab3)
         self.letraingdir2.setGeometry(50, 140, 300, objectwidth)
+        self.letraingdir2.setStatusTip("Network sub dir")
 
         self.btraindir2 = QPushButton('Set Dir', tab3)
         self.btraindir2.setStatusTip('Set Dir')
         self.btraindir2.resize(self.btraindir2.sizeHint())
         self.btraindir2.setGeometry(370, 140, 80, objectwidth)
         self.btraindir2.clicked.connect(self.btraindir2clicked)
+        self.btraindir2.setStatusTip("Network sub dir")
 
         self.letrainfile1 = QLineEdit(tab3)
         self.letrainfile1.setGeometry(50, 170, 300, objectwidth)
+        self.letrainfile1.setStatusTip("Validation Set")
 
         self.btrainfile1 = QPushButton('Set Files', tab3)
         self.btrainfile1.setStatusTip('Set Files')
         self.btrainfile1.resize(self.btrainfile1.sizeHint())
         self.btrainfile1.setGeometry(370, 170, 80, objectwidth)
         self.btrainfile1.clicked.connect(self.btrainfile1clicked)
+        self.btrainfile1.setStatusTip("Validation Set")
 
         self.letrainfile2 = QLineEdit(tab3)
         self.letrainfile2.setGeometry(50, 200, 300, objectwidth)
+        self.letrainfile2.setStatusTip("Validation set classification")
 
         self.btrainfile2 = QPushButton('Set Files', tab3)
         self.btrainfile2.setStatusTip('Set Files')
         self.btrainfile2.resize(self.btrainfile2.sizeHint())
         self.btrainfile2.setGeometry(370, 200, 80, objectwidth)
         self.btrainfile2.clicked.connect(self.btrainfile2clicked)
+        self.btrainfile2.setStatusTip("Validation set classification")
 
         self.letrainfile3 = QLineEdit(tab3)
         self.letrainfile3.setGeometry(50, 230, 300, objectwidth)
+        self.letrainfile3.setStatusTip("Supervised train set")
 
         self.btrainfile3 = QPushButton('Set Files', tab3)
         self.btrainfile3.setStatusTip('Set Files')
         self.btrainfile3.resize(self.btrainfile3.sizeHint())
         self.btrainfile3.setGeometry(370, 230, 80, objectwidth)
         self.btrainfile3.clicked.connect(self.btrainfile3clicked)
+        self.btrainfile3.setStatusTip("Supervised train set")
 
         self.letrainfile4 = QLineEdit(tab3)
         self.letrainfile4.setGeometry(50, 260, 300, objectwidth)
+        self.letrainfile4.setStatusTip("Supervised train set classification")
 
         self.btrainfile4 = QPushButton('Set Files', tab3)
         self.btrainfile4.setStatusTip('Set Files')
         self.btrainfile4.resize(self.btrainfile4.sizeHint())
         self.btrainfile4.setGeometry(370, 260, 80, objectwidth)
         self.btrainfile4.clicked.connect(self.btrainfile4clicked)
+        self.btrainfile4.setStatusTip("Supervised train set classification")
 
         # set geometry of main window
         self.setGeometry(300, 300, 500, 400)
@@ -256,17 +264,11 @@ class Gui(QMainWindow):
             training button was clicked and training will start recently
         """
         # start different modes when checkboxes are checked
-        if self.cb.isChecked():
-            print("New DataSet")
-            # server.training([], True, False)
-            return
 
         if self.cbt.isChecked():
-            print('Validation')
-            server.training(self.files, False, True, [], [], [], [])
+            server.training(self.files, valid=True, vsD=self.trainfile1, vsR=self.trainfile2, svtD=self.trainfile3, svtR=self.trainfile4, main_dir=self.trainingdir1, sub_dir=self.trainingdir2)
         else:
-            print('Standard')
-            server.training(self.files, False, False)
+            server.training(self.files, valid=False)
 
 
     def showdialog(self):
@@ -398,7 +400,6 @@ class Gui(QMainWindow):
 
         # tab 3
         self.bshowTrain.setGeometry(size3, 80, size, objectwidth)
-        self.cb.setGeometry(startx, 5, 150, objectwidth)
         self.cbt.setGeometry(startx, 20, 150, objectwidth)
         self.btraining.setGeometry(startx, 50, size, objectwidth)
         self.letrainingpath.setGeometry(startx, 80, size2, objectwidth)
@@ -432,13 +433,13 @@ class Gui(QMainWindow):
         self.trainingdir1 = fname
 
 
-        def btraindir2clicked(self):
-            """
-           Select an dir
-           """
+    def btraindir2clicked(self):
+        """
+        Select an dir
+        """
 
 
-            # start filepicker at '/home' place
+        # start filepicker at '/home' place
 
 
         fname = QFileDialog.getExistingDirectory(self, 'Select Directory', '/home')  # set textfiel text with filepath
@@ -448,8 +449,8 @@ class Gui(QMainWindow):
 
     def btrainfile1clicked(self):
         """
-       Select multiple files
-       """
+        Select multiple files
+        """
 
 
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
@@ -475,9 +476,9 @@ class Gui(QMainWindow):
 
 
     def btrainfile3clicked(self):
-            """
-           Select multiple files
-           """
+        """
+        Select multiple files
+        """
 
 
         name = QFileDialog.getOpenFileNames(self, 'Select Files')
