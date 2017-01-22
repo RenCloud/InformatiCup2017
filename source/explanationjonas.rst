@@ -42,7 +42,7 @@ The API has some advanced features, because it is possible to use PUT, POST and 
 When you aren't registered you can only request 60 times per hour. If you are above this limit you don't get any responds back
 from the GitHub API. To get more you have to use Basic Authentication or use oAtuh which we would recommend.
 
-To call the the api nearly every time the same routine is done:
+To call the the api nearly every time the same routine is done only some changes:
 ::
 
     # request the api here we call the tree api to get the git data 
@@ -152,6 +152,7 @@ Beschränke dich auf das wesentlich und schreib nicht zu viel :-P
 Das was da unten noch in diesem unterkapitel steht wiederholt nur das, was du schon erzählt hast. Ich glaube nicht, dass das noch darin verbleiben sollte.
 
 ***********************************
+
 Soll dieser Teil auch raus?
 OAuth2 is an Authorization Flow for webapplication (and other ). It's make it easy to control which application is connected.
 Every application gets an client id and secret which this an application is registert at the server. 
